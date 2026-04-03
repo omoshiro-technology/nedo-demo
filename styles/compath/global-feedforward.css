@@ -1,0 +1,151 @@
+/**
+ * フィードフォワードリスト スタイル
+ * Phase 14: コンパクトなチャットメッセージ形式
+ * - クリックで参照元決定事項をハイライト
+ */
+
+.feedforward-list {
+  font-size: 14px;
+  line-height: 1.5;
+  position: relative;
+}
+
+.feedforward-list__header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.feedforward-list__header {
+  font-weight: 600;
+  color: #166534;
+}
+
+.feedforward-list__copy-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+  position: relative;
+}
+
+.feedforward-list__copy-btn:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.feedforward-list__copy-btn:active {
+  background: #e5e7eb;
+}
+
+.feedforward-list__copy-tooltip {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  padding: 4px 8px;
+  background: #1f2937;
+  color: white;
+  font-size: 11px;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.feedforward-list__insight {
+  font-size: 13px;
+  color: #15803d;
+  margin: 0 0 12px 0;
+  padding: 8px 12px;
+  background: #f0fdf4;
+  border-radius: 6px;
+  border-left: 3px solid #22c55e;
+}
+
+.feedforward-list__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.feedforward-list__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 8px;
+  border-bottom: 1px solid #f3f4f6;
+  border-radius: 4px;
+  transition: background-color 0.15s;
+}
+
+.feedforward-list__item:last-child {
+  border-bottom: none;
+}
+
+/* クリック可能なアイテム */
+.feedforward-list__item--clickable {
+  cursor: pointer;
+}
+
+.feedforward-list__item--clickable:hover {
+  background: #f9fafb;
+}
+
+/* 選択状態 */
+.feedforward-list__item--selected {
+  background: #ecfdf5;
+  border-left: 3px solid #22c55e;
+  margin-left: -3px;
+}
+
+.feedforward-list__priority {
+  font-size: 10px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.feedforward-list__text {
+  flex: 1;
+  color: #374151;
+}
+
+.feedforward-list__deadline {
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.feedforward-list__link-icon {
+  font-size: 12px;
+  opacity: 0.5;
+  flex-shrink: 0;
+  transition: opacity 0.15s;
+}
+
+.feedforward-list__item--clickable:hover .feedforward-list__link-icon {
+  opacity: 1;
+}
+
+.feedforward-list__veteran {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: #fefce8;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #854d0e;
+  font-style: italic;
+}
+
+.feedforward-list__veteran-source {
+  display: block;
+  font-size: 11px;
+  color: #92400e;
+  font-style: normal;
+  margin-top: 4px;
+}

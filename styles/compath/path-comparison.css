@@ -1,0 +1,254 @@
+/**
+ * Phase 31: 評価軸スパイン + パスレーン構造のスタイル
+ * 推奨パス比較UI用
+ */
+
+/* ============================================
+   評価軸ノード (AxisNode)
+   ============================================ */
+.dn-axis-node {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 2px solid #94a3b8;
+  border-radius: 8px;
+  padding: 12px 20px;
+  min-width: 100px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dn-axis-node__label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.dn-axis-node__description {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+/* ============================================
+   パスヘッダーノード (PathHeaderNode)
+   ============================================ */
+.dn-path-header-node {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-left-width: 6px;
+  border-radius: 12px;
+  padding: 16px 20px;
+  min-width: 180px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.dn-path-header-node:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.dn-path-header-node--selected {
+  border-color: #1f7a6d;
+  background: #f0fdf4;
+}
+
+.dn-path-header-node--focused {
+  box-shadow: 0 0 0 3px rgba(31, 122, 109, 0.3);
+}
+
+.dn-path-header-node__content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.dn-path-header-node__indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.dn-path-header-node__text {
+  flex: 1;
+}
+
+.dn-path-header-node__label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.3;
+}
+
+.dn-path-header-node__description {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* ============================================
+   パスステップノード (PathStepNode)
+   ============================================ */
+.dn-path-step-node {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px 18px;
+  min-width: 160px;
+  max-width: 220px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.dn-path-step-node:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dn-path-step-node--selected {
+  background: #f0fdf4;
+  border-color: #1f7a6d;
+}
+
+.dn-path-step-node--dimmed {
+  opacity: 0.4;
+}
+
+.dn-path-step-node__content {
+  text-align: left;
+}
+
+.dn-path-step-node__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+  line-height: 1.3;
+}
+
+.dn-path-step-node__description {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* ============================================
+   差分ノード (DeltaNode)
+   ============================================ */
+.dn-delta-node {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.dn-delta-node__content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dn-delta-node__axis {
+  color: #92400e;
+  font-weight: 500;
+}
+
+.dn-delta-node__value {
+  font-weight: 700;
+}
+
+.dn-delta-node__value--positive {
+  color: #16a34a;
+}
+
+.dn-delta-node__value--negative {
+  color: #dc2626;
+}
+
+/* ============================================
+   パスゴールノード (PathGoalNode)
+   ============================================ */
+.dn-path-goal-node {
+  border-radius: 12px;
+  padding: 16px 20px;
+  min-width: 140px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.dn-path-goal-node:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.dn-path-goal-node--selected {
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5), 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.dn-path-goal-node--dimmed {
+  opacity: 0.4;
+}
+
+.dn-path-goal-node__content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dn-path-goal-node__icon {
+  font-size: 20px;
+}
+
+.dn-path-goal-node__text {
+  flex: 1;
+}
+
+.dn-path-goal-node__label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.dn-path-goal-node__description {
+  font-size: 11px;
+  opacity: 0.9;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* ============================================
+   パス色の定義
+   ============================================ */
+:root {
+  --path-color-a: #16a34a; /* 緑 - 安全重視 */
+  --path-color-b: #2563eb; /* 青 - バランス */
+  --path-color-c: #f97316; /* 橙 - 効率重視 */
+}
+
+/* ============================================
+   エッジスタイル用のクラス
+   ============================================ */
+.path-edge--a {
+  stroke: var(--path-color-a);
+}
+
+.path-edge--b {
+  stroke: var(--path-color-b);
+}
+
+.path-edge--c {
+  stroke: var(--path-color-c);
+}
+
+/* 軸リンク（細い破線） */
+.axis-link-edge {
+  stroke: #94a3b8;
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+}

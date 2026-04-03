@@ -1,0 +1,35 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/home/noro/brain-room-poc/logs/.95fde633b2c25ade10dec9e108b103eb0dc8e58b-audit.json",
+    "files": [
+        {
+            "date": 1755339276087,
+            "name": "/home/noro/brain-room-poc/logs/mcp-puppeteer-2025-08-16.log",
+            "hash": "dda882ecbb566d485ce10be6ed0167d22cb0afbed5775e3d6c200363da153737"
+        },
+        {
+            "date": 1755357808541,
+            "name": "/home/noro/brain-room-poc/logs/mcp-puppeteer-2025-08-17.log",
+            "hash": "2081b996624d1776b5ef908d69b7097e2532b25a263fbe43645c943c5fd0cc23"
+        },
+        {
+            "date": 1755442849939,
+            "name": "/home/noro/brain-room-poc/logs/mcp-puppeteer-2025-08-18.log",
+            "hash": "2081342fe8ada21229fa0a40f2a6e21c78177dae903728f2f2831f1bbb8b8061"
+        },
+        {
+            "date": 1755806681204,
+            "name": "/home/noro/brain-room-poc/logs/mcp-puppeteer-2025-08-22.log",
+            "hash": "471e9863e951e3973f9c6542e4d839690406833e1a160edfb6003ba7f37741cb"
+        },
+        {
+            "date": 1755937314965,
+            "name": "/home/noro/brain-room-poc/logs/mcp-puppeteer-2025-08-23.log",
+            "hash": "6109ed08d4e93e1ab28e9a2bb09c74f6de78968999d44f5d9c4c6e96d633cb5d"
+        }
+    ],
+    "hashType": "sha256"
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_気づきのコピー" data-name="気づきのコピー" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #4265af;
+      }
+
+      .cls-2 {
+        fill: #cad2eb;
+      }
+    </style>
+  </defs>
+  <circle class="cls-2" cx="100" cy="100" r="100"/>
+  <g>
+    <rect class="cls-1" x="60.04" y="85.41" width="87.13" height="10" transform="translate(-7.99 170.75) rotate(-76.86)"/>
+    <path class="cls-1" d="M89.47,143.98c-5.09,0-9.23,4.14-9.23,9.23s4.14,9.23,9.23,9.23,9.23-4.14,9.23-9.23-4.14-9.23-9.23-9.23Z"/>
+  </g>
+</svg>

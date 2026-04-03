@@ -1,0 +1,733 @@
+.graph-panel {
+  background: var(--card);
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.graph-panel__header {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+}
+
+.graph-panel__canvas {
+  height: 520px;
+  background: linear-gradient(180deg, #fff, #f8f4ee);
+  position: relative;
+  overflow: hidden;
+}
+
+.graph-panel__chat {
+  border-left: 1px solid var(--line);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  gap: 8px;
+  min-width: 260px;
+  max-width: 900px;
+  width: 100%;
+  box-sizing: border-box;
+  height: 100%;
+  align-self: stretch;
+  overflow: hidden;
+}
+
+.graph-panel__chat-head {
+  font-weight: 700;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--line);
+}
+
+.graph-panel__chat-body {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+
+.graph-panel__chat-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.graph-panel__chat-msg.is-user .graph-panel__chat-bubble {
+  background: #e8f4f1;
+}
+
+.graph-panel__chat-msg.is-assistant .graph-panel__chat-bubble {
+  background: #f5f1eb;
+}
+
+.graph-panel__chat-role {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.graph-panel__chat-bubble {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  line-height: 1.4;
+  font-size: 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.graph-panel__chat-input {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.graph-panel__chat-input textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px;
+  resize: vertical;
+  font-size: 0.95rem;
+}
+
+.graph-panel__chat-input button {
+  align-self: flex-end;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.graph-panel__chat-add {
+  margin-top: 6px;
+  display: inline-block;
+  border: 1px solid var(--accent);
+  background: #fff;
+  color: var(--accent);
+  border-radius: 8px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.graph-panel__chat-add:hover {
+  background: rgba(31, 122, 109, 0.08);
+}
+
+.graph-panel__chat-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+  align-items: flex-start;
+}
+
+.graph-panel__chat-action-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border: none;
+  background: transparent;
+}
+
+.graph-panel__chat-action-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.graph-panel__chat-action-level {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.graph-panel__chat-action-label {
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.graph-panel__chat-actions.is-speculative .graph-panel__chat-add {
+  border-style: dashed;
+  color: #c46000;
+  border-color: #c46000;
+}
+
+.graph-panel__chat-actions.is-speculative .graph-panel__chat-add:hover {
+  background: rgba(196, 96, 0, 0.08);
+}
+
+.graph-panel__chat-spec-label {
+  font-weight: 700;
+  color: #c46000;
+}
+
+.graph-panel__workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  height: 520px;
+}
+
+.graph-panel__workspace.has-sidebar {
+  grid-template-columns: 260px minmax(0, 1fr);
+}
+
+.graph-panel__workspace.has-chat {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.graph-panel__workspace.has-sidebar.has-chat {
+  grid-template-columns: 260px minmax(0, 1fr) auto;
+}
+
+.graph-panel__sidebar {
+  border-right: 1px solid var(--line);
+  padding: 12px;
+  background: rgba(248, 244, 238, 0.65);
+  overflow-y: auto;
+  position: relative;
+  z-index: 2;
+}
+
+.graph-panel__sidebar-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.graph-panel__pool {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.graph-panel__pool-item {
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  background: #fff;
+  padding: 8px 10px;
+  cursor: grab;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+}
+
+.graph-panel__pool-item.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.graph-panel__pool-item:active {
+  cursor: grabbing;
+}
+
+.graph-panel__pool-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.graph-panel__pool-meta {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.graph-panel__actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.graph-panel__button {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-weight: 700;
+  min-width: 44px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.graph-panel__button:hover {
+  border-color: var(--accent);
+}
+
+.graph-panel__button.is-active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* 注意: ReactFlowのエッジスタイルはFlowChart.tsxのEDGE_STYLESで管理
+   .selected クラスはReactFlowが内部的に使用するため、ここでは上書きしない */
+
+.react-flow__edge-updater,
+.react-flow__edge-updater:hover {
+  cursor: grab;
+}
+
+.react-flow__edge-updater:active {
+  cursor: grabbing;
+}
+
+.graph-panel.is-fullscreen {
+  position: fixed;
+  top: 72px; /* メインヘッダー(60px) + 余白(12px) */
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 30;
+  max-width: none;
+  width: auto;
+  height: auto;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.graph-panel.is-fullscreen .graph-panel__header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--card-bg, #fff);
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.graph-panel.is-fullscreen .graph-panel__canvas {
+  height: calc(100vh - 200px);
+}
+
+.graph-panel.is-fullscreen .graph-panel__workspace {
+  height: calc(100vh - 150px);
+}
+
+.graph-panel__columns {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transform-origin: top left;
+  z-index: 1;
+}
+
+.graph-panel__column-line {
+  border-left: 1px dashed rgba(31, 122, 109, 0.25);
+  height: 100%;
+  position: absolute;
+  top: 0;
+  width: 0;
+}
+
+.graph-panel__palette {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 5;
+  min-width: 180px;
+  max-width: 220px;
+}
+
+.graph-panel__palette-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.graph-panel__palette button {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.graph-panel__palette button:hover {
+  border-color: var(--accent);
+}
+
+.graph-panel__palette .small {
+  font-size: 0.8rem;
+  display: block;
+}
+
+.graph-panel__palette-title {
+  font-weight: 700;
+  text-align: left;
+}
+
+.graph-panel__palette-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+.graph-panel__palette-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.graph-panel__palette-help {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-weight: 700;
+  cursor: help;
+}
+
+/* 編集パレット折りたたみ */
+.graph-panel__palette.is-collapsed {
+  min-width: auto;
+  max-width: auto;
+  padding: 8px;
+}
+
+.graph-panel__palette-toggle {
+  background: var(--bg-secondary, #f8f9fa);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+
+.graph-panel__palette-toggle:hover {
+  background: var(--line);
+}
+
+/* 展開時の×ボタン: 右上隅に配置 */
+.graph-panel__palette-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary, #64748b);
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.graph-panel__palette-close:hover {
+  background: var(--bg-secondary, #f1f5f9);
+  color: var(--text-primary, #1f2937);
+}
+
+/* 折りたたみ時: 円形FAB風 */
+.graph-panel__palette.is-collapsed {
+  min-width: auto;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.graph-panel__palette.is-collapsed .graph-panel__palette-toggle {
+  background: var(--accent, #1f7a6d);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 1.3rem;
+  box-shadow: 0 4px 12px rgba(31, 122, 109, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.graph-panel__palette.is-collapsed .graph-panel__palette-toggle:hover {
+  background: var(--accent-dark, #186459);
+  transform: scale(1.05);
+}
+
+/* フルスクリーン時のヘッダー調整 */
+.graph-panel.is-fullscreen .ghost-button[disabled] {
+  display: none;
+}
+
+.graph-panel.is-fullscreen .graph-panel__button {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.graph-panel.is-fullscreen .graph-panel__button.is-active {
+  background: #ef4444;
+  border-color: #ef4444;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.graph-panel.is-fullscreen .graph-panel__button.is-active:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+.graph-panel.is-fullscreen .graph-panel__actions {
+  flex-shrink: 0;
+}
+
+/* ヘッダーレスポンシブ対応 */
+@media (max-width: 1024px) {
+  .graph-panel__header .ghost-button[disabled] {
+    display: none;
+  }
+
+  .graph-panel__header h3 {
+    font-size: 1rem;
+  }
+
+  .graph-panel__actions {
+    gap: 8px;
+  }
+}
+
+.axis-node {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #fff;
+  min-width: 200px;
+  max-width: 200px;
+  min-height: 110px;
+  box-shadow: 0 10px 24px rgba(31, 24, 18, 0.08);
+}
+
+.axis-node.is-selected {
+  outline: 2px solid var(--accent);
+  box-shadow: 0 0 0 4px rgba(31, 122, 109, 0.12);
+}
+
+.axis-node-wrapper {
+  position: relative;
+}
+
+.axis-node-wrapper .react-flow__handle {
+  width: 10px;
+  height: 10px;
+  border: 2px solid #fff;
+  background: var(--accent);
+}
+
+.axis-node-wrapper .react-flow__handle-left {
+  left: -10px;
+}
+
+.axis-node-wrapper .react-flow__handle-right {
+  right: -10px;
+}
+
+.axis-node.is-missing {
+  border-color: var(--missing);
+  background: rgba(212, 72, 61, 0.12);
+}
+
+.axis-node.is-chat-fact {
+  background: #e7f4f0;
+  border-color: rgba(31, 122, 109, 0.35);
+}
+
+.axis-node.is-chat-speculative {
+  background: #fff3e7;
+  border-color: rgba(196, 96, 0, 0.35);
+}
+
+.axis-node__level {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  line-height: 1.2;
+  margin-bottom: 2px;
+}
+
+.axis-node__label {
+  margin-top: 2px;
+  font-weight: 600;
+  max-width: 100%;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 低信頼度ノード */
+.axis-node.is-low-confidence {
+  border-color: #9ca3af;
+  border-style: dashed;
+  background: #f9fafb;
+}
+
+.axis-node__badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #6b7280;
+  color: white;
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: 4px;
+  z-index: 1;
+}
+
+.missing-list {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+  height: fit-content;
+}
+
+.missing-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: grid;
+  gap: 8px;
+}
+
+.missing-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(212, 72, 61, 0.3);
+  background: rgba(212, 72, 61, 0.08);
+}
+
+.missing-list__label {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.missing-list__value {
+  font-weight: 600;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 20;
+}
+
+.modal__content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  min-width: 320px;
+  max-width: 520px;
+  box-shadow: var(--shadow);
+}
+
+.modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.modal__body {
+  margin: 0 0 12px;
+  line-height: 1.6;
+}
+
+.modal__footer {
+  text-align: right;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(31, 122, 109, 0.12);
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.badge.is-missing {
+  background: rgba(212, 72, 61, 0.12);
+  color: var(--missing);
+}
+
+@media (max-width: 960px) {
+  .hero {
+    flex-direction: column;
+  }
+
+  .visual-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.graph-panel__chat-input button {
+  font-size: 0.95rem;
+}
+
+.graph-panel__chat-resize {
+  width: 6px;
+  cursor: col-resize;
+  background: linear-gradient(180deg, rgba(31, 122, 109, 0.08), rgba(31, 122, 109, 0.02));
+  height: 100%;
+}
+

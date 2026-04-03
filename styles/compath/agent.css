@@ -1,0 +1,596 @@
+/**
+ * Agent UI スタイル
+ * - AgentStateIndicator: 状態バッジ
+ * - ActionsLog: アクションログ
+ */
+
+/* =============================================================================
+   AgentStateIndicator: 状態バッジ
+   ============================================================================= */
+
+.agent-state-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--surface-secondary, #f5f5f5);
+  border-radius: 8px;
+  font-size: 13px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.agent-state-indicator__badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+/* 状態別の色 */
+.agent-state-indicator__badge--idle {
+  background: var(--color-gray-100, #e5e7eb);
+  color: var(--color-gray-600, #4b5563);
+}
+
+.agent-state-indicator__badge--planning {
+  background: var(--color-blue-100, #dbeafe);
+  color: var(--color-blue-700, #1d4ed8);
+}
+
+.agent-state-indicator__badge--executing {
+  background: var(--color-yellow-100, #fef3c7);
+  color: var(--color-yellow-700, #a16207);
+}
+
+.agent-state-indicator__badge--artifact_updated {
+  background: var(--color-green-100, #dcfce7);
+  color: var(--color-green-700, #15803d);
+}
+
+.agent-state-indicator__badge--waiting_user_input {
+  background: var(--color-orange-100, #ffedd5);
+  color: var(--color-orange-700, #c2410c);
+}
+
+.agent-state-indicator__badge--accepted {
+  background: var(--color-purple-100, #f3e8ff);
+  color: var(--color-purple-700, #7c3aed);
+}
+
+/* パルスアニメーション（アクティブ時） */
+.agent-state-indicator__pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+.agent-state-indicator__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.agent-state-indicator__label {
+  white-space: nowrap;
+}
+
+.agent-state-indicator__confidence {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-left: 4px;
+}
+
+/* 成果物タイプ表示 */
+.agent-state-indicator__artifact {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: var(--surface-tertiary, #e5e7eb);
+  border-radius: 12px;
+  font-size: 11px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.agent-state-indicator__artifact-icon {
+  display: flex;
+  align-items: center;
+}
+
+.agent-state-indicator__artifact-label {
+  white-space: nowrap;
+}
+
+/* =============================================================================
+   ActionsLog: アクションログ
+   ============================================================================= */
+
+.actions-log {
+  background: var(--surface-secondary, #f9fafb);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 12px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.actions-log--collapsed {
+  /* 折りたたみ時 */
+}
+
+.actions-log__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--surface-primary, #fff);
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  cursor: pointer;
+  user-select: none;
+}
+
+.actions-log__header:hover {
+  background: var(--surface-hover, #f3f4f6);
+}
+
+.actions-log__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  color: var(--text-primary, #1f2937);
+}
+
+.actions-log__count {
+  font-size: 11px;
+  color: var(--text-secondary, #6b7280);
+  margin-left: auto;
+}
+
+.actions-log__toggle {
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.actions-log__toggle--collapsed {
+  transform: rotate(-90deg);
+}
+
+/* ログリスト */
+.actions-log__list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.actions-log__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border-light, #f3f4f6);
+  transition: background 0.15s ease;
+}
+
+.actions-log__item:last-child {
+  border-bottom: none;
+}
+
+.actions-log__item--latest {
+  background: var(--surface-highlight, #f0f9ff);
+}
+
+.actions-log__item--fail {
+  background: var(--color-red-50, #fef2f2);
+}
+
+.actions-log__item--warn {
+  background: var(--color-yellow-50, #fffbeb);
+}
+
+/* タイムスタンプ */
+.actions-log__time {
+  font-size: 10px;
+  color: var(--text-tertiary, #9ca3af);
+  font-family: monospace;
+  min-width: 60px;
+}
+
+/* 結果アイコン */
+.actions-log__result {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+
+.actions-log__result--ok {
+  color: var(--color-green-500, #22c55e);
+}
+
+.actions-log__result--warn {
+  color: var(--color-yellow-500, #eab308);
+}
+
+.actions-log__result--fail {
+  color: var(--color-red-500, #ef4444);
+}
+
+/* アクションタイプ */
+.actions-log__type {
+  font-weight: 500;
+  color: var(--text-secondary, #6b7280);
+  min-width: 48px;
+}
+
+/* メッセージ */
+.actions-log__message {
+  flex: 1;
+  color: var(--text-primary, #1f2937);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* エラー詳細 */
+.actions-log__error {
+  font-size: 10px;
+  color: var(--color-red-600, #dc2626);
+  background: var(--color-red-100, #fee2e2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =============================================================================
+   成果物更新通知
+   ============================================================================= */
+
+.artifact-notification {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--color-green-50, #f0fdf4);
+  border: 1px solid var(--color-green-200, #bbf7d0);
+  border-radius: 8px;
+  margin: 8px 0;
+}
+
+.artifact-notification__icon {
+  color: var(--color-green-600, #16a34a);
+}
+
+.artifact-notification__content {
+  flex: 1;
+}
+
+.artifact-notification__title {
+  font-weight: 500;
+  color: var(--color-green-800, #166534);
+  font-size: 13px;
+}
+
+.artifact-notification__meta {
+  font-size: 11px;
+  color: var(--color-green-600, #16a34a);
+  margin-top: 2px;
+}
+
+/* =============================================================================
+   成果物タイプ選択UI（フォールバック用）
+   ============================================================================= */
+
+.artifact-type-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  background: var(--surface-secondary, #f9fafb);
+  border-radius: 8px;
+}
+
+.artifact-type-selector__chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--surface-primary, #fff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.artifact-type-selector__chip:hover {
+  border-color: var(--color-blue-400, #60a5fa);
+  background: var(--color-blue-50, #eff6ff);
+}
+
+.artifact-type-selector__chip--selected {
+  border-color: var(--color-blue-500, #3b82f6);
+  background: var(--color-blue-100, #dbeafe);
+  color: var(--color-blue-700, #1d4ed8);
+}
+
+/* =============================================================================
+   AgentPlanPanel: 計画ステップ表示
+   ============================================================================= */
+
+.agent-plan-panel {
+  background: var(--surface-secondary, #f9fafb);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  padding: 12px 16px;
+  max-width: 720px;
+  margin: 8px auto;
+  font-size: 13px;
+}
+
+.agent-plan-panel--active {
+  border-color: var(--color-blue-200, #bfdbfe);
+  background: var(--color-blue-50, #eff6ff);
+}
+
+.agent-plan-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.agent-plan-panel__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+}
+
+.agent-plan-panel__title svg {
+  color: var(--color-blue-600, #2563eb);
+}
+
+.agent-plan-panel__progress-text {
+  font-size: 12px;
+  color: var(--text-secondary, #6b7280);
+}
+
+/* プログレスバー */
+.agent-plan-panel__progress-bar {
+  height: 4px;
+  background: var(--color-gray-200, #e5e7eb);
+  border-radius: 2px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.agent-plan-panel__progress-fill {
+  height: 100%;
+  background: var(--color-blue-500, #3b82f6);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* 計画ステップ一覧 */
+.agent-plan-panel__steps {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.agent-plan-panel__step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.agent-plan-panel__step--pending {
+  color: var(--text-tertiary, #9ca3af);
+}
+
+.agent-plan-panel__step--in_progress {
+  background: var(--color-blue-100, #dbeafe);
+  color: var(--color-blue-700, #1d4ed8);
+}
+
+.agent-plan-panel__step--completed {
+  color: var(--color-green-700, #15803d);
+}
+
+.agent-plan-panel__step--error {
+  background: var(--color-red-50, #fef2f2);
+  color: var(--color-red-700, #b91c1c);
+}
+
+.agent-plan-panel__step-icon {
+  font-size: 14px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.agent-plan-panel__step-icon--pulse {
+  animation: step-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes step-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.agent-plan-panel__step-number {
+  font-weight: 500;
+  min-width: 20px;
+}
+
+.agent-plan-panel__step-label {
+  flex: 1;
+}
+
+.agent-plan-panel__step-detail {
+  font-size: 11px;
+  color: var(--text-secondary, #6b7280);
+}
+
+/* 判断理由セクション */
+.agent-plan-panel__route-result {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color, #e5e7eb);
+}
+
+.agent-plan-panel__route-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  color: var(--text-primary, #1f2937);
+  margin-bottom: 8px;
+}
+
+.agent-plan-panel__route-header svg {
+  color: var(--color-yellow-500, #eab308);
+}
+
+.agent-plan-panel__route-type {
+  font-size: 13px;
+  color: var(--text-primary, #1f2937);
+  margin-bottom: 8px;
+}
+
+.agent-plan-panel__route-type strong {
+  color: var(--color-blue-600, #2563eb);
+}
+
+.agent-plan-panel__route-confidence {
+  font-size: 11px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.agent-plan-panel__route-reasons {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.agent-plan-panel__route-reason {
+  font-size: 12px;
+  color: var(--text-secondary, #6b7280);
+  padding-left: 16px;
+  position: relative;
+}
+
+.agent-plan-panel__route-reason::before {
+  content: "•";
+  position: absolute;
+  left: 4px;
+  color: var(--color-gray-400, #9ca3af);
+}
+
+.agent-plan-panel__route-fallback {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-tertiary, #9ca3af);
+}
+
+.agent-plan-panel__route-fallback-choice {
+  display: inline-block;
+  padding: 2px 8px;
+  margin-left: 4px;
+  background: var(--surface-tertiary, #e5e7eb);
+  border-radius: 10px;
+}
+
+/* =============================================================================
+   レスポンシブ対応
+   ============================================================================= */
+
+@media (max-width: 640px) {
+  .agent-state-indicator {
+    flex-wrap: wrap;
+    padding: 6px 10px;
+  }
+
+  .agent-state-indicator__badge {
+    font-size: 12px;
+    padding: 3px 8px;
+  }
+
+  .actions-log__item {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .actions-log__message {
+    width: 100%;
+    order: 10;
+  }
+}
+
+/* =============================================================================
+   AgentSelector: 提案書作成ボタン
+   ============================================================================= */
+
+.agent-selector__proposal-section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.agent-selector__proposal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.agent-selector__proposal-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.agent-selector__proposal-btn:active {
+  transform: translateY(0);
+}

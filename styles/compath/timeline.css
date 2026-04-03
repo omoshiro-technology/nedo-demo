@@ -1,0 +1,1727 @@
+/* ===== 意思決定タイムライン分析 ===== */
+
+.decision-analysis-page {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.decision-analysis-page__header {
+  margin-bottom: 24px;
+}
+
+.decision-analysis-page__header h1 {
+  margin-bottom: 8px;
+}
+
+.decision-analysis-page__input,
+.decision-analysis-page__result,
+.decision-analysis-page__timeline,
+.decision-analysis-page__empty,
+.decision-analysis-page__examples {
+  margin-bottom: 24px;
+}
+
+/* 意思決定パターン例示 */
+.decision-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.decision-example {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--bg);
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.decision-example__tag {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  min-width: 48px;
+  text-align: center;
+}
+
+.decision-example__tag--decision {
+  background: var(--accent);
+}
+
+.decision-example__tag--agreement {
+  background: #10b981;
+}
+
+.decision-example__tag--change {
+  background: #f59e0b;
+}
+
+.decision-example__tag--adoption {
+  background: #6366f1;
+}
+
+.decision-example__tag--cancellation {
+  background: #ef4444;
+}
+
+.decision-example__content {
+  flex: 1;
+}
+
+.decision-example__text {
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.decision-example__text strong {
+  color: var(--accent);
+  background: rgba(31, 122, 109, 0.1);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.decision-example__desc {
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.decision-examples-footer {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+/* ファイルドロップゾーン */
+.file-drop-zone {
+  border: 2px dashed var(--line);
+  border-radius: 16px;
+  padding: 40px 24px;
+  text-align: center;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.5);
+  margin-bottom: 16px;
+}
+
+.file-drop-zone.is-dragging {
+  border-color: var(--accent);
+  background: rgba(31, 122, 109, 0.05);
+}
+
+.file-drop-zone__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.file-drop-zone__content svg {
+  color: var(--muted);
+}
+
+.file-drop-zone__content p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.file-drop-zone__content .small {
+  font-size: 0.85rem;
+}
+
+.file-select-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background: var(--accent);
+  color: white;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.file-select-button:hover {
+  background: #166b5f;
+}
+
+.file-select-button input {
+  display: none;
+}
+
+/* ファイルリスト */
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.file-list__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.file-list__item svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.file-list__item-name {
+  flex: 1;
+  font-size: 0.95rem;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-list__item-date {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.file-list__item-remove {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.file-list__item-remove:hover {
+  color: var(--missing);
+  background: rgba(212, 72, 61, 0.1);
+}
+
+/* 分析ボタン */
+.analyze-button {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.analyze-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(31, 122, 109, 0.25);
+}
+
+.analyze-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* サマリーグリッド */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summary-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.summary-item strong {
+  font-size: 1.1rem;
+}
+
+/* 警告 */
+.warnings {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: rgba(224, 107, 59, 0.1);
+  border-radius: 8px;
+  border-left: 4px solid var(--accent-2);
+}
+
+.warnings ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.warnings li {
+  font-size: 0.9rem;
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+/* タイムライン */
+.decision-timeline {
+  background: var(--card);
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  padding: 24px;
+  position: relative;
+}
+
+.decision-timeline__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.decision-timeline__header h3 {
+  margin: 0;
+}
+
+.decision-timeline__content {
+  position: relative;
+  padding-left: 40px;
+}
+
+.decision-timeline__axis {
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--accent), var(--line));
+}
+
+.decision-timeline__group {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px dashed var(--line);
+}
+
+.decision-timeline__group:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.decision-timeline__date-marker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 6px 0;
+}
+
+.decision-timeline__date-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--card);
+  box-shadow: 0 0 0 2px var(--accent);
+  margin-left: -32px;
+  flex-shrink: 0;
+}
+
+.decision-timeline__date-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.decision-timeline__date-count {
+  font-size: 0.8rem;
+  color: var(--muted);
+  background: rgba(31, 122, 109, 0.1);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.decision-timeline__items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 決定カード */
+.decision-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.decision-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+
+.decision-card.is-selected {
+  border-left-color: var(--accent) !important;
+  background: rgba(31, 122, 109, 0.08);
+  box-shadow: 0 0 0 4px rgba(31, 122, 109, 0.15);
+  transform: scale(1.01);
+}
+
+/* Note: .decision-card__content for DecisionResultView is defined in chat.css with flex: 1 */
+/* This style is for timeline page only */
+.decision-timeline .decision-card__content {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--ink);
+  margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.decision-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.decision-card__left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.decision-card__right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.decision-card__status-icon {
+  font-size: 0.9rem;
+  font-weight: 600;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.decision-card__status-icon--confirmed {
+  color: #10b981;
+}
+
+.decision-card__status-icon--gray {
+  color: #f59e0b;
+}
+
+.decision-card__status-icon--proposed {
+  color: #6b7280;
+}
+
+/* カードヘッダー - DecisionResultView用は chat.css に定義 */
+
+.decision-card__badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.decision-card__status-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.decision-card__status-badge--confirmed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.decision-card__status-badge--gray {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.decision-card__status-badge--proposed {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.decision-card__importance-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.decision-card__importance-badge--critical {
+  background: #fecaca;
+  color: #991b1b;
+}
+
+.decision-card__importance-badge--high {
+  background: #fed7aa;
+  color: #9a3412;
+}
+
+/* 重要度カテゴリ */
+.decision-card__importance-categories {
+  font-weight: normal;
+  opacity: 0.9;
+}
+
+/* 影響範囲サマリー */
+.decision-card__impact-summary {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--line);
+  font-size: 0.75rem;
+}
+
+.decision-card__impact-label {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.decision-card__impact-tag {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+}
+
+.decision-card__impact-more {
+  color: var(--text-secondary);
+  font-size: 0.65rem;
+}
+
+/* 分析サマリー行 */
+.decision-card__summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+}
+
+.decision-card__phase-tag {
+  font-size: 0.65rem;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.decision-card__change-tag {
+  font-size: 0.65rem;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.decision-card__change-tag--high {
+  background: #fecaca;
+  color: #991b1b;
+}
+
+.decision-card__change-tag--medium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.decision-card__change-tag--low {
+  background: #e5e7eb;
+  color: #6b7280;
+}
+
+.decision-card__delay-tag {
+  font-size: 0.65rem;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: #fecaca;
+  color: #991b1b;
+}
+
+.decision-card--has-warning {
+  border-left-color: #ef4444;
+}
+
+.decision-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.decision-card__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+/* パターン種別タグ: 全て統一したモノトーン */
+.decision-card__tag--decision,
+.decision-card__tag--agreement,
+.decision-card__tag--change,
+.decision-card__tag--adoption,
+.decision-card__tag--cancellation,
+.decision-card__tag--other {
+  background: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+.decision-card__source {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 詳細パネル */
+.decision-detail-panel {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 400px;
+  max-width: 90vw;
+  background: var(--card);
+  border-left: 1px solid var(--line);
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.decision-detail-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  background: var(--card);
+}
+
+.decision-detail-panel__header h4 {
+  margin: 0;
+}
+
+.decision-detail-panel__close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.decision-detail-panel__close:hover {
+  color: var(--ink);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.decision-detail-panel__content {
+  padding: 20px;
+}
+
+.decision-detail-panel__item {
+  margin-bottom: 20px;
+}
+
+.decision-detail-panel__item:last-child {
+  margin-bottom: 0;
+}
+
+.decision-detail-panel__item .label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.decision-detail-panel__item p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.decision-detail-panel__item .context {
+  background: #f8f8f8;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+/* 決定内容のハイライト（マーカー風） */
+.decision-highlight {
+  background: linear-gradient(180deg, transparent 50%, #fef08a 50%);
+  padding: 0 2px;
+  border-radius: 2px;
+  color: inherit;
+}
+
+/* 空状態 */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.empty-state svg {
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  margin-bottom: 8px;
+}
+
+/* バッジ */
+.badge--accent {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  color: white;
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+  .decision-detail-panel {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .decision-timeline__content {
+    padding-left: 30px;
+  }
+
+  .decision-timeline__date-dot {
+    margin-left: -22px;
+  }
+}
+
+/* ===== 折りたたみセクション ===== */
+
+.collapsible-section {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.collapsible-section__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 12px 14px;
+  background: #fafaf8;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--ink);
+  transition: background 0.15s ease;
+}
+
+.collapsible-section__header:hover {
+  background: #f5f5f0;
+}
+
+.collapsible-section__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.collapsible-section__badge {
+  font-size: 0.9rem;
+}
+
+.collapsible-section__icon {
+  color: var(--muted);
+  transition: transform 0.2s ease;
+}
+
+.collapsible-section.is-open .collapsible-section__icon {
+  transform: rotate(180deg);
+}
+
+.collapsible-section__content {
+  padding: 14px;
+  background: var(--card);
+  border-top: 1px solid var(--line);
+}
+
+/* 詳細パネル追加スタイル */
+.decision-detail-panel__primary {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.decision-detail-panel__main-content {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink);
+  margin: 12px 0;
+}
+
+/* 次にやることセクション */
+.decision-detail-panel__actions {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.decision-detail-panel__actions-title {
+  margin: 0 0 10px 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #166534;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.decision-detail-panel__actions-title::before {
+  content: "✓";
+  font-size: 0.9rem;
+}
+
+.decision-detail-panel__actions-list {
+  margin: 0;
+  padding-left: 20px;
+  list-style: none;
+}
+
+.decision-detail-panel__actions-list li {
+  position: relative;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+.decision-detail-panel__actions-list li:last-child {
+  margin-bottom: 0;
+}
+
+.decision-detail-panel__actions-list li::before {
+  content: "•";
+  position: absolute;
+  left: -14px;
+  color: #22c55e;
+  font-weight: bold;
+}
+
+.decision-detail-panel__ambiguity {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #92400e;
+  background: #fef3c7;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.decision-detail-panel__ambiguity-icon {
+  font-size: 0.9rem;
+}
+
+.decision-detail-panel__footer-info {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-align: right;
+}
+
+/* ===== Phase 4.5: 確信度判定と判断支援 ===== */
+
+/* --- ステータス別カードスタイル --- */
+.decision-card--confirmed {
+  border-left: 4px solid #10b981;
+}
+
+.decision-card--gray {
+  border-left: 4px solid #94a3b8;
+  background: linear-gradient(135deg, #fffdf8 0%, #f8fafc 100%);
+}
+
+.decision-card--proposed {
+  border-left: 4px solid #3b82f6;
+  background: linear-gradient(135deg, #fffdf8 0%, #eff6ff 100%);
+}
+
+/* Note: .decision-card__header is defined in chat.css for DecisionResultView */
+
+.decision-card__status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.decision-card__status--confirmed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.decision-card__status--gray {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.decision-card__status--proposed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.decision-card__score {
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.decision-card__ambiguity {
+  font-size: 0.75rem;
+  color: #92400e;
+  background: #fef3c7;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin: 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.decision-card__ambiguity-icon {
+  font-size: 0.85rem;
+}
+
+/* --- フィルター --- */
+.decision-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.decision-filter__section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.decision-filter__label {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.decision-filter__buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.decision-filter__btn {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--card);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.5;
+  transition: all 0.2s ease;
+}
+
+.decision-filter__btn.is-active {
+  opacity: 1;
+}
+
+.decision-filter__btn--confirmed.is-active {
+  border-color: #10b981;
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.decision-filter__btn--gray.is-active {
+  border-color: #94a3b8;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.decision-filter__btn--proposed.is-active {
+  border-color: #3b82f6;
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.decision-filter__btn--pattern.is-active {
+  border-color: var(--accent);
+  background: var(--bg-accent);
+  color: var(--accent);
+}
+
+.decision-filter__count {
+  font-size: 0.65rem;
+  opacity: 0.8;
+}
+
+.decision-filter__select {
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--card);
+}
+
+/* --- タイムラインヘッダー拡張 --- */
+.decision-timeline__header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.decision-timeline__header-top h3 {
+  white-space: nowrap;
+}
+
+.decision-timeline__header-top .muted {
+  white-space: nowrap;
+}
+
+.decision-filter__section--end {
+  margin-left: auto;
+}
+
+.decision-filter__total {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  margin-left: 12px;
+}
+
+/* --- 詳細パネル拡張 --- */
+.decision-detail-panel__status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f8f8f8;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.decision-detail-panel__status {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 6px;
+}
+
+.decision-detail-panel__status--confirmed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.decision-detail-panel__status--gray {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.decision-detail-panel__status--proposed {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.decision-detail-panel__score {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.decision-detail-panel__ambiguity {
+  background: #fef3c7;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.decision-detail-panel__ambiguity .label {
+  color: #92400e;
+}
+
+.decision-detail-panel__ambiguity ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+.decision-detail-panel__ambiguity li {
+  font-size: 0.85rem;
+  color: #92400e;
+  margin-bottom: 4px;
+}
+
+/* --- ガイダンスパネル --- */
+.guidance-panel {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.guidance-panel__section {
+  margin-bottom: 20px;
+}
+
+.guidance-panel__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.guidance-panel__icon {
+  font-size: 1rem;
+}
+
+.guidance-panel__list {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 0.85rem;
+  line-height: 1.8;
+}
+
+.guidance-panel__list--actions {
+  list-style: none;
+  padding-left: 0;
+}
+
+.guidance-panel__list--actions li {
+  margin-bottom: 6px;
+}
+
+.guidance-panel__checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.guidance-panel__checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+}
+
+.guidance-panel__list--questions {
+  list-style: none;
+  padding-left: 0;
+}
+
+.guidance-panel__list--questions li {
+  padding: 8px 12px;
+  background: #f8f8f8;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+}
+
+.guidance-panel__similar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.guidance-panel__similar-item {
+  padding: 12px;
+  background: #f8f8f8;
+  border-radius: 8px;
+  border-left: 3px solid var(--line);
+}
+
+.guidance-panel__similar-item:hover {
+  background: #f0f0f0;
+}
+
+.guidance-panel__similar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.guidance-panel__similar-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.guidance-panel__similar-tag--confirmed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.guidance-panel__similar-tag--gray {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.guidance-panel__similar-score {
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.guidance-panel__similar-content {
+  font-size: 0.85rem;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+.guidance-panel__similar-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+/* --- リスクインジケーター --- */
+.risk-indicator {
+  margin-top: 20px;
+  padding: 16px;
+  background: linear-gradient(135deg, #fef2f2 0%, #fef9e7 100%);
+  border-radius: 10px;
+  border: 1px solid #fecaca;
+}
+
+.risk-indicator__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.risk-indicator__icon {
+  font-size: 1.1rem;
+}
+
+.risk-indicator__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.risk-indicator__content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.risk-indicator__delay {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.risk-indicator__label {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.risk-indicator__level {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.risk-indicator__level--high {
+  color: #ef4444;
+}
+
+.risk-indicator__level--medium {
+  color: #f59e0b;
+}
+
+.risk-indicator__level--low {
+  color: #10b981;
+}
+
+.risk-indicator__areas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.risk-indicator__area-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.risk-indicator__area-tag {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--ink);
+}
+
+.risk-indicator__impact {
+  font-size: 0.85rem;
+  color: #7f1d1d;
+  line-height: 1.5;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 6px;
+}
+
+.risk-indicator__impact p {
+  margin: 0;
+}
+
+/* --- DecisionCard: 重要度バッジ --- */
+.decision-card__header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.decision-card__importance {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.decision-card__importance--critical {
+  background: #fecaca;
+  color: #991b1b;
+}
+
+.decision-card__importance--high {
+  background: #fed7aa;
+  color: #9a3412;
+}
+
+.decision-card__importance--medium {
+  background: #fef08a;
+  color: #854d0e;
+}
+
+.decision-card__importance--low {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* --- DecisionCard: フェーズ遅延警告 --- */
+.decision-card--delayed {
+  border-left: 3px solid #f59e0b;
+}
+
+.decision-card__delay-warning {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: #b45309;
+  background: #fef3c7;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.decision-card__delay-icon {
+  font-size: 0.85rem;
+}
+
+/* --- 詳細パネル: 重要度セクション --- */
+.decision-detail-panel__importance {
+  margin-bottom: 16px;
+}
+
+.decision-detail-panel__importance-content {
+  margin-top: 8px;
+}
+
+.decision-detail-panel__importance-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.decision-detail-panel__importance-badge--critical {
+  background: #fecaca;
+  color: #991b1b;
+}
+
+.decision-detail-panel__importance-badge--high {
+  background: #fed7aa;
+  color: #9a3412;
+}
+
+.decision-detail-panel__importance-badge--medium {
+  background: #fef08a;
+  color: #854d0e;
+}
+
+.decision-detail-panel__importance-badge--low {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.decision-detail-panel__importance-categories {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+.decision-detail-panel__importance-keywords {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* --- 詳細パネル: フェーズ情報 --- */
+.decision-detail-panel__phase {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #f8f8f8;
+  border-radius: 8px;
+}
+
+.decision-detail-panel__phase--delayed {
+  background: #fef3c7;
+  border-left: 3px solid #f59e0b;
+}
+
+.decision-detail-panel__phase-content {
+  margin-top: 8px;
+}
+
+.decision-detail-panel__phase-current {
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+
+.decision-detail-panel__phase-expected {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.decision-detail-panel__phase-warning {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #b45309;
+  font-weight: 500;
+}
+
+.decision-detail-panel__phase-warning-icon {
+  font-size: 1rem;
+}
+
+.decision-detail-panel__phase-warning-reason {
+  font-weight: 400;
+}
+
+/* --- 詳細パネル: 変更詳細 --- */
+.decision-detail-panel__change {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #eff6ff;
+  border-radius: 8px;
+  border-left: 3px solid #3b82f6;
+}
+
+.decision-detail-panel__change-content {
+  margin-top: 8px;
+}
+
+.decision-detail-panel__change-type {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.decision-detail-panel__change-type-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.decision-detail-panel__change-type-badge--high {
+  background: #fecaca;
+  color: #991b1b;
+}
+
+.decision-detail-panel__change-type-badge--medium {
+  background: #fed7aa;
+  color: #9a3412;
+}
+
+.decision-detail-panel__change-type-badge--low {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.decision-detail-panel__change-impact {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.decision-detail-panel__change-impact--high {
+  color: #991b1b;
+}
+
+.decision-detail-panel__change-impact--medium {
+  color: #9a3412;
+}
+
+.decision-detail-panel__change-impact--low {
+  color: #065f46;
+}
+
+.decision-detail-panel__change-diff {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.decision-detail-panel__change-before,
+.decision-detail-panel__change-after {
+  font-size: 0.85rem;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.decision-detail-panel__change-before {
+  background: #fee2e2;
+}
+
+.decision-detail-panel__change-after {
+  background: #d1fae5;
+}
+
+.decision-detail-panel__change-before .change-label,
+.decision-detail-panel__change-after .change-label {
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.decision-detail-panel__change-before .change-label {
+  color: #991b1b;
+}
+
+.decision-detail-panel__change-after .change-label {
+  color: #065f46;
+}
+
+/* --- サンプルデータ読み込みボタン --- */
+.sample-data-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 8px;
+  border: 1px dashed #7dd3fc;
+}
+
+.sample-data-buttons__label {
+  font-size: 0.8rem;
+  color: #0369a1;
+  font-weight: 500;
+}
+
+.sample-data-btn {
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  border: 1px solid #7dd3fc;
+  border-radius: 6px;
+  background: white;
+  color: #0369a1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sample-data-btn:hover:not(:disabled) {
+  background: #0ea5e9;
+  color: white;
+  border-color: #0ea5e9;
+}
+
+.sample-data-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== DecisionCard アクションボタン ===== */
+
+.decision-card__actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+}
+
+.decision-card:hover .decision-card__actions {
+  opacity: 1;
+}
+
+.decision-card__action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.decision-card__action-btn--copy {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.decision-card__action-btn--copy:hover {
+  background: rgba(59, 130, 246, 0.2);
+  color: #2563eb;
+}
+
+.decision-card__action-btn--ai {
+  background: rgba(168, 85, 247, 0.1);
+}
+
+.decision-card__action-btn--ai:hover {
+  background: rgba(168, 85, 247, 0.2);
+}
+
+.decision-card__action-emoji {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.decision-card__copy-tooltip {
+  position: absolute;
+  top: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1f2937;
+  color: #fff;
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  animation: tooltip-fade-in 0.15s ease;
+}
+
+.decision-card__copy-tooltip::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 4px 4px 0;
+  border-style: solid;
+  border-color: #1f2937 transparent transparent;
+}
+
+@keyframes tooltip-fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+

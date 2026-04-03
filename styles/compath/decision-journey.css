@@ -1,0 +1,280 @@
+/**
+ * DecisionJourneyView - 意思決定履歴可視化スタイル
+ * Phase 27
+ */
+
+.decision-journey {
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.decision-journey--empty {
+  min-height: 200px;
+}
+
+/* ヘッダー */
+.decision-journey__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(31, 122, 109, 0.08), rgba(31, 122, 109, 0.02));
+  border-bottom: 1px solid var(--line);
+}
+
+.decision-journey__header-content {
+  flex: 1;
+}
+
+.decision-journey__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.decision-journey__title svg {
+  color: var(--accent);
+}
+
+.decision-journey__purpose {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.decision-journey__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.decision-journey__close:hover {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+/* 空状態 */
+.decision-journey__empty-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 40px 20px;
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ステップリスト */
+.decision-journey__steps {
+  padding: 16px;
+  overflow-y: auto;
+}
+
+/* 個別ステップ */
+.journey-step {
+  display: flex;
+  gap: 12px;
+}
+
+/* ステップインジケーター */
+.journey-step__indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 32px;
+}
+
+.journey-step__number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--accent);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.journey-step__line {
+  flex: 1;
+  width: 2px;
+  min-height: 20px;
+  background: var(--line);
+  margin-top: 6px;
+}
+
+/* ステップ内容 */
+.journey-step__content {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 20px;
+}
+
+.journey-step__criteria {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+.journey-step__selection {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.journey-step__selection-label {
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.journey-step__selection-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.journey-step__rationale {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.journey-step__rationale-icon {
+  flex-shrink: 0;
+}
+
+/* リスク戦略バッジ */
+.journey-step__risk {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 4px;
+}
+
+.journey-step__risk--avoid {
+  background: rgba(34, 197, 94, 0.1);
+  color: #15803d;
+}
+
+.journey-step__risk--mitigate {
+  background: rgba(59, 130, 246, 0.1);
+  color: #1d4ed8;
+}
+
+.journey-step__risk--transfer {
+  background: rgba(168, 85, 247, 0.1);
+  color: #7c3aed;
+}
+
+.journey-step__risk--accept {
+  background: rgba(245, 158, 11, 0.1);
+  color: #b45309;
+}
+
+/* 最終結果 */
+.decision-journey__outcome {
+  margin: 0 16px;
+  padding: 14px;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius: 8px;
+}
+
+.decision-journey__outcome-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #15803d;
+  margin-bottom: 6px;
+}
+
+.decision-journey__outcome-label svg {
+  color: #22c55e;
+}
+
+.decision-journey__outcome-value {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #166534;
+}
+
+/* サマリー */
+.decision-journey__summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+}
+
+.decision-journey__summary-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.decision-journey__summary-item--considerations {
+  flex-basis: 100%;
+}
+
+.decision-journey__summary-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.decision-journey__summary-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.decision-journey__summary-value--hedge {
+  color: #15803d;
+}
+
+.decision-journey__summary-value--take {
+  color: #b45309;
+}

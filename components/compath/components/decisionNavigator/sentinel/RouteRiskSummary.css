@@ -1,0 +1,338 @@
+/**
+ * RouteRiskSummary Styles
+ */
+
+/* オーバーレイ */
+.rrs-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* モーダル */
+.rrs-modal {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 640px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ヘッダー */
+.rrs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+}
+
+.rrs-header__left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rrs-header__icon {
+  font-size: 20px;
+}
+
+.rrs-header__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0369a1;
+}
+
+.rrs-close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0369a1;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.rrs-close-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* 目的表示 */
+.rrs-purpose {
+  padding: 12px 20px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.rrs-purpose__label {
+  font-size: 12px;
+  color: #6b7280;
+  margin-right: 8px;
+}
+
+.rrs-purpose__text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+/* サマリーカード */
+.rrs-summary-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 16px 20px;
+}
+
+.rrs-card {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.rrs-card--hedge {
+  border: 1px solid #86efac;
+  background: linear-gradient(to bottom, #f0fdf4, white);
+}
+
+.rrs-card--take {
+  border: 1px solid #fcd34d;
+  background: linear-gradient(to bottom, #fefce8, white);
+}
+
+.rrs-card__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.rrs-card--hedge .rrs-card__header {
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.rrs-card--take .rrs-card__header {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.rrs-card__icon {
+  font-size: 16px;
+}
+
+.rrs-card__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  flex: 1;
+}
+
+.rrs-card__count {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.1);
+  color: #4b5563;
+}
+
+.rrs-card__body {
+  padding: 12px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.rrs-card__empty {
+  font-size: 13px;
+  color: #9ca3af;
+  text-align: center;
+  padding: 8px;
+  margin: 0;
+}
+
+.rrs-card__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rrs-card__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.rrs-card__strategy-badge {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: white;
+  white-space: nowrap;
+}
+
+.rrs-card__node-label {
+  color: #374151;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* リスクレベル分布 */
+.rrs-distribution {
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.rrs-distribution__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 12px;
+}
+
+.rrs-distribution__bars {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rrs-distribution__bar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rrs-distribution__bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.rrs-distribution__bar-count {
+  color: #6b7280;
+}
+
+.rrs-distribution__bar-bg {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.rrs-distribution__bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* リスク詳細 */
+.rrs-details {
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.rrs-details__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 12px;
+}
+
+.rrs-details__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rrs-details__item {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.rrs-details__item-header {
+  padding: 8px 12px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.rrs-details__node-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.rrs-details__item-body {
+  padding: 12px;
+}
+
+.rrs-details__item-body p {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.rrs-details__item-body p:last-child {
+  margin-bottom: 0;
+}
+
+.rrs-details__item-body strong {
+  color: #1f2937;
+}
+
+/* フッター */
+.rrs-footer {
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rrs-footer__note {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.rrs-btn {
+  font-size: 14px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.rrs-btn--primary {
+  background: #3b82f6;
+  border: none;
+  color: white;
+}
+
+.rrs-btn--primary:hover {
+  background: #2563eb;
+}

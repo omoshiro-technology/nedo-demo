@@ -1,0 +1,335 @@
+/**
+ * SentinelWarningModal Styles
+ */
+
+/* オーバーレイ */
+.swm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* モーダル */
+.swm-modal {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 560px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ヘッダー */
+.swm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+}
+
+.swm-header__left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.swm-header__icon {
+  font-size: 20px;
+}
+
+.swm-header__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.swm-header__stats {
+  display: flex;
+  gap: 8px;
+}
+
+.swm-stat {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.swm-stat--critical {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.swm-stat--high {
+  background: #ffedd5;
+  color: #ea580c;
+}
+
+.swm-stat--other {
+  background: #e5e7eb;
+  color: #4b5563;
+}
+
+.swm-close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #92400e;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.swm-close-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* 説明 */
+.swm-description {
+  padding: 12px 20px;
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* 警告リスト */
+.swm-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 警告アイテム */
+.swm-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+
+.swm-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.swm-item--critical {
+  border-color: #fca5a5;
+  background: linear-gradient(to right, #fef2f2, white);
+}
+
+.swm-item--high {
+  border-color: #fdba74;
+  background: linear-gradient(to right, #fff7ed, white);
+}
+
+.swm-item--medium {
+  border-color: #fcd34d;
+  background: linear-gradient(to right, #fefce8, white);
+}
+
+.swm-item--low {
+  border-color: #d1d5db;
+  background: white;
+}
+
+.swm-item__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.swm-item__header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.swm-item__icon {
+  flex-shrink: 0;
+}
+
+.swm-item--critical .swm-item__icon {
+  color: #dc2626;
+}
+
+.swm-item--high .swm-item__icon {
+  color: #ea580c;
+}
+
+.swm-item--medium .swm-item__icon {
+  color: #ca8a04;
+}
+
+.swm-item--low .swm-item__icon {
+  color: #6b7280;
+}
+
+.swm-item__viewpoint {
+  font-weight: 500;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.swm-item__severity {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.swm-item--critical .swm-item__severity {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.swm-item--high .swm-item__severity {
+  background: #ffedd5;
+  color: #ea580c;
+}
+
+.swm-item--medium .swm-item__severity {
+  background: #fef3c7;
+  color: #ca8a04;
+}
+
+.swm-item--low .swm-item__severity {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.swm-item__expand-icon {
+  color: #9ca3af;
+  transition: transform 0.2s;
+}
+
+.swm-item__expand-icon--expanded {
+  transform: rotate(180deg);
+}
+
+.swm-item__body {
+  padding: 0 16px 12px;
+}
+
+.swm-item__risk {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.swm-item__suggestion {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* 展開時の詳細 */
+.swm-item__details {
+  padding: 12px 16px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+.swm-item__checklist-title {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.swm-item__checklist {
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.swm-item__checklist-item {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.swm-item__checklist-bullet {
+  color: #9ca3af;
+}
+
+.swm-item__acknowledge-btn {
+  font-size: 12px;
+  padding: 6px 12px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.swm-item__acknowledge-btn:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+/* フッター */
+.swm-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.swm-btn {
+  font-size: 14px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.swm-btn--secondary {
+  background: white;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.swm-btn--secondary:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.swm-btn--primary {
+  background: #3b82f6;
+  border: none;
+  color: white;
+}
+
+.swm-btn--primary:hover {
+  background: #2563eb;
+}

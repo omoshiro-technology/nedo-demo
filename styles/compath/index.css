@@ -1,0 +1,19 @@
+/* ComPath styles - scoped under .compath-scope */
+@import "./base.css";
+@import "./components.css";
+@import "./chat.css";
+@import "./agent.css";
+@import "./analysis.css";
+@import "./artifact-card.css";
+@import "./brain-model-peek.css";
+@import "./copy-ready-output.css";
+@import "./decision-journey.css";
+@import "./decision-navigator.css";
+@import "./expert-thinking.css";
+@import "./global-feedforward.css";
+@import "./graph.css";
+@import "./knowledge-transfer-question.css";
+@import "./path-comparison.css";
+@import "./proposal-wizard.css";
+@import "./similar-case.css";
+@import "./timeline.css";

@@ -1,0 +1,480 @@
+/**
+ * InsightDashboard Styles
+ * Capitalizer Agent の知見ダッシュボード
+ */
+
+.id-container {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+/* 折りたたみ状態 */
+.id-collapsed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.id-collapsed:hover {
+  border-color: #f59e0b;
+}
+
+.id-collapsed__icon {
+  font-size: 1.25rem;
+}
+
+.id-collapsed__count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #f59e0b;
+}
+
+/* ヘッダー */
+.id-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #334155;
+}
+
+.id-header__left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.id-header__icon {
+  font-size: 1.25rem;
+}
+
+.id-header__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.id-header__subtitle {
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+.id-header__collapse {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: #94a3b8;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.id-header__collapse:hover {
+  background: rgba(100, 116, 139, 0.3);
+  color: #e2e8f0;
+}
+
+/* ローディング */
+.id-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px;
+  color: #94a3b8;
+}
+
+.id-loading__spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #334155;
+  border-top-color: #f59e0b;
+  border-radius: 50%;
+  animation: id-spin 1s linear infinite;
+}
+
+@keyframes id-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 概要カード */
+.id-overview {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.id-stat-card {
+  flex: 1;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+
+.id-stat-card--highlight {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.id-stat-card__value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.id-stat-card--highlight .id-stat-card__value {
+  color: #f59e0b;
+}
+
+.id-stat-card__label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+/* タブ */
+.id-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #334155;
+}
+
+.id-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 8px;
+  font-size: 0.8125rem;
+  color: #94a3b8;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.id-tab:hover {
+  color: #e2e8f0;
+}
+
+.id-tab--active {
+  color: #f59e0b;
+  border-bottom-color: #f59e0b;
+}
+
+/* コンテンツ */
+.id-content {
+  min-height: 120px;
+}
+
+/* セクションタイトル */
+.id-section-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin: 0 0 8px 0;
+}
+
+/* Top リスト */
+.id-top-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.id-top-item {
+  display: flex;
+  gap: 12px;
+  padding: 8px;
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 6px;
+}
+
+.id-top-item__rank {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.id-top-item__content {
+  flex: 1;
+}
+
+.id-top-item__rule {
+  font-size: 0.8125rem;
+  color: #e2e8f0;
+  margin: 0 0 4px 0;
+}
+
+.id-top-item__stats {
+  display: flex;
+  gap: 12px;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+/* Pending リスト */
+.id-pending-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.id-pending-item {
+  padding: 8px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 6px;
+}
+
+.id-pending-item__badge {
+  display: inline-block;
+  font-size: 0.6875rem;
+  padding: 2px 6px;
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+.id-pending-item__content {
+  font-size: 0.8125rem;
+  color: #e2e8f0;
+  margin: 0;
+}
+
+/* 経験則タブ */
+.id-heuristic-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.id-heuristic-card {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.id-heuristic-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.id-heuristic-card__reliability {
+  font-size: 0.6875rem;
+  padding: 2px 6px;
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+  border-radius: 4px;
+}
+
+.id-heuristic-card__active {
+  font-size: 0.6875rem;
+  padding: 2px 6px;
+  background: rgba(34, 197, 94, 0.2);
+  color: #86efac;
+  border-radius: 4px;
+}
+
+.id-heuristic-card__rule {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #e2e8f0;
+  margin: 0 0 4px 0;
+}
+
+.id-heuristic-card__desc {
+  font-size: 0.8125rem;
+  color: #94a3b8;
+  margin: 0 0 8px 0;
+}
+
+.id-heuristic-card__domains {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.id-heuristic-card__domain {
+  font-size: 0.6875rem;
+  padding: 2px 6px;
+  background: rgba(100, 116, 139, 0.3);
+  color: #94a3b8;
+  border-radius: 4px;
+}
+
+/* パターンタブ */
+.id-pattern-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.id-pattern-card {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.id-pattern-card--success {
+  border-left: 3px solid #22c55e;
+}
+
+.id-pattern-card--failure {
+  border-left: 3px solid #ef4444;
+}
+
+.id-pattern-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.id-pattern-card__type {
+  font-size: 0.6875rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.id-pattern-card--success .id-pattern-card__type {
+  background: rgba(34, 197, 94, 0.2);
+  color: #86efac;
+}
+
+.id-pattern-card--failure .id-pattern-card__type {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
+.id-pattern-card__occurrences {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.id-pattern-card__name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #e2e8f0;
+  margin: 0 0 8px 0;
+}
+
+.id-pattern-card__lessons {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 0.8125rem;
+  color: #94a3b8;
+}
+
+.id-pattern-card__lessons li {
+  margin-bottom: 4px;
+}
+
+/* 学びタブ */
+.id-learning-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.id-learning-card {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.id-learning-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.id-learning-card__category {
+  font-size: 0.6875rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.id-learning-card__category--heuristic {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+}
+
+.id-learning-card__category--insight {
+  background: rgba(139, 92, 246, 0.2);
+  color: #c4b5fd;
+}
+
+.id-learning-card__confidence {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.id-learning-card__content {
+  font-size: 0.875rem;
+  color: #e2e8f0;
+  margin: 0 0 8px 0;
+}
+
+.id-learning-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.id-learning-card__confirmation {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+/* 空状態 */
+.id-empty {
+  text-align: center;
+  color: #64748b;
+  font-size: 0.875rem;
+  padding: 24px;
+}
+
+/* レスポンシブ */
+@media (max-width: 640px) {
+  .id-container {
+    padding: 12px;
+  }
+
+  .id-overview {
+    flex-direction: column;
+  }
+
+  .id-tabs {
+    overflow-x: auto;
+  }
+}

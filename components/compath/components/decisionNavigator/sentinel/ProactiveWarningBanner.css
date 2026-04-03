@@ -1,0 +1,341 @@
+/**
+ * ProactiveWarningBanner Styles
+ * Sentinel Agent のプロアクティブ警告表示
+ */
+
+.pwb-container {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+/* ヘッダー */
+.pwb-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #334155;
+}
+
+.pwb-header__left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pwb-header__icon {
+  font-size: 1.5rem;
+}
+
+.pwb-header__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.pwb-header__subtitle {
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+.pwb-header__stats {
+  display: flex;
+  gap: 8px;
+}
+
+.pwb-stat {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.pwb-stat--critical {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
+.pwb-stat--high {
+  background: rgba(249, 115, 22, 0.2);
+  color: #fdba74;
+}
+
+.pwb-stat--other {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+}
+
+/* ローディング */
+.pwb-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  color: #94a3b8;
+}
+
+.pwb-loading__spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #334155;
+  border-top-color: #60a5fa;
+  border-radius: 50%;
+  animation: pwb-spin 1s linear infinite;
+}
+
+@keyframes pwb-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 警告リスト */
+.pwb-warnings {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 警告アイテム */
+.pwb-warning {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 12px;
+  transition: all 0.2s ease;
+}
+
+.pwb-warning:hover {
+  border-color: #475569;
+}
+
+.pwb-warning--expanded {
+  background: rgba(30, 41, 59, 0.8);
+}
+
+/* 重要度別スタイル */
+.pwb-warning--critical {
+  border-left: 3px solid #ef4444;
+}
+
+.pwb-warning--critical .pwb-warning__icon {
+  color: #ef4444;
+}
+
+.pwb-warning--high {
+  border-left: 3px solid #f97316;
+}
+
+.pwb-warning--high .pwb-warning__icon {
+  color: #f97316;
+}
+
+.pwb-warning--medium {
+  border-left: 3px solid #3b82f6;
+}
+
+.pwb-warning--medium .pwb-warning__icon {
+  color: #3b82f6;
+}
+
+.pwb-warning--low {
+  border-left: 3px solid #6b7280;
+}
+
+.pwb-warning--low .pwb-warning__icon {
+  color: #6b7280;
+}
+
+/* 警告ヘッダー */
+.pwb-warning__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.pwb-warning__header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pwb-warning__category {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.pwb-warning__severity {
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(100, 116, 139, 0.3);
+  color: #94a3b8;
+}
+
+.pwb-warning__actions {
+  display: flex;
+  gap: 4px;
+}
+
+.pwb-warning__btn {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: #94a3b8;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.pwb-warning__btn:hover {
+  background: rgba(100, 116, 139, 0.3);
+  color: #e2e8f0;
+}
+
+.pwb-warning__btn--expand svg {
+  transition: transform 0.2s ease;
+}
+
+/* 警告ボディ */
+.pwb-warning__body {
+  padding-left: 26px;
+}
+
+.pwb-warning__risk {
+  font-size: 0.875rem;
+  color: #e2e8f0;
+  margin: 0 0 4px 0;
+  line-height: 1.5;
+}
+
+.pwb-warning__suggestion {
+  font-size: 0.8125rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* 警告詳細 */
+.pwb-warning__details {
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 6px;
+  margin-left: 26px;
+}
+
+.pwb-warning__checklist-title {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #94a3b8;
+  margin: 0 0 8px 0;
+}
+
+.pwb-warning__checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pwb-warning__checklist-item {
+  display: flex;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: #cbd5e1;
+  padding: 4px 0;
+}
+
+.pwb-warning__checklist-bullet {
+  color: #60a5fa;
+}
+
+.pwb-warning__footer {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #334155;
+}
+
+.pwb-warning__btn--acknowledge {
+  background: rgba(34, 197, 94, 0.2);
+  color: #86efac;
+  padding: 6px 12px;
+  font-size: 0.8125rem;
+  border-radius: 6px;
+}
+
+.pwb-warning__btn--acknowledge:hover {
+  background: rgba(34, 197, 94, 0.3);
+}
+
+.pwb-warning__btn--details {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+  padding: 6px 12px;
+  font-size: 0.8125rem;
+  border-radius: 6px;
+}
+
+.pwb-warning__btn--details:hover {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+/* もっと見るボタン */
+.pwb-show-more {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 8px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid #334155;
+  border-radius: 6px;
+  color: #93c5fd;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pwb-show-more:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: #3b82f6;
+}
+
+/* レスポンシブ */
+@media (max-width: 640px) {
+  .pwb-container {
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+
+  .pwb-header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .pwb-header__stats {
+    flex-wrap: wrap;
+  }
+
+  .pwb-warning__header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pwb-warning__body {
+    padding-left: 0;
+  }
+
+  .pwb-warning__details {
+    margin-left: 0;
+  }
+}

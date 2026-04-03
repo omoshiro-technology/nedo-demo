@@ -1,0 +1,427 @@
+/**
+ * 類似事例検索のスタイル
+ * Phase 28+: 過去の類似事例を参照
+ */
+
+/* ============================================
+   入力カード
+   ============================================ */
+
+.similar-case-input-card {
+  max-width: 600px;
+}
+
+.similar-case-input-card__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.similar-case-input-card__icon {
+  font-size: 20px;
+}
+
+.similar-case-input-card__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.similar-case-input-card__description {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.similar-case-input-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.similar-case-input-card__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.similar-case-input-card__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.similar-case-input-card__hint {
+  font-size: 11px;
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.similar-case-input-card__input,
+.similar-case-input-card__select {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.similar-case-input-card__input:focus,
+.similar-case-input-card__select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.similar-case-input-card__radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.similar-case-input-card__radio-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.similar-case-input-card__radio-item:hover {
+  border-color: #3b82f6;
+  background: #f8fafc;
+}
+
+.similar-case-input-card__radio-item input[type="radio"] {
+  margin-top: 2px;
+}
+
+.similar-case-input-card__radio-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.similar-case-input-card__radio-description {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-left: auto;
+}
+
+.similar-case-input-card__footer {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.similar-case-input-card__submit-btn {
+  padding: 10px 24px;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.similar-case-input-card__submit-btn:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.similar-case-input-card__submit-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   結果カード
+   ============================================ */
+
+.similar-case-result-card {
+  max-width: 800px;
+}
+
+.similar-case-result-card__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.similar-case-result-card__icon {
+  font-size: 20px;
+}
+
+.similar-case-result-card__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.similar-case-result-card__count {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.similar-case-result-card__hint {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-bottom: 16px;
+}
+
+.similar-case-result-card__empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: #6b7280;
+}
+
+.similar-case-result-card__empty p {
+  margin: 4px 0;
+}
+
+.similar-case-result-card__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ============================================
+   個別事例カード
+   ============================================ */
+
+.similar-case-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  transition: all 0.2s;
+}
+
+.similar-case-card:hover {
+  border-color: #d1d5db;
+}
+
+.similar-case-card--expanded {
+  border-color: #3b82f6;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+.similar-case-card__header {
+  padding: 12px 16px;
+  cursor: pointer;
+}
+
+.similar-case-card__title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.similar-case-card__score {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  padding: 2px 8px;
+  border-radius: 10px;
+  min-width: 40px;
+  text-align: center;
+}
+
+.similar-case-card__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  flex: 1;
+}
+
+.similar-case-card__toggle {
+  font-size: 10px;
+  color: #9ca3af;
+}
+
+.similar-case-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.similar-case-card__tag {
+  font-size: 11px;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.similar-case-card__tag--kpi {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.similar-case-card__year {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-left: auto;
+}
+
+.similar-case-card__summary {
+  font-size: 13px;
+  color: #4b5563;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.similar-case-card__body {
+  padding: 0 16px 16px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.similar-case-card__match-reasons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f3f4f6;
+  margin-bottom: 12px;
+}
+
+.similar-case-card__match-label {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.similar-case-card__match-tag {
+  font-size: 11px;
+  color: #059669;
+  background: #d1fae5;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.similar-case-card__section {
+  margin-bottom: 16px;
+}
+
+.similar-case-card__section:last-of-type {
+  margin-bottom: 0;
+}
+
+.similar-case-card__section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 6px 0;
+}
+
+.similar-case-card__section-content {
+  font-size: 13px;
+  color: #4b5563;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.similar-case-card__section--lessons {
+  background: #fffbeb;
+  padding: 12px;
+  border-radius: 6px;
+  margin-left: -12px;
+  margin-right: -12px;
+}
+
+.similar-case-card__section--lessons .similar-case-card__section-title {
+  color: #92400e;
+}
+
+.similar-case-card__list {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 13px;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.similar-case-card__list--lessons {
+  color: #78350f;
+}
+
+.similar-case-card__other-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.similar-case-card__other-option {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+  background: #f9fafb;
+  border-radius: 4px;
+}
+
+.similar-case-card__option-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.similar-case-card__option-reason {
+  font-size: 11px;
+  color: #dc2626;
+}
+
+.similar-case-card__metadata {
+  display: flex;
+  gap: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #f3f4f6;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.similar-case-card__actions {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.similar-case-card__action-btn {
+  padding: 8px 16px;
+  background: #10b981;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.similar-case-card__action-btn:hover {
+  background: #059669;
+}

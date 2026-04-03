@@ -1,0 +1,545 @@
+/**
+ * ブレインモデル覗き見機能 - スタイル
+ *
+ * Phase 19: 宇宙空間に浮かぶノードとエッジを表現
+ * ダークな背景に光るパスを表示
+ *
+ * 注意: これはデモ用実装であり、後で捨てる前提
+ */
+
+/* ===============================
+   オーバーレイ
+   =============================== */
+.brain-peek-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1100;
+  animation: brain-fade-in 0.4s ease-out;
+  backdrop-filter: blur(4px);
+}
+
+@keyframes brain-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ===============================
+   ポップアップコンテナ
+   =============================== */
+.brain-peek-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(92vw, 950px);
+  height: min(88vh, 700px);
+  background: linear-gradient(145deg, #080c14 0%, #0f1520 50%, #151d2e 100%);
+  border: 1px solid rgba(31, 122, 109, 0.25);
+  border-radius: 20px;
+  box-shadow:
+    0 30px 100px rgba(0, 0, 0, 0.7),
+    0 0 60px rgba(31, 122, 109, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  z-index: 1101;
+  display: flex;
+  flex-direction: column;
+  animation: brain-peek-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+@keyframes brain-peek-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* ===============================
+   ヘッダー
+   =============================== */
+.brain-peek-header {
+  padding: 20px 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.brain-peek-title {
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brain-peek-title-icon {
+  font-size: 20px;
+  opacity: 0.9;
+}
+
+.brain-peek-subtitle {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  font-weight: 400;
+  margin-left: 12px;
+}
+
+.brain-peek-close {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  padding: 8px 12px;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.brain-peek-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ===============================
+   キャンバス（SVG領域）
+   =============================== */
+.brain-model-canvas {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.brain-model-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  user-select: none;
+}
+
+/* 操作コントロール */
+.brain-model-controls {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 10;
+}
+
+.brain-model-hint {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 11px;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 4px;
+}
+
+.brain-model-reset {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.brain-model-reset:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+/* 星屑背景 */
+.brain-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.15), transparent),
+    radial-gradient(1px 1px at 40px 70px, rgba(255, 255, 255, 0.1), transparent),
+    radial-gradient(1px 1px at 50px 160px, rgba(255, 255, 255, 0.12), transparent),
+    radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.08), transparent),
+    radial-gradient(1px 1px at 130px 80px, rgba(255, 255, 255, 0.1), transparent),
+    radial-gradient(1px 1px at 160px 120px, rgba(255, 255, 255, 0.06), transparent);
+  background-size: 200px 200px;
+  animation: twinkle 8s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  from { opacity: 0.4; }
+  to { opacity: 0.7; }
+}
+
+/* ===============================
+   背景ノード（薄い）
+   =============================== */
+.brain-node--dim {
+  fill: rgba(255, 255, 255, 0.08);
+  transition: fill 0.3s ease;
+}
+
+.brain-node--dim:hover {
+  fill: rgba(255, 255, 255, 0.15);
+}
+
+/* ===============================
+   パス上のノード（グロー）
+   =============================== */
+/* 外側のグロー（大きい半透明円） */
+.brain-node--glow {
+  fill: var(--path-color, #ff6b6b);
+  opacity: 0.25;
+  filter: blur(2px);
+}
+
+.brain-node--highlighted {
+  fill: var(--path-color, #ff6b6b);
+  filter: drop-shadow(0 0 8px var(--path-color, #ff6b6b))
+          drop-shadow(0 0 16px var(--path-color, #ff6b6b));
+  animation: node-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes node-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px var(--path-color, #ff6b6b))
+            drop-shadow(0 0 16px var(--path-color, #ff6b6b));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px var(--path-color, #ff6b6b))
+            drop-shadow(0 0 24px var(--path-color, #ff6b6b));
+  }
+}
+
+/* ノードラベル */
+.brain-node-label {
+  fill: #fff;
+  font-size: 4px; /* SVG座標系に合わせた小さめの値 */
+  font-weight: 600;
+  text-anchor: middle;
+  pointer-events: none;
+  paint-order: stroke fill;
+  stroke: rgba(0, 0, 0, 0.9);
+  stroke-width: 0.6px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.brain-node-label--dim {
+  display: none; /* 背景ノードのラベルは非表示 */
+}
+
+/* ===============================
+   エッジ（線）
+   =============================== */
+/* 背景エッジ */
+.brain-edge--dim {
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 0.3;
+}
+
+/* パス上のエッジ（アニメーション） */
+.brain-edge--highlighted {
+  stroke: var(--path-color, #ff6b6b);
+  stroke-width: 0.8;
+  stroke-linecap: round;
+  stroke-dasharray: 4 2;
+  filter: drop-shadow(0 0 3px var(--path-color, #ff6b6b));
+  animation: edge-flow 1.8s linear infinite;
+}
+
+@keyframes edge-flow {
+  from { stroke-dashoffset: 12; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* D3.js描画用のエッジアニメーション */
+.brain-edge-animated {
+  animation: edge-flow-d3 1.5s linear infinite;
+}
+
+@keyframes edge-flow-d3 {
+  from { stroke-dashoffset: 12; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* 探索中のエッジ（グレー破線がホップ） */
+.brain-edge-searching {
+  animation: edge-search 0.8s ease-in-out infinite;
+}
+
+@keyframes edge-search {
+  0%, 100% {
+    stroke-dashoffset: 0;
+    opacity: 0.3;
+  }
+  50% {
+    stroke-dashoffset: 8;
+    opacity: 0.6;
+  }
+}
+
+/* エッジの矢印 */
+.brain-edge-arrow {
+  fill: var(--path-color, #ff6b6b);
+  filter: drop-shadow(0 0 4px var(--path-color, #ff6b6b));
+}
+
+/* ===============================
+   アンダーグロウ（問いノード発光）
+   =============================== */
+.brain-underglow {
+  animation: underglow-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes underglow-pulse {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.1);
+  }
+}
+
+/* ===============================
+   終端ノード点滅
+   =============================== */
+.brain-pulse {
+  animation: brain-node-pulse 1s ease-in-out infinite;
+}
+
+@keyframes brain-node-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.2);
+  }
+}
+
+/* ===============================
+   フェーズインジケーター
+   =============================== */
+.brain-phase-indicator {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 10px 24px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+}
+
+.brain-phase-text {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  animation: phase-fade 0.5s ease-out;
+}
+
+@keyframes phase-fade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===============================
+   ナラティブパネル
+   =============================== */
+.brain-narrative {
+  padding: 24px 32px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+  line-height: 1.8;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.brain-narrative-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.brain-narrative-icon {
+  font-size: 18px;
+}
+
+.brain-narrative-intro {
+  margin-bottom: 16px;
+  padding-left: 4px;
+}
+
+.brain-narrative-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px 0;
+}
+
+.brain-narrative-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;
+  border-left: 2px solid var(--path-color, #ff6b6b);
+  padding-left: 16px;
+  margin-left: 4px;
+}
+
+.brain-narrative-step-number {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  background: var(--path-color, #ff6b6b);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #000;
+}
+
+.brain-narrative-step-text {
+  flex: 1;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.brain-narrative-conclusion {
+  margin-top: 16px;
+  padding: 16px;
+  background: rgba(var(--path-color-rgb, 255, 107, 107), 0.1);
+  border-radius: 8px;
+  border-left: 3px solid var(--path-color, #ff6b6b);
+  font-weight: 500;
+}
+
+/* ===============================
+   フッター
+   =============================== */
+.brain-peek-footer {
+  padding: 18px 28px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.brain-peek-confirm {
+  background: linear-gradient(135deg, #1f7a6d 0%, #2a9d8f 100%);
+  color: #fff;
+  border: none;
+  padding: 14px 40px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 20px rgba(31, 122, 109, 0.3);
+}
+
+.brain-peek-confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(31, 122, 109, 0.4);
+}
+
+.brain-peek-confirm:active {
+  transform: translateY(0);
+}
+
+/* ===============================
+   判断軸ラベル クリック可能スタイル
+   =============================== */
+.criteria-label--clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.criteria-label--clickable:hover {
+  transform: translateY(-2px);
+}
+
+.criteria-label--clickable:hover .criteria-label__question {
+  color: #1f7a6d;
+}
+
+.criteria-label--clickable::after {
+  content: "🔍";
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.criteria-label--clickable:hover::after {
+  opacity: 1;
+}
+
+/* ===============================
+   レスポンシブ
+   =============================== */
+@media (max-width: 768px) {
+  .brain-peek-popup {
+    width: 96vw;
+    height: 92vh;
+    border-radius: 12px;
+  }
+
+  .brain-peek-header {
+    padding: 16px 20px;
+  }
+
+  .brain-peek-title {
+    font-size: 15px;
+  }
+
+  .brain-narrative {
+    padding: 16px 20px;
+    font-size: 13px;
+  }
+
+  .brain-peek-footer {
+    padding: 14px 20px;
+  }
+
+  .brain-peek-confirm {
+    padding: 12px 32px;
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,1521 @@
+/**
+ * 提案書作成ウィザードのスタイル
+ * Phase 28: 営業向け提案書作成支援
+ */
+
+/* ============================================================
+   ウィザードコンテナ
+   ============================================================ */
+
+.proposal-wizard {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.proposal-wizard__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.proposal-wizard__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.proposal-wizard__close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s;
+}
+
+.proposal-wizard__close-btn:hover {
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
+/* ============================================================
+   ステッパー
+   ============================================================ */
+
+.proposal-wizard__stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.proposal-wizard__step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.proposal-wizard__step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 600;
+  background: #e5e7eb;
+  color: #6b7280;
+  transition: all 0.3s;
+}
+
+.proposal-wizard__step--active .proposal-wizard__step-number {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.proposal-wizard__step--completed .proposal-wizard__step-number {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.proposal-wizard__step-label {
+  font-size: 13px;
+  color: #6b7280;
+  transition: color 0.3s;
+}
+
+.proposal-wizard__step--active .proposal-wizard__step-label {
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.proposal-wizard__step--completed .proposal-wizard__step-label {
+  color: #10b981;
+}
+
+.proposal-wizard__step-connector {
+  width: 40px;
+  height: 2px;
+  background: #e5e7eb;
+  margin: 0 12px;
+  transition: background 0.3s;
+}
+
+.proposal-wizard__step-connector--completed {
+  background: #10b981;
+}
+
+/* ============================================================
+   コンテンツエリア
+   ============================================================ */
+
+.proposal-wizard__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+/* ============================================================
+   フッター（ナビゲーション）
+   ============================================================ */
+
+.proposal-wizard__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.proposal-wizard__nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.proposal-wizard__nav-btn--back {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.proposal-wizard__nav-btn--back:hover {
+  background: #f3f4f6;
+}
+
+.proposal-wizard__nav-btn--next {
+  background: #3b82f6;
+  border: 1px solid #3b82f6;
+  color: #ffffff;
+}
+
+.proposal-wizard__nav-btn--next:hover {
+  background: #2563eb;
+}
+
+.proposal-wizard__nav-btn--generate {
+  background: #10b981;
+  border: 1px solid #10b981;
+  color: #ffffff;
+}
+
+.proposal-wizard__nav-btn--generate:hover {
+  background: #059669;
+}
+
+.proposal-wizard__nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   Step 1: 顧客背景カード
+   ============================================================ */
+
+.customer-context-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.customer-context-card__section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.customer-context-card__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.customer-context-card__input {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #1f2937;
+  transition: border-color 0.2s;
+}
+
+.customer-context-card__input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.customer-context-card__select {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #1f2937;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.customer-context-card__select:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.customer-context-card__checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.customer-context-card__checkbox-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.customer-context-card__checkbox-item:hover {
+  background: #f9fafb;
+}
+
+.customer-context-card__checkbox-item--selected {
+  background: #eff6ff;
+  border-color: #3b82f6;
+}
+
+.customer-context-card__checkbox {
+  margin-top: 2px;
+}
+
+.customer-context-card__checkbox-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.customer-context-card__checkbox-label {
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.customer-context-card__checkbox-desc {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.customer-context-card__radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.customer-context-card__radio-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.customer-context-card__radio-item:hover {
+  background: #f9fafb;
+}
+
+.customer-context-card__radio-item--selected {
+  background: #eff6ff;
+  border-color: #3b82f6;
+}
+
+.customer-context-card__radio {
+  margin-top: 2px;
+}
+
+.customer-context-card__radio-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.customer-context-card__radio-label {
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.customer-context-card__radio-desc {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.customer-context-card__textarea {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #1f2937;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.customer-context-card__textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+/* ============================================================
+   Step 2: 判断論点カード
+   ============================================================ */
+
+.evaluation-points-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.evaluation-points-card__intro {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.6;
+  padding: 12px 16px;
+  background: #f9fafb;
+  border-radius: 6px;
+}
+
+.evaluation-points-card__point {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.evaluation-points-card__point-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.evaluation-points-card__point-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: #3b82f6;
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.evaluation-points-card__point-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.evaluation-points-card__point-controls {
+  display: flex;
+  gap: 16px;
+}
+
+.evaluation-points-card__control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.evaluation-points-card__control-label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.evaluation-points-card__control-select {
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #1f2937;
+  background: #ffffff;
+}
+
+.evaluation-points-card__note-input {
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #1f2937;
+}
+
+.evaluation-points-card__note-input::placeholder {
+  color: #9ca3af;
+}
+
+/* ============================================================
+   Step 3: 提案書プレビュー
+   ============================================================ */
+
+.proposal-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.proposal-preview__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+}
+
+.proposal-preview__spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.proposal-preview__loading-text {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.proposal-preview__error {
+  padding: 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 14px;
+}
+
+.proposal-preview__section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.proposal-preview__section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.proposal-preview__section-content {
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.7;
+  padding: 12px 16px;
+  background: #f9fafb;
+  border-radius: 6px;
+  white-space: pre-wrap;
+}
+
+.proposal-preview__options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.proposal-preview__option {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.proposal-preview__option--recommended {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.proposal-preview__option-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.proposal-preview__option-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.proposal-preview__option-badge {
+  font-size: 11px;
+  padding: 3px 8px;
+  background: #3b82f6;
+  color: #ffffff;
+  border-radius: 12px;
+}
+
+.proposal-preview__option-desc {
+  font-size: 13px;
+  color: #4b5563;
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+.proposal-preview__option-pros-cons {
+  display: flex;
+  gap: 16px;
+}
+
+.proposal-preview__option-list {
+  flex: 1;
+}
+
+.proposal-preview__option-list-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.proposal-preview__option-list ul {
+  margin: 0;
+  padding-left: 16px;
+}
+
+.proposal-preview__option-list li {
+  font-size: 12px;
+  color: #4b5563;
+  margin-bottom: 4px;
+}
+
+.proposal-preview__risks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.proposal-preview__risk-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: #b45309;
+  padding: 8px 12px;
+  background: #fffbeb;
+  border-radius: 6px;
+}
+
+.proposal-preview__risk-icon {
+  flex-shrink: 0;
+}
+
+.proposal-preview__actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.proposal-preview__action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.proposal-preview__action-btn--copy {
+  background: #3b82f6;
+  border: 1px solid #3b82f6;
+  color: #ffffff;
+}
+
+.proposal-preview__action-btn--copy:hover {
+  background: #2563eb;
+}
+
+.proposal-preview__action-btn--regenerate {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.proposal-preview__action-btn--regenerate:hover {
+  background: #f3f4f6;
+}
+
+.proposal-preview__copied {
+  font-size: 13px;
+  color: #10b981;
+  text-align: center;
+}
+
+/* ============================================================
+   提案書入力カード（チャット埋め込み用）
+   ============================================================ */
+
+.proposal-input-card {
+  max-width: 600px;
+}
+
+.proposal-input-card__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.proposal-input-card__step-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  background: #6b7280;
+  color: #ffffff;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.proposal-input-card__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.proposal-input-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.proposal-input-card__intro {
+  font-size: 13px;
+  color: #4b5563;
+  line-height: 1.6;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 6px;
+  margin: 0;
+}
+
+.proposal-input-card__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.proposal-input-card__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.proposal-input-card__input,
+.proposal-input-card__select {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.proposal-input-card__input:focus,
+.proposal-input-card__select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.proposal-input-card__textarea {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #1f2937;
+  resize: vertical;
+  min-height: 60px;
+}
+
+.proposal-input-card__checkbox-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.proposal-input-card__checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.proposal-input-card__checkbox-item:hover {
+  background: #f9fafb;
+}
+
+.proposal-input-card__checkbox-item--selected {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+}
+
+.proposal-input-card__radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.proposal-input-card__radio-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.proposal-input-card__radio-item:hover {
+  background: #f9fafb;
+}
+
+.proposal-input-card__radio-item--selected {
+  background: #eff6ff;
+  border-color: #3b82f6;
+}
+
+.proposal-input-card__radio-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.proposal-input-card__radio-desc {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.proposal-input-card__point {
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.proposal-input-card__point-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.proposal-input-card__point-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: #3b82f6;
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.proposal-input-card__point-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.proposal-input-card__point-controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.proposal-input-card__control {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.proposal-input-card__control label {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.proposal-input-card__control select {
+  padding: 6px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.proposal-input-card__note-input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.proposal-input-card__note-input::placeholder {
+  color: #9ca3af;
+}
+
+.proposal-input-card__footer {
+  margin-top: 8px;
+  display: flex;
+  gap: 12px;
+}
+
+.proposal-input-card__secondary-btn {
+  flex: 0 0 auto;
+  padding: 12px 16px;
+  background: transparent;
+  color: #3b82f6;
+  border: 1px solid #3b82f6;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.proposal-input-card__secondary-btn:hover {
+  background: #eff6ff;
+}
+
+.proposal-input-card__submit-btn {
+  width: 100%;
+  padding: 12px;
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.proposal-input-card__submit-btn:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.proposal-input-card__submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.proposal-input-card__submit-btn--generate {
+  background: #10b981;
+}
+
+.proposal-input-card__submit-btn--generate:hover:not(:disabled) {
+  background: #059669;
+}
+
+/* ============================================================
+   提案書結果カード（チャット埋め込み用）
+   ============================================================ */
+
+.proposal-result-card {
+  max-width: 700px;
+}
+
+.proposal-result-card__header {
+  margin-bottom: 16px;
+}
+
+.proposal-result-card__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.proposal-result-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.proposal-result-card__section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.proposal-result-card__section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.proposal-result-card__section-content {
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.8;
+  padding: 14px 16px;
+  background: #f9fafb;
+  border-radius: 6px;
+  white-space: pre-wrap;
+}
+
+.proposal-result-card__options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.proposal-result-card__option {
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.proposal-result-card__option--recommended {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.proposal-result-card__option-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.proposal-result-card__option-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.proposal-result-card__option-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  background: #3b82f6;
+  color: #ffffff;
+  border-radius: 10px;
+}
+
+.proposal-result-card__option-desc {
+  font-size: 12px;
+  color: #4b5563;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.proposal-result-card__option-pros-cons {
+  display: flex;
+  gap: 12px;
+}
+
+.proposal-result-card__option-list {
+  flex: 1;
+}
+
+.proposal-result-card__option-list-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.proposal-result-card__option-list ul {
+  margin: 0;
+  padding-left: 14px;
+}
+
+.proposal-result-card__option-list li {
+  font-size: 11px;
+  color: #4b5563;
+  margin-bottom: 2px;
+}
+
+.proposal-result-card__risks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.proposal-result-card__risk-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 12px;
+  color: #b45309;
+  padding: 8px 10px;
+  background: #fffbeb;
+  border-radius: 6px;
+}
+
+.proposal-result-card__risk-icon {
+  flex-shrink: 0;
+}
+
+.proposal-result-card__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.proposal-result-card__action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.proposal-result-card__action-btn--copy {
+  background: #3b82f6;
+  border: 1px solid #3b82f6;
+  color: #ffffff;
+}
+
+.proposal-result-card__action-btn--copy:hover {
+  background: #2563eb;
+}
+
+.proposal-result-card__action-btn--pptx {
+  background: #f97316;
+  border: 1px solid #f97316;
+  color: #ffffff;
+}
+
+.proposal-result-card__action-btn--pptx:hover:not(:disabled) {
+  background: #ea580c;
+}
+
+.proposal-result-card__action-btn--pptx:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.proposal-result-card__action-btn--regenerate {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.proposal-result-card__action-btn--regenerate:hover {
+  background: #f3f4f6;
+}
+
+/* 提案の位置づけ */
+.proposal-result-card__positioning {
+  font-size: 13px;
+  color: #4b5563;
+  line-height: 1.6;
+  padding: 12px 16px;
+  background: #f0f9ff;
+  border-left: 3px solid #3b82f6;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 8px;
+}
+
+/* Before/After */
+.proposal-result-card__before-after {
+  display: flex;
+  gap: 16px;
+}
+
+.proposal-result-card__before,
+.proposal-result-card__after {
+  flex: 1;
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.proposal-result-card__before {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.proposal-result-card__after {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.proposal-result-card__ba-label {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.proposal-result-card__before .proposal-result-card__ba-label {
+  color: #dc2626;
+}
+
+.proposal-result-card__after .proposal-result-card__ba-label {
+  color: #16a34a;
+}
+
+.proposal-result-card__ba-content {
+  font-size: 12px;
+  color: #374151;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* 代償 */
+.proposal-result-card__tradeoffs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.proposal-result-card__tradeoff-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 12px;
+  color: #6366f1;
+  padding: 8px 10px;
+  background: #eef2ff;
+  border-radius: 6px;
+}
+
+.proposal-result-card__tradeoff-icon {
+  flex-shrink: 0;
+}
+
+/* データ要求 */
+.proposal-result-card__data-requirements {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.proposal-result-card__data-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 12px;
+  color: #0891b2;
+  padding: 8px 10px;
+  background: #ecfeff;
+  border-radius: 6px;
+}
+
+.proposal-result-card__data-icon {
+  flex-shrink: 0;
+}
+
+/* 判断論点のフォーマット済み表示 */
+.proposal-result-card__section-content--evaluation {
+  padding: 0;
+  background: transparent;
+}
+
+.proposal-result-card__eval-point {
+  padding: 14px 16px;
+  background: #f9fafb;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.proposal-result-card__eval-point:last-child {
+  margin-bottom: 0;
+}
+
+.proposal-result-card__eval-point-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.proposal-result-card__eval-point-desc {
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.8;
+}
+
+/* ============================================================
+   Step 0: 初期選択カード
+   ============================================================ */
+
+.proposal-input-card--choice {
+  max-width: 500px;
+}
+
+.proposal-input-card__choice-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.proposal-input-card__choice-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 16px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.proposal-input-card__choice-btn:hover {
+  border-color: #3b82f6;
+  background: #f8fafc;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+.proposal-input-card__choice-icon {
+  font-size: 28px;
+}
+
+.proposal-input-card__choice-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.proposal-input-card__choice-desc {
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+/* ============================================================
+   Step 1: 顧客選択（コンパクト版）
+   ============================================================ */
+
+.proposal-input-card--compact {
+  max-width: 500px;
+}
+
+.proposal-input-card__customer-select {
+  margin-bottom: 12px;
+}
+
+.proposal-input-card__select--full {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 15px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1f2937;
+  cursor: pointer;
+}
+
+.proposal-input-card__select--full:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.proposal-input-card__profile-summary {
+  padding: 12px 14px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.proposal-input-card__profile-detail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.proposal-input-card__profile-detail:last-child {
+  margin-bottom: 0;
+}
+
+.proposal-input-card__detail-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  min-width: 40px;
+}
+
+.proposal-input-card__detail-value {
+  font-size: 13px;
+  color: #1f2937;
+}
+
+.proposal-input-card__profile-context {
+  font-size: 12px;
+  color: #4b5563;
+  line-height: 1.5;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* ============================================================
+   Step 2: 判断論点（行ベースレイアウト）
+   ============================================================ */
+
+.proposal-input-card--evaluation {
+  max-width: 650px;
+}
+
+.proposal-input-card__eval-table {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.proposal-input-card__eval-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.proposal-input-card__eval-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.proposal-input-card__eval-row:last-of-type {
+  border-bottom: none;
+}
+
+.proposal-input-card__eval-col {
+  display: flex;
+  align-items: center;
+}
+
+.proposal-input-card__eval-col--title {
+  flex: 1;
+  min-width: 0;
+  padding-right: 12px;
+}
+
+.proposal-input-card__eval-col--importance {
+  width: 80px;
+  flex-shrink: 0;
+  padding-right: 8px;
+}
+
+.proposal-input-card__eval-col--status {
+  width: 90px;
+  flex-shrink: 0;
+  padding-right: 8px;
+}
+
+.proposal-input-card__eval-col--action {
+  width: 32px;
+  flex-shrink: 0;
+  justify-content: center;
+}
+
+.proposal-input-card__eval-title-text {
+  font-size: 13px;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.proposal-input-card__eval-input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #1f2937;
+}
+
+.proposal-input-card__eval-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.proposal-input-card__eval-input::placeholder {
+  color: #9ca3af;
+}
+
+.proposal-input-card__eval-select {
+  width: 100%;
+  padding: 6px 4px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #1f2937;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.proposal-input-card__eval-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.proposal-input-card__remove-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: #9ca3af;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.proposal-input-card__remove-btn:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.proposal-input-card__add-row-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-top: 1px dashed #d1d5db;
+  color: #3b82f6;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.proposal-input-card__add-row-btn:hover {
+  background: #f8fafc;
+}
