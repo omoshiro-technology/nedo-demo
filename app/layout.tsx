@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { Toaster } from "@/components/ui/toaster"
-import { AppSidebar } from "@/components/shell/app-sidebar"
+import { AppHeader } from "@/components/shell/app-header"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -20,8 +20,8 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className={inter.className}>
-        <div className="flex h-screen overflow-hidden">
-          <AppSidebar />
+        <div className="flex flex-col h-screen overflow-hidden">
+          <AppHeader />
           <main className="flex-1 overflow-auto">
             {children}
           </main>

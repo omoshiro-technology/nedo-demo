@@ -190,13 +190,7 @@ export default function Home() {
 
   return (
     <div className="h-full bg-gray-50 text-gray-800">
-      <header className="bg-white shadow-sm border-b border-gray-100">
-        <div className="px-6 py-3">
-          <h1 className="text-lg font-bold text-gray-900">BRAIN-Room</h1>
-          <p className="text-xs text-gray-500">複数のAIが協働して思考する知的会議空間</p>
-        </div>
-      </header>
-      <div className="p-4 overflow-auto" style={{ height: "calc(100% - 60px)" }}>
+      <div className="p-4 overflow-auto h-full">
         {isConfigured ? (
           <DiscussionInterface
             characters={characters}
