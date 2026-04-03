@@ -7,7 +7,7 @@ export async function GET(
 ) {
   try {
     const { sessionId } = await params;
-    const session = SessionStore.findById(sessionId);
+    const session = await SessionStore.findById(sessionId);
 
     if (!session) {
       return NextResponse.json(
@@ -32,7 +32,7 @@ export async function DELETE(
 ) {
   try {
     const { sessionId } = await params;
-    const deleted = SessionStore.delete(sessionId);
+    const deleted = await SessionStore.delete(sessionId);
 
     if (!deleted) {
       return NextResponse.json(

@@ -19,7 +19,7 @@ export type ToggleAlternativesRequest = {
 export async function toggleAlternatives(
   request: ToggleAlternativesRequest
 ): Promise<DecisionNavigatorSession | null> {
-  const session = SessionStore.findById(request.sessionId);
+  const session = await SessionStore.findById(request.sessionId);
   if (!session) {
     return null;
   }
@@ -152,7 +152,7 @@ export async function toggleAlternatives(
   }
 
   session.updatedAt = getTimestamp();
-  SessionStore.save(session);
+  await SessionStore.save(session);
 
   return session;
 }

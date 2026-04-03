@@ -75,7 +75,7 @@ export async function regenerateSession(
   sessionId: string,
   request: RegenerateSessionRequest
 ): Promise<DecisionNavigatorSession | null> {
-  const existingSession = SessionStore.findById(sessionId);
+  const existingSession = await SessionStore.findById(sessionId);
   if (!existingSession) {
     return null;
   }
@@ -195,7 +195,7 @@ export async function regenerateSession(
   };
 
   // 保存
-  SessionStore.save(regeneratedSession);
+  await SessionStore.save(regeneratedSession);
   await sessionRepository.save(regeneratedSession);
 
   console.log("[regenerateSession] Session regenerated:", {

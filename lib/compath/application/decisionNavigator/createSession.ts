@@ -246,7 +246,7 @@ export async function createSession(
   };
 
   // 保存（両方のリポジトリに保存して互換性維持）
-  SessionStore.save(session);
+  await SessionStore.save(session);
   await sessionRepository.save(session);
 
   // バックグラウンドで次の選択肢をプリフェッチ
@@ -277,7 +277,7 @@ function getMimeType(fileName: string): string {
 /**
  * 聞き出しフロー用のセッションを作成
  */
-function createClarificationSession(
+async function createClarificationSession(
   sessionId: string,
   request: CreateSessionRequest,
   goalPurpose: string,
@@ -286,7 +286,7 @@ function createClarificationSession(
   problemCategory: DecisionNavigatorSession["problemCategory"],
   supportMode: SupportMode,
   now: string
-): DecisionNavigatorSession {
+): Promise<DecisionNavigatorSession> {
   // 開始ノードを作成（ゴール形式の目的を使用）
   const startNode: DecisionFlowNode = {
     id: `node-start-${sessionId}`,
@@ -391,7 +391,7 @@ function createClarificationSession(
   };
 
   // 保存
-  SessionStore.save(session);
+  await SessionStore.save(session);
 
   return session;
 }

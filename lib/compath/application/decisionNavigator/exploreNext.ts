@@ -237,13 +237,13 @@ function collectSelectedPath(
 /**
  * 重複判断軸の処理（収束エッジを追加）
  */
-function handleDuplicateCriteria(
+async function handleDuplicateCriteria(
   session: DecisionNavigatorSession,
   parentNodeId: string,
   duplicateCriteria: DecisionFlowNode,
   explorationNodeId: string,
   now: string
-): ExploreNextResult {
+): Promise<ExploreNextResult> {
   const newEdges: DecisionFlowEdge[] = [];
 
   // 既存のエッジがなければ収束エッジを追加
@@ -274,7 +274,7 @@ function handleDuplicateCriteria(
     updatedAt: now,
   };
 
-  SessionStore.save(updatedSession);
+  await SessionStore.save(updatedSession);
 
   const existingLabel = session.criteriaLabels?.find(l => l.id === duplicateCriteria.id);
   return {
@@ -298,7 +298,7 @@ function handleDuplicateCriteria(
  * 探索ノードから次の問いを生成
  */
 export async function exploreNext(request: ExploreNextRequest): Promise<ExploreNextResult> {
-  const session = SessionStore.findById(request.sessionId);
+  const session = await SessionStore.findById(request.sessionId);
   if (!session) {
     return { success: false, reason: "セッションが見つかりません" };
   }
@@ -623,7 +623,7 @@ export async function exploreNext(request: ExploreNextRequest): Promise<ExploreN
     updatedAt: now,
   };
 
-  SessionStore.save(updatedSession);
+  await SessionStore.save(updatedSession);
 
   return {
     success: true,

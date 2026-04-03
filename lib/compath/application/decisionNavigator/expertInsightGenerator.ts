@@ -274,7 +274,7 @@ export async function generateInsights(
 ): Promise<GenerateInsightsResponse> {
   const { sessionId, currentNodeId, context, triggerTiming } = request;
 
-  const session = SessionStore.findById(sessionId);
+  const session = await SessionStore.findById(sessionId);
   if (!session) {
     throw new Error("セッションが見つかりません");
   }

@@ -99,7 +99,7 @@ export async function recordSelection(
   sessionId: string,
   request: RecordSelectionRequest
 ): Promise<RecordSelectionResult | null> {
-  const session = SessionStore.findById(sessionId);
+  const session = await SessionStore.findById(sessionId);
   if (!session) return null;
 
   const now = getTimestamp();
@@ -269,7 +269,7 @@ export async function recordSelection(
       },
     };
 
-    SessionStore.save(updatedSession);
+    await SessionStore.save(updatedSession);
     await sessionRepository.save(updatedSession);
 
     return {
@@ -685,7 +685,7 @@ export async function recordSelection(
       },
     };
 
-    SessionStore.save(completedSession);
+    await SessionStore.save(completedSession);
     await sessionRepository.save(completedSession);
 
     return {
@@ -1084,10 +1084,10 @@ export async function recordSelection(
       if (recommendedNode) {
         // バックグラウンドで実行（awaitしない）- レスポンス速度を優先
         generateDecisionProperty(recommendedNode, propertyContext)
-          .then((property) => {
+          .then(async (property) => {
             if (property) {
               // SessionStoreから最新のセッションを取得して更新
-              SessionStore.update(session.id, (currentSession) => ({
+              await SessionStore.update(session.id, (currentSession) => ({
                 ...currentSession,
                 nodes: currentSession.nodes.map((n) =>
                   n.id === recommendedNode.id ? { ...n, decisionProperty: property } : n
@@ -1196,7 +1196,7 @@ export async function recordSelection(
     },
   };
 
-  SessionStore.save(updatedSession);
+  await SessionStore.save(updatedSession);
   await sessionRepository.save(updatedSession);
 
   // Phase 9: Capitalizer Agent - 選択から知見を自動抽出（バックグラウンドで実行）

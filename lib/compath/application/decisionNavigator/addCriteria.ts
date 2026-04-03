@@ -53,7 +53,7 @@ export type AddCriteriaResult = {
  * セッションに新しい判断軸を追加
  */
 export async function addCriteria(sessionId: string): Promise<AddCriteriaResult> {
-  const session = SessionStore.findById(sessionId);
+  const session = await SessionStore.findById(sessionId);
   if (!session) {
     return { success: false, reason: "セッションが見つかりません" };
   }
@@ -211,7 +211,7 @@ export async function addCriteria(sessionId: string): Promise<AddCriteriaResult>
     updatedAt: now,
   };
 
-  SessionStore.save(updatedSession);
+  await SessionStore.save(updatedSession);
 
   return {
     success: true,

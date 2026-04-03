@@ -9,7 +9,7 @@ export async function GET(
   try {
     const { sessionId } = await params;
 
-    const session = SessionStore.findById(sessionId);
+    const session = await SessionStore.findById(sessionId);
     if (!session) {
       return NextResponse.json(
         { message: "セッションが見つかりません" },

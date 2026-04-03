@@ -79,7 +79,7 @@ export async function processChat(
   sessionId: string,
   userMessage: string
 ): Promise<DecisionNavigatorSession> {
-  const session = SessionStore.findById(sessionId);
+  const session = await SessionStore.findById(sessionId);
   if (!session) {
     throw new Error("セッションが見つかりません");
   }
@@ -148,7 +148,7 @@ ${userMessage}
   session.updatedAt = getTimestamp();
 
   // 保存
-  SessionStore.save(session);
+  await SessionStore.save(session);
 
   return session;
 }

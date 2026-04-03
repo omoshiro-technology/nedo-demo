@@ -29,7 +29,7 @@ export async function PATCH(
       );
     }
 
-    const session = SessionStore.findById(sessionId);
+    const session = await SessionStore.findById(sessionId);
     if (!session) {
       return NextResponse.json(
         { message: "セッションが見つかりません。" },
@@ -61,7 +61,7 @@ export async function PATCH(
     );
     session.executionPlan = updatedPlan;
     session.updatedAt = new Date().toISOString();
-    SessionStore.save(session);
+    await SessionStore.save(session);
 
     return NextResponse.json({ executionPlan: updatedPlan });
   } catch (error) {

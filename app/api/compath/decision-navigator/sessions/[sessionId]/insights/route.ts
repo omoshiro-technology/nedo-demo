@@ -13,7 +13,7 @@ export async function POST(
     const body = await request.json();
     const { currentNodeId, triggerTiming } = body;
 
-    const session = SessionStore.findById(sessionId);
+    const session = await SessionStore.findById(sessionId);
     if (!session) {
       return NextResponse.json(
         { message: "セッションが見つかりません" },

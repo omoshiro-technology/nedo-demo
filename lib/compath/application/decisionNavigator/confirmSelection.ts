@@ -21,7 +21,7 @@ export async function confirmSelection(
   sessionId: string,
   request: ConfirmSelectionRequest
 ): Promise<DecisionNavigatorSession | null> {
-  const session = SessionStore.findById(sessionId);
+  const session = await SessionStore.findById(sessionId);
   if (!session || !session.pendingSelection) return null;
 
   const now = getTimestamp();
@@ -59,15 +59,15 @@ export async function confirmSelection(
     updatedAt: getTimestamp(),
   };
 
-  SessionStore.save(updatedSession);
+  await SessionStore.save(updatedSession);
   return updatedSession;
 }
 
 /**
  * 選択を取り消し（1つ前に戻る）
  */
-export function undoSelection(sessionId: string): DecisionNavigatorSession | null {
-  const session = SessionStore.findById(sessionId);
+export async function undoSelection(sessionId: string): Promise<DecisionNavigatorSession | null> {
+  const session = await SessionStore.findById(sessionId);
   if (!session || session.selectionHistory.length <= 1) return null;
 
   const lastSelection = session.selectionHistory.at(-1);
@@ -133,6 +133,6 @@ export function undoSelection(sessionId: string): DecisionNavigatorSession | nul
     },
   };
 
-  SessionStore.save(updatedSession);
+  await SessionStore.save(updatedSession);
   return updatedSession;
 }

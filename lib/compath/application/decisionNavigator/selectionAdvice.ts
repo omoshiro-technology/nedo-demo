@@ -79,7 +79,7 @@ export async function generateSelectionAdviceAsync(
     console.log("[recordSelection] Generated selection advice (async):", selectionAdvice.message);
 
     // SessionStoreを更新してチャットメッセージを追加
-    const currentSession = SessionStore.findById(session.id);
+    const currentSession = await SessionStore.findById(session.id);
     if (!currentSession) {
       console.warn("[recordSelection] Session not found for advice update:", session.id);
       return;
@@ -108,7 +108,7 @@ export async function generateSelectionAdviceAsync(
       updatedAt: getTimestamp(),
     };
 
-    SessionStore.save(updatedSession);
+    await SessionStore.save(updatedSession);
     await sessionRepository.save(updatedSession);
     console.log("[recordSelection] Selection advice added to chat (async)");
   } catch (error) {

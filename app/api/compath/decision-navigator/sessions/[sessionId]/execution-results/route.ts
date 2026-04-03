@@ -83,13 +83,13 @@ function extractLearningsFromRetrospective(
 }
 
 // ヘルパー: セッションナレッジを更新
-function updateSessionKnowledge(
+async function updateSessionKnowledge(
   sessionId: string,
   result: ExecutionResult
-): void {
+): Promise<void> {
   let knowledge = SessionKnowledgeRepository.findBySessionId(sessionId);
   if (!knowledge) {
-    const session = SessionStore.findById(sessionId);
+    const session = await SessionStore.findById(sessionId);
     if (!session) return;
     knowledge = createInitialSessionKnowledge(sessionId, session);
   }
@@ -171,7 +171,7 @@ export async function GET(
   try {
     const { sessionId } = await params;
 
-    const session = SessionStore.findById(sessionId);
+    const session = await SessionStore.findById(sessionId);
     if (!session) {
       return NextResponse.json(
         { message: "セッションが見つかりません" },
@@ -198,7 +198,7 @@ export async function POST(
     const { sessionId } = await params;
     const body = await request.json();
 
-    const session = SessionStore.findById(sessionId);
+    const session = await SessionStore.findById(sessionId);
     if (!session) {
       return NextResponse.json(
         { message: "セッションが見つかりません" },
@@ -259,7 +259,7 @@ export async function POST(
     }
 
     ExecutionResultRepository.save(sessionId, result);
-    updateSessionKnowledge(sessionId, result);
+    await updateSessionKnowledge(sessionId, result);
 
     return NextResponse.json(result, { status: 201 });
   } catch (error) {

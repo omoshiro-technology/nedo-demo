@@ -12,7 +12,7 @@ export const maxDuration = 60;
 
 export async function GET() {
   try {
-    const sessions = SessionStore.findAll();
+    const sessions = await SessionStore.findAll();
     return NextResponse.json({ sessions });
   } catch (error) {
     const message =

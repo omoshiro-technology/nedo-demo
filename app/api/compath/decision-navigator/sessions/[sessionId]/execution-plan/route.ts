@@ -10,7 +10,7 @@ export async function GET(
 ) {
   try {
     const { sessionId } = await params;
-    const session = SessionStore.findById(sessionId);
+    const session = await SessionStore.findById(sessionId);
 
     if (!session) {
       return NextResponse.json(
@@ -28,7 +28,7 @@ export async function GET(
     const executionPlan = await generateExecutionPlan(session);
     session.executionPlan = executionPlan;
     session.updatedAt = new Date().toISOString();
-    SessionStore.save(session);
+    await SessionStore.save(session);
 
     return NextResponse.json({ executionPlan });
   } catch (error) {
@@ -46,7 +46,7 @@ export async function POST(
 ) {
   try {
     const { sessionId } = await params;
-    const session = SessionStore.findById(sessionId);
+    const session = await SessionStore.findById(sessionId);
 
     if (!session) {
       return NextResponse.json(
@@ -58,7 +58,7 @@ export async function POST(
     const executionPlan = await generateExecutionPlan(session);
     session.executionPlan = executionPlan;
     session.updatedAt = new Date().toISOString();
-    SessionStore.save(session);
+    await SessionStore.save(session);
 
     return NextResponse.json({ executionPlan }, { status: 201 });
   } catch (error) {

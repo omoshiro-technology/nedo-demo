@@ -19,7 +19,7 @@ export interface UpdateRationaleRequest {
 export async function updateRationale(
   request: UpdateRationaleRequest
 ): Promise<DecisionNavigatorSession> {
-  const session = SessionStore.findById(request.sessionId);
+  const session = await SessionStore.findById(request.sessionId);
   if (!session) {
     throw new Error("セッションが見つかりません");
   }
@@ -88,7 +88,7 @@ export async function updateRationale(
   session.updatedAt = now;
 
   // 保存
-  SessionStore.save(session);
+  await SessionStore.save(session);
 
   return session;
 }

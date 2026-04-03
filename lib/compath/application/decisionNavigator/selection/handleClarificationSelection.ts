@@ -170,7 +170,7 @@ export async function handleClarificationSelection(
       },
     };
 
-    SessionStore.save(updatedSession);
+    await SessionStore.save(updatedSession);
 
     return {
       session: updatedSession,
@@ -249,7 +249,7 @@ export async function handleClarificationSelection(
     },
   };
 
-  SessionStore.save(updatedSession);
+  await SessionStore.save(updatedSession);
 
   return {
     session: updatedSession,
