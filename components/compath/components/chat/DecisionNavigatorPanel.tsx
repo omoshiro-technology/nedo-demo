@@ -198,6 +198,81 @@ export function DecisionNavigatorPanel({
   // 左パネルタブ切り替え（質問 / AIチャット）
   const [leftPanelTab, setLeftPanelTab] = useState<"question" | "chat">("question");
 
+  /** ノード情報をテキストエクスポート */
+  const handleExportNodes = useCallback(() => {
+    if (!session) return;
+    const lines: string[] = [];
+    lines.push(`# 意思決定ナビゲーター エクスポート`);
+    lines.push(`目的: ${session.purpose}`);
+    lines.push(`戦略: ${session.thinkingStrategy ?? "未設定"}`);
+    lines.push(`作成: ${session.createdAt}`);
+    lines.push(`更新: ${session.updatedAt}`);
+    lines.push(`ノード数: ${session.nodes.length}  エッジ数: ${session.edges.length}`);
+    lines.push(``);
+
+    // 判断軸ラベル
+    if (session.criteriaLabels && session.criteriaLabels.length > 0) {
+      lines.push(`## 判断軸`);
+      session.criteriaLabels.forEach((cl, i) => {
+        lines.push(`${i + 1}. [${cl.id}] ${cl.question}${cl.isPreSelected ? ` (事前選択: ${cl.preSelectedValue})` : ""}`);
+      });
+      lines.push(``);
+    }
+
+    // ノード一覧
+    lines.push(`## ノード一覧`);
+    const sortedNodes = [...session.nodes].sort((a, b) => (a.depth ?? 0) - (b.depth ?? 0));
+    for (const node of sortedNodes) {
+      const indent = "  ".repeat(node.depth ?? 0);
+      const statusIcon = node.status === "selected" ? "✅" : node.status === "rejected" ? "❌" : "⬜";
+      lines.push(`${indent}${statusIcon} [${node.id}]`);
+      lines.push(`${indent}  type=${node.type} level=${node.level} status=${node.status}`);
+      lines.push(`${indent}  label: ${node.label}`);
+      if (node.description) lines.push(`${indent}  desc: ${node.description}`);
+      if (node.parentId) lines.push(`${indent}  parent: ${node.parentId}`);
+      if (node.isRecommended) lines.push(`${indent}  ⭐ 推奨`);
+      if (node.riskLevel) lines.push(`${indent}  risk: ${node.riskLevel}`);
+      if (node.selectedAt) lines.push(`${indent}  selectedAt: ${node.selectedAt}`);
+      if (node.rationale) lines.push(`${indent}  rationale: ${node.rationale}`);
+    }
+    lines.push(``);
+
+    // エッジ一覧
+    lines.push(`## エッジ一覧`);
+    for (const edge of session.edges) {
+      lines.push(`  ${edge.source} → ${edge.target} (type=${edge.type}${edge.isRecommended ? ", 推奨" : ""})`);
+    }
+    lines.push(``);
+
+    // 選択履歴
+    if (session.selectionHistory && session.selectionHistory.length > 0) {
+      lines.push(`## 選択履歴`);
+      session.selectionHistory.forEach((h, i) => {
+        lines.push(`${i + 1}. nodeId=${h.nodeId} at=${h.selectedAt}`);
+        if (h.rationale) lines.push(`   理由: ${h.rationale}`);
+      });
+      lines.push(``);
+    }
+
+    // 列状態
+    if (session.columnStates && session.columnStates.length > 0) {
+      lines.push(`## 列状態`);
+      lines.push(`  currentColumn=${session.currentColumnIndex ?? "未設定"}`);
+      session.columnStates.forEach((state, i) => {
+        lines.push(`  col${i}: ${state}`);
+      });
+    }
+
+    const text = lines.join("\n");
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `decision-export-${session.id.slice(0, 8)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [session]);
+
   /** 戦略名の日本語マップ */
   const STRATEGY_LABELS: Record<ThinkingStrategyId, string> = {
     forward: "フォワード",
@@ -875,6 +950,20 @@ export function DecisionNavigatorPanel({
             <span>{overlookedWarnings.length}</span>
           </button>
         ) : null}
+        {session && (
+          <button
+            type="button"
+            className="dn-panel__export-btn"
+            onClick={handleExportNodes}
+            title="ノード情報をテキストエクスポート"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+          </button>
+        )}
         <button
           type="button"
           className="dn-panel__close"

@@ -2458,6 +2458,26 @@
   color: var(--ink);
 }
 
+/* エクスポートボタン */
+.dn-panel__export-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--muted);
+  transition: all 0.2s ease;
+}
+
+.dn-panel__export-btn:hover {
+  background: rgba(31, 122, 109, 0.1);
+  color: var(--accent);
+}
+
 /* Phase 27: 判断パスボタン（タイトル横に配置） */
 .dn-panel__journey-btn {
   display: inline-flex;
