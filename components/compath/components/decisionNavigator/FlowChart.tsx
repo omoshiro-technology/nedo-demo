@@ -585,10 +585,10 @@ function FlowChartInner({
         defaultViewport={{ x: 100, y: 0, zoom: 0.7 }} // 左にオフセットしてラベルエリアを表示
         minZoom={0.3}
         maxZoom={2}
-        nodesDraggable={false}
+        nodesDraggable={true}
         nodesConnectable={false}
         elementsSelectable={true}
-        selectNodesOnDrag={false}
+        selectNodesOnDrag={true}
         panOnScroll={false}
         zoomOnScroll={true}
         zoomOnPinch={true}
