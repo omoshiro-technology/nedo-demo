@@ -153,19 +153,34 @@ export default function Home() {
   )
 
   const handleLoadSet = useCallback(
-    (setId: string) => {
+    async (setId: string) => {
       const selectedSet = characterSets.find((set) => set.id === setId)
       if (selectedSet) {
         setCharacters(selectedSet.characters)
         setIsConfigured(true)
         localStorage.setItem("current-character-set", setId)
+
+        // 板金プレス工程設計チーム選択時にナレッジも自動ロード
+        if (setId === "preset-sheetmetal-press") {
+          const hasPress = knowledgeFiles.some(f => f.name === "板金プレス工程設計 熟練技能ナレッジベース")
+          if (!hasPress) {
+            try {
+              const res = await fetch('/sheetmetal-press-knowledge.json')
+              if (res.ok) {
+                const data = await res.json()
+                handleUploadKnowledge(data)
+              }
+            } catch {}
+          }
+        }
+
         toast({
           title: "読み込み完了",
           description: `キャラクターセット「${selectedSet.name}」を読み込みました。`,
         })
       }
     },
-    [characterSets, toast],
+    [characterSets, knowledgeFiles, handleUploadKnowledge, toast],
   )
 
   const handleResetConfig = useCallback(() => {
@@ -189,8 +204,13 @@ export default function Home() {
   }
 
   return (
-    <div className="h-full bg-gray-50 text-gray-800">
-      <div className="p-4 overflow-auto h-full">
+    <div className="min-h-screen bg-gray-50 text-gray-800">
+      <header className="bg-white shadow-sm">
+        <div className="container mx-auto px-4 py-4">
+          <h1 className="text-2xl font-bold text-gray-900">BRAIN-Room</h1>
+        </div>
+      </header>
+      <main className="container mx-auto p-4">
         {isConfigured ? (
           <DiscussionInterface
             characters={characters}
@@ -210,7 +230,7 @@ export default function Home() {
             onDeleteKnowledge={handleDeleteKnowledge}
           />
         )}
-      </div>
+      </main>
     </div>
   )
 }

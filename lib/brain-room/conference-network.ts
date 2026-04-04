@@ -1,6 +1,6 @@
-import { Agent } from "@mastra/core"
-import { AgentNetwork } from "@mastra/core/network"
-import { openai } from "@ai-sdk/openai"
+import { Agent } from "@mastra/core/agent"
+// AgentNetwork removed in @mastra/core v1 — not used in production flow
+import { anthropic } from "@ai-sdk/anthropic"
 import { z } from "zod"
 import type { Character, KnowledgeFile } from "@/lib/brain-room/types"
 import { generateConferenceTurnWithKnowledge, createResponseAgent } from "./conference-agents"
@@ -63,7 +63,7 @@ Balance participation while prioritizing speakers who can most effectively advan
   return new Agent({
     name: "facilitator",
     instructions,
-    model: openai("gpt-4.1"),
+    model: anthropic("claude-haiku-4-5-20251001"),
   })
 }
 
@@ -73,44 +73,10 @@ function createCharacterAgent(character: Character, context: ConferenceNetworkCo
   return createResponseAgent(character, context)
 }
 
-// AgentNetwork作成
-export function createConferenceNetwork(context: ConferenceNetworkContext): AgentNetwork {
-  const { theme, purpose, characters, turn } = context
-  
-  // ファシリテーターと各キャラクターのAgentを作成
-  const facilitatorAgent = createFacilitatorAgent(context)
-  const characterAgents = characters.map(character => 
-    createCharacterAgent(character, context)
-  )
-  
-  // すべてのAgentをNetworkに追加
-  const allAgents = [facilitatorAgent, ...characterAgents]
-
-  // Network全体の調整役の指示
-  const networkInstructions = `You are coordinating a conference discussion about "${theme}".
-${purpose ? `Purpose: ${purpose}` : ''}
-
-Turn: ${turn + 1}/20
-
-Process flow:
-1. First, use transmit to consult the facilitator about who should speak next
-2. The facilitator will analyze balance and flow, then transmit to a specific character
-3. The character will generate their actual utterance with proper formatting
-4. Return the character's structured response
-
-IMPORTANT: 
-- The facilitator NEVER speaks in the conference, only manages flow
-- Characters generate actual conference utterances
-- Use transmit tool to chain: You → Facilitator → Character
-
-Start by transmitting to the facilitator for speaker selection.`
-
-  return new AgentNetwork({
-    name: "ConferenceNetworkV2",
-    instructions: networkInstructions,
-    model: openai("gpt-4.1"),
-    agents: allAgents,
-  })
+// AgentNetwork removed in @mastra/core v1
+// createConferenceNetwork is kept as a no-op stub for import compatibility
+export function createConferenceNetwork(_context: ConferenceNetworkContext): any {
+  return null
 }
 
 
@@ -262,11 +228,12 @@ function calculateExpertiseMatch(character: Character, lastUtterance: string, th
 // 選択された話者による発言生成関数（知識検索機能付き）
 export async function generateCharacterTurn(
   selectedSpeaker: Character,
-  context: ConferenceNetworkContext
+  context: ConferenceNetworkContext,
+  whiteboard?: string,
 ): Promise<any> {
   console.log(`[DEBUG] generateCharacterTurn called for ${selectedSpeaker.name}`)
   console.log(`[DEBUG] Knowledge files in context: ${context.knowledgeFiles?.length || 0}`)
-  
+
   // AgentConferenceContext型に変換
   const conferenceContext: AgentConferenceContext = {
     theme: context.theme,
@@ -276,11 +243,12 @@ export async function generateCharacterTurn(
     characters: context.characters,
     knowledgeFiles: context.knowledgeFiles || [],
   }
-  
+
   // 2段階生成プロセスを使用（既存実装）
   const result = await generateConferenceTurnWithKnowledge(
     selectedSpeaker,
-    conferenceContext
+    conferenceContext,
+    whiteboard,
   )
   
   console.log(`[DEBUG] Result from generateConferenceTurnWithKnowledge:`, {

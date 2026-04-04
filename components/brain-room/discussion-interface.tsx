@@ -19,6 +19,8 @@ import { NodeListView } from "@/components/brain-room/node-list-view"
 import { MessageTag } from "@/components/brain-room/message-tag"
 import { ArchipelagoView } from "@/components/brain-room/archipelago-view"
 import { MessageTextWithReferences } from "@/components/brain-room/message-text-with-references"
+import { MermaidDiagram } from "@/components/brain-room/mermaid-diagram"
+import { WhiteboardView } from "@/components/brain-room/whiteboard-view"
 
 interface DiscussionInterfaceProps {
   characters: Character[]
@@ -47,7 +49,13 @@ export function DiscussionInterface({
   const [isArchipelagoLoading, setIsArchipelagoLoading] = useState(false)
   const [archipelagoError, setArchipelagoError] = useState<string | null>(null)
   const [selectedKnowledgeItems, setSelectedKnowledgeItems] = useState<Set<string>>(new Set())
+  const [whiteboardHtml, setWhiteboardHtml] = useState<string>("")
   const [showKnowledgeModal, setShowKnowledgeModal] = useState(false)
+  const [appMode, setAppMode] = useState<"conference" | "chat">("conference")
+  const [chatInput, setChatInput] = useState("")
+  const [isSending, setIsSending] = useState(false)
+  const [selectedChatPersonas, setSelectedChatPersonas] = useState<number[]>([])
+  const [chatTurnCount, setChatTurnCount] = useState(0)
 
   // Archipelago View State
   const { toast } = useToast()
@@ -67,6 +75,80 @@ export function DiscussionInterface({
     setSelectedKnowledgeItems(new Set(knowledgeIds))
     setShowKnowledgeModal(true)
   }, [])
+
+  const sendChatMessage = async () => {
+    if (!chatInput.trim() || isSending) return
+
+    const userMsg = chatInput.trim()
+    setChatInput("")
+    setIsSending(true)
+
+    // Add user message
+    const userMessage: Message = {
+      characterId: 0,
+      characterName: "あなた",
+      text: userMsg,
+      isUser: true,
+    }
+    setMessages((prev) => [...prev, userMessage])
+
+    const history = messages.map((m) => ({
+      speakerName: m.isUser ? "ユーザー" : m.characterName,
+      text: m.text,
+      isUser: !!m.isUser,
+    }))
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userMessage: userMsg,
+          characters,
+          selectedPersonaIds: selectedChatPersonas,
+          conversationHistory: history,
+          knowledgeFiles,
+          theme: theme || undefined,
+          purpose: purpose || undefined,
+          whiteboard: whiteboardHtml || undefined,
+          turnCount: chatTurnCount,
+        }),
+      })
+
+      if (!response.ok || !response.body) throw new Error("Chat API failed")
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ""
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split("\n")
+        buffer = lines.pop() || ""
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue
+          try {
+            const event = JSON.parse(line.slice(6))
+            if (event.type === "message") {
+              setMessages((prev) => [...prev, event.data])
+            } else if (event.type === "whiteboard_update") {
+              setWhiteboardHtml(event.data.html || "")
+            }
+          } catch {}
+        }
+      }
+
+      setChatTurnCount((c) => c + 1)
+    } catch (e) {
+      console.error("Chat send failed:", e)
+      toast({ title: "エラー", description: "メッセージ送信に失敗しました。", variant: "destructive" })
+    } finally {
+      setIsSending(false)
+    }
+  }
 
   const stopConference = () => {
     if (abortControllerRef.current) {
@@ -94,6 +176,7 @@ export function DiscussionInterface({
 
     setStatus("running")
     setMessages([])
+    setWhiteboardHtml("")
 
     const rootNodeId = "root"
     const initialSummaryNodes: Record<string, SummaryNode> = {
@@ -203,6 +286,9 @@ export function DiscussionInterface({
                   }
                   return newNodes
                 })
+              } else if (event.type === "whiteboard_update") {
+                console.log("Whiteboard updated")
+                setWhiteboardHtml(event.data.html || "")
               } else if (event.type === "end") {
                 console.log("Conference ended:", event.data.reason)
                 setStatus("finished")
@@ -324,6 +410,7 @@ export function DiscussionInterface({
     }
   }, [theme, purpose, messages, toast])
 
+
   const handleJumpToMessage = (messageIndex: number) => {
     setActiveTab("chat")
     setHighlightedMessageIndex(messageIndex)
@@ -373,14 +460,14 @@ export function DiscussionInterface({
       const convertUUIDReferencesToMarkdown = (text: string): { convertedText: string; referencedKnowledge: string[] } => {
         const uuidPattern = /\[UUID:([a-f0-9-]{36})\]/gi
         const referencedKnowledge: Set<string> = new Set()
-        
+
         // UUIDを収集
         let match
         const tempPattern = new RegExp(uuidPattern.source, uuidPattern.flags)
         while ((match = tempPattern.exec(text)) !== null) {
           referencedKnowledge.add(match[1])
         }
-        
+
         // 参照番号でUUIDを置き換え
         const knowledgeArray = Array.from(referencedKnowledge)
         let convertedText = text
@@ -391,7 +478,7 @@ export function DiscussionInterface({
             `[^${refNumber}]`
           )
         })
-        
+
         return { convertedText, referencedKnowledge: knowledgeArray }
       }
 
@@ -453,32 +540,32 @@ export function DiscussionInterface({
       // 引用元情報セクションを追加
       if (allReferencedKnowledge.size > 0) {
         markdownContent += "## 引用元情報\n\n"
-        
+
         Array.from(allReferencedKnowledge).forEach((knowledgeId, index) => {
           const result = findKnowledgeItemById(knowledgeId)
           if (result) {
             const { item, fileName } = result
             const refNumber = index + 1
-            
+
             markdownContent += `### [^${refNumber}] ${item.title}\n\n`
             markdownContent += `**出典**: ${fileName}\n\n`
-            
+
             if (item.summary) {
               markdownContent += `**要約**: ${item.summary}\n\n`
             }
-            
+
             markdownContent += "**原文**:\n```\n"
             markdownContent += `${item.content}\n`
             markdownContent += "```\n\n"
-            
+
             if (item.keywords && item.keywords.length > 0) {
               markdownContent += `**キーワード**: ${item.keywords.join(", ")}\n\n`
             }
-            
+
             if (item.source) {
               markdownContent += `**情報源**: ${item.source}\n\n`
             }
-            
+
             markdownContent += "---\n\n"
           }
         })
@@ -562,59 +649,167 @@ export function DiscussionInterface({
 
       <Card>
         <CardHeader>
-          <CardTitle>プロジェクト設定</CardTitle>
-          <CardDescription>会議のテーマと目的を設定し、プロジェクトを開始します。</CardDescription>
+          <CardTitle>{appMode === "conference" ? "会議設定" : "チャット設定"}</CardTitle>
+          <CardDescription>
+            {appMode === "conference"
+              ? "AIキャラクター同士が自動で議論します。テーマを設定して開始してください。"
+              : "AIキャラクターと直接会話します。相手を選んで開始してください。"}
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {status === "idle" && (
+            <div className="flex gap-2">
+              <Button
+                variant={appMode === "conference" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setAppMode("conference")}
+              >
+                会議モード
+              </Button>
+              <Button
+                variant={appMode === "chat" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setAppMode("chat")}
+              >
+                チャットモード
+              </Button>
+            </div>
+          )}
+
+          {status === "idle" && appMode === "chat" && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">会話する相手</label>
+              <div className="flex flex-wrap gap-2">
+                {characters.map((c) => (
+                  <Button
+                    key={c.id}
+                    variant={selectedChatPersonas.includes(c.id) ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => {
+                      setSelectedChatPersonas((prev) =>
+                        prev.includes(c.id) ? prev.filter((id) => id !== c.id) : [...prev, c.id]
+                      )
+                    }}
+                  >
+                    {c.name}
+                  </Button>
+                ))}
+              </div>
+              <p className="text-xs text-gray-500">
+                {selectedChatPersonas.length === 0
+                  ? "1人以上選択してください"
+                  : selectedChatPersonas.length === 1
+                    ? `${characters.find(c => c.id === selectedChatPersonas[0])?.name}と1対1で会話`
+                    : `${selectedChatPersonas.length}人のグループチャット`}
+              </p>
+            </div>
+          )}
+
+          {status !== "running" && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">プリセット</label>
+              <div className="flex flex-wrap gap-2">
+                {appMode === "conference" ? (
+                  <>
+                    {[
+                      { label: "工程構想", theme: "新規受注品（自動車ブラケット、590MPaハイテン t1.2mm、月産8,000個）の工程設計を構想する", purpose: "製品形状・材質・生産量から最適な工程順序・型方式・加工条件の方向性を決定する。品質・コスト・納期のバランスを考慮し、工程設計の骨格を固める。" },
+                      { label: "トラブル対応", theme: "量産中の絞り部品で割れ不良が突然発生率2%に上昇した。原因を特定し対策を検討する", purpose: "割れの発生パターンを分析し、4M変動の観点から原因候補を絞り込む。暫定対策でラインを止めずに生産を継続しつつ、恒久対策と再発防止策を決定する。" },
+                      { label: "VE・コスト改善", theme: "既存製品（家電ブラケット、SPCC t1.0mm、5工程）の型費・加工費を30%削減するVE提案を検討する", purpose: "図面の公差・形状を見直し、工程数削減や材料歩留まり改善の余地を洗い出す。品質を維持しながらコスト削減を実現する具体的な提案をまとめる。" },
+                      { label: "材質変更対応", theme: "軽量化要求でSPCC t1.6mmから590MPaハイテン t1.2mmへの材質変更が決定。既存金型の流用可否と工程変更を検討する", purpose: "材質変更に伴う成形荷重・スプリングバック・金型寿命・後工程への影響を網羅的に評価し、金型改造範囲・追加投資・リスクを明確にする。" },
+                      { label: "新人育成方針", theme: "入社2年目の工程設計者を3年後に一人前にするための育成計画を議論する", purpose: "スキルマップを参照しながら、現時点の習熟度と目標レベルのギャップを特定する。OJTのアサイン方針、重点的に伸ばすスキル、育成上の注意点を決める。" },
+                    ].map((p) => (
+                      <Button key={p.label} variant="outline" size="sm" className="text-xs" onClick={() => { setTheme(p.theme); setPurpose(p.purpose) }}>
+                        {p.label}
+                      </Button>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    {[
+                      { label: "公差の相談", theme: "この図面の公差設定について相談したい" },
+                      { label: "不良の原因切り分け", theme: "量産中に発生した不良の原因を一緒に考えてほしい" },
+                      { label: "工程設計レビュー", theme: "考えた工程案をレビューしてほしい" },
+                      { label: "材料選定の相談", theme: "この部品に最適な材料を選びたい" },
+                      { label: "コスト削減アイデア", theme: "この部品のコストを下げる方法を相談したい" },
+                    ].map((p) => (
+                      <Button key={p.label} variant="outline" size="sm" className="text-xs" onClick={() => { setTheme(p.theme); setPurpose("") }}>
+                        {p.label}
+                      </Button>
+                    ))}
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
           <div className="space-y-2">
             <label htmlFor="theme" className="text-sm font-medium text-gray-700">
-              会議のテーマ <span className="text-red-500">*</span>
+              {appMode === "conference" ? "会議のテーマ" : "話題"}{" "}
+              {appMode === "conference" && <span className="text-red-500">*</span>}
+              {appMode === "chat" && <span className="text-gray-400 text-xs">(オプション)</span>}
             </label>
             <Input
               id="theme"
               type="text"
               value={theme}
               onChange={(e) => setTheme(e.target.value)}
-              placeholder="例：人工知能は人類の未来をどう変えるか？"
+              placeholder={appMode === "conference" ? "例：新規受注品の工程設計を構想する" : "例：この図面の公差について相談したい"}
               disabled={status === "running"}
             />
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="purpose" className="text-sm font-medium text-gray-700 flex items-center gap-2">
-              <Target className="h-4 w-4" />
-              会議の目的 <span className="text-gray-400 text-xs">(オプション)</span>
-            </label>
-            <Textarea
-              id="purpose"
-              value={purpose}
-              onChange={(e) => setPurpose(e.target.value)}
-              placeholder="例：AIの倫理的な課題を整理し、今後の開発指針を決定する"
-              disabled={status === "running"}
-              rows={3}
-              className="resize-none"
-            />
-            <p className="text-xs text-gray-500">
-              会議の具体的な目的や達成したい成果を入力すると、より方向性のある議論が期待できます。
-            </p>
-          </div>
+          {appMode === "conference" && (
+            <div className="space-y-2">
+              <label htmlFor="purpose" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                <Target className="h-4 w-4" />
+                会議の目的 <span className="text-gray-400 text-xs">(オプション)</span>
+              </label>
+              <Textarea
+                id="purpose"
+                value={purpose}
+                onChange={(e) => setPurpose(e.target.value)}
+                placeholder="例：品質・コスト・納期のバランスを考慮し、工程設計の骨格を固める"
+                disabled={status === "running"}
+                rows={3}
+                className="resize-none"
+              />
+            </div>
+          )}
 
           <div className="flex gap-2 pt-2">
-            <Button onClick={startConference} disabled={status === "running" || !theme} className="flex-1 sm:flex-none">
-              {status === "running" ? (
-                <>
-                  <Sparkles className="mr-2 h-4 w-4 animate-pulse" />
-                  会議中...
-                </>
-              ) : (
-                "会議を開始"
-              )}
-            </Button>
-            {status === "running" && (
-              <Button variant="destructive" size="default" onClick={stopConference}>
-                <Square className="mr-1 h-4 w-4" />
-                停止
-              </Button>
+            {appMode === "conference" ? (
+              <>
+                <Button onClick={startConference} disabled={status === "running" || !theme} className="flex-1 sm:flex-none">
+                  {status === "running" ? (
+                    <><Sparkles className="mr-2 h-4 w-4 animate-pulse" />会議中...</>
+                  ) : "会議を開始"}
+                </Button>
+                {status === "running" && (
+                  <Button variant="destructive" size="default" onClick={stopConference}>
+                    <Square className="mr-1 h-4 w-4" />停止
+                  </Button>
+                )}
+              </>
+            ) : (
+              <>
+                <Button
+                  onClick={() => {
+                    setStatus("running")
+                    setMessages([])
+                    setWhiteboardHtml("")
+                    setChatTurnCount(0)
+                  }}
+                  disabled={status === "running" || selectedChatPersonas.length === 0}
+                  className="flex-1 sm:flex-none"
+                >
+                  チャットを開始
+                </Button>
+                {status === "running" && (
+                  <Button variant="destructive" size="default" onClick={() => setStatus("finished")}>
+                    <Square className="mr-1 h-4 w-4" />終了
+                  </Button>
+                )}
+              </>
             )}
           </div>
         </CardContent>
@@ -629,10 +824,11 @@ export function DiscussionInterface({
       {status !== "idle" && (
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList>
-            <TabsTrigger value="chat">チャットビュー</TabsTrigger>
-            <TabsTrigger value="mindmap">マインドマップビュー</TabsTrigger>
-            <TabsTrigger value="nodelist">ノードリストビュー</TabsTrigger>
-            <TabsTrigger value="archipelago">群島ビュー</TabsTrigger>
+            <TabsTrigger value="chat">チャット</TabsTrigger>
+            <TabsTrigger value="mindmap">マインドマップ</TabsTrigger>
+            <TabsTrigger value="nodelist">ノードリスト</TabsTrigger>
+            <TabsTrigger value="whiteboard">ホワイトボード</TabsTrigger>
+            <TabsTrigger value="archipelago">群島MAP</TabsTrigger>
           </TabsList>
           <TabsContent value="chat">
             <Card>
@@ -647,16 +843,20 @@ export function DiscussionInterface({
                       key={index}
                       id={`message-${index}`}
                       className={`mb-4 flex items-start gap-3 p-2 rounded transition-colors duration-300 ${
-                        highlightedMessageIndex === index ? "bg-yellow-100 border-l-4 border-yellow-400" : ""
-                      }`}
+                        msg.isUser ? "flex-row-reverse" : ""
+                      } ${highlightedMessageIndex === index ? "bg-yellow-100 border-l-4 border-yellow-400" : ""}`}
                     >
-                      <div className="p-2 bg-gray-200 rounded-full">
-                        <Bot className="h-5 w-5 text-gray-600" />
+                      <div className={`p-2 rounded-full ${msg.isUser ? "bg-blue-200" : "bg-gray-200"}`}>
+                        {msg.isUser ? (
+                          <Users className="h-5 w-5 text-blue-600" />
+                        ) : (
+                          <Bot className="h-5 w-5 text-gray-600" />
+                        )}
                       </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
+                      <div className={`flex-1 ${msg.isUser ? "text-right" : ""}`}>
+                        <div className={`flex items-center gap-2 mb-1 ${msg.isUser ? "justify-end" : ""}`}>
                           <p className="font-bold">{msg.characterName}</p>
-                          {msg.tag && <MessageTag tag={msg.tag} />}
+                          {msg.tag && !msg.isUser && <MessageTag tag={msg.tag} />}
                         </div>
                         <MessageTextWithReferences
                           text={msg.text}
@@ -665,12 +865,32 @@ export function DiscussionInterface({
                       </div>
                     </div>
                   ))}
-                  {status === "running" && (
+                  {status === "running" && appMode === "conference" && (
                     <div className="text-center text-gray-500">
                       AIが思考中... <Sparkles className="inline-block h-4 w-4 animate-pulse" />
                     </div>
                   )}
+                  {isSending && (
+                    <div className="text-center text-gray-500">
+                      <Sparkles className="inline-block h-4 w-4 animate-pulse mr-1" />考え中...
+                    </div>
+                  )}
                 </ScrollArea>
+                {appMode === "chat" && status === "running" && (
+                  <div className="flex gap-2 mt-3">
+                    <Input
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChatMessage() } }}
+                      placeholder="メッセージを入力..."
+                      disabled={isSending}
+                      className="flex-1"
+                    />
+                    <Button onClick={sendChatMessage} disabled={isSending || !chatInput.trim()}>
+                      {isSending ? <Sparkles className="h-4 w-4 animate-pulse" /> : "送信"}
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -734,6 +954,39 @@ export function DiscussionInterface({
               />
             </div>
           </TabsContent>
+          <TabsContent value="whiteboard">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                    <Brain className="h-5 w-5" />
+                    共有ホワイトボード
+                  </h2>
+                  <p className="text-sm text-gray-500">議論の構造をホワイトボード形式で可視化</p>
+                </div>
+                {whiteboardHtml && (
+                  <button
+                    className="text-xs text-gray-500 hover:text-gray-800 underline"
+                    onClick={() => {
+                      navigator.clipboard.writeText(whiteboardHtml)
+                      toast({ title: "コピー完了", description: "HTMLソースをコピーしました。" })
+                    }}
+                  >
+                    HTMLソースをコピー
+                  </button>
+                )}
+              </div>
+              {whiteboardHtml ? (
+                <WhiteboardView html={whiteboardHtml} knowledgeFiles={knowledgeFiles} />
+              ) : (
+                <div className="text-center text-gray-400 py-16">
+                  <Brain className="h-12 w-12 mx-auto mb-4 opacity-30" />
+                  <p>ホワイトボードは3ターン目以降に自動生成されます</p>
+                  <p className="text-sm mt-1">議論の進行に合わせて更新されます</p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
         </Tabs>
       )}
 
@@ -791,8 +1044,8 @@ export function DiscussionInterface({
                     {item.keywords && item.keywords.length > 0 && (
                       <div className="flex flex-wrap gap-1 mb-2">
                         {item.keywords.map((keyword, i) => (
-                          <span 
-                            key={i} 
+                          <span
+                            key={i}
                             className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded"
                           >
                             {keyword}

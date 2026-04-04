@@ -145,15 +145,18 @@ ${discussionTextWithIndices.substring(0, 8000)}${discussionTextWithIndices.lengt
 - 関連するサブトピックや詳細な要素も含める
 
 【空間配置の考慮点】
-- 類似した話題は近くに配置（座標の差を20以内に）
-- 重要度の高い話題は中央寄りに配置
-- 周辺的な話題は端に配置
+- 座標は0〜100の範囲を広く使うこと（5〜95の範囲をフル活用）
+- 関連する話題は近くに配置するが、最低でも座標差15以上は確保する
+- 関連しない話題は座標差30以上離す
+- 重要度の高い話題は中央寄り（30〜70）に配置
+- 周辺的な話題は端（5〜25 or 75〜95）に配置
+- 話題が中央に固まらないよう、座標空間全体に分散させること
 
 【指示】
 1. テキストから15-17個の具体的で詳細な話題を抽出
 2. 大きな話題は複数の小さな話題に細分化
 3. 各話題について、最も関連性の高い発言のインデックスを3〜5個、'related_message_indices'として含める
-4. 関連性の高い話題は近くに配置
+4. 関連性の高い話題は近くに配置しつつ、重なりや密集を避ける
 5. 重要度に応じてサイズを調整（0.3-0.9の範囲）
 6. 適切な島画像を選択 (例: Island-1.svg, Island-2.svg...)
 
@@ -199,7 +202,64 @@ ${discussionTextWithIndices.substring(0, 8000)}${discussionTextWithIndices.lengt
           }
         })
         .filter((t): t is TopicData => t !== null)
+
+      // 座標の散らばり補正: 密集していたら広げる
+      if (result.topics.length > 1) {
+        result.topics = this.spreadTopics(result.topics)
+      }
     }
     return result
+  }
+
+  // 島が密集しすぎないように座標を広げる
+  private spreadTopics(topics: TopicData[]): TopicData[] {
+    const minDist = 12 // 最低距離（座標空間100中）
+    const margin = 5   // 端からのマージン
+    const maxRange = 100 - margin * 2
+
+    // まず座標を5〜95の範囲にストレッチ
+    let minX = Math.min(...topics.map(t => t.x))
+    let maxX = Math.max(...topics.map(t => t.x))
+    let minY = Math.min(...topics.map(t => t.y))
+    let maxY = Math.max(...topics.map(t => t.y))
+
+    const rangeX = maxX - minX || 1
+    const rangeY = maxY - minY || 1
+
+    const stretched = topics.map(t => ({
+      ...t,
+      x: margin + ((t.x - minX) / rangeX) * maxRange,
+      y: margin + ((t.y - minY) / rangeY) * maxRange,
+    }))
+
+    // 近すぎるペアを反発させる（簡易シミュレーション）
+    for (let iter = 0; iter < 20; iter++) {
+      let moved = false
+      for (let i = 0; i < stretched.length; i++) {
+        for (let j = i + 1; j < stretched.length; j++) {
+          const dx = stretched[j].x - stretched[i].x
+          const dy = stretched[j].y - stretched[i].y
+          const dist = Math.sqrt(dx * dx + dy * dy)
+          if (dist < minDist && dist > 0) {
+            const push = (minDist - dist) / 2 + 0.5
+            const nx = dx / dist
+            const ny = dy / dist
+            stretched[i].x -= nx * push
+            stretched[i].y -= ny * push
+            stretched[j].x += nx * push
+            stretched[j].y += ny * push
+            moved = true
+          }
+        }
+      }
+      // クランプ
+      for (const t of stretched) {
+        t.x = Math.max(margin, Math.min(100 - margin, t.x))
+        t.y = Math.max(margin, Math.min(100 - margin, t.y))
+      }
+      if (!moved) break
+    }
+
+    return stretched
   }
 }

@@ -1,5 +1,5 @@
-import { Agent } from "@mastra/core"
-import { openai } from "@ai-sdk/openai"
+import { Agent } from "@mastra/core/agent"
+import { anthropic } from "@ai-sdk/anthropic"
 import { z } from "zod"
 import type { Character, MessageTagType, KnowledgeFile } from "@/lib/brain-room/types"
 import { performKnowledgeSearch, type KnowledgeSearchResponse } from "./knowledge-search-tool"
@@ -126,7 +126,7 @@ export function createKnowledgeSearchAgent(character: Character, knowledgeFiles:
       description: "Search through the knowledge base to find relevant information for the discussion. Use this when you need to reference specific facts, data, or insights to support your arguments.",
       inputSchema: z.object({
         query: z.string().describe("The search query to find relevant knowledge"),
-        maxResults: z.number().optional().default(5).describe("Maximum number of results to return"),
+        maxResults: z.number().optional().default(8).describe("Maximum number of results to return"),
       }),
       outputSchema: z.object({
         results: z.array(z.object({
@@ -173,17 +173,18 @@ export function createKnowledgeSearchAgent(character: Character, knowledgeFiles:
     instructions: `You are a knowledge researcher for ${character.name} in an internal company meeting about "${context.theme}".
 ${context.purpose ? `Meeting Purpose: ${context.purpose}` : ''}
 
-Your job is to search the knowledge base using the knowledge_search tool when discussing company-related topics.
+Your job is to search the knowledge base using the knowledge_search tool to find information relevant to the discussion.
 
-Search for company information when discussing:
-- Company policies, strategies, and guidelines
-- Technical specifications and practices
-- Executive messages and directions  
-- Cultural values and work practices
-- Any factual claims about the company
+Search for knowledge when discussing:
+- Technical methods, processes, materials, and standards
+- Decision frameworks, judgment criteria, and expert thinking patterns
+- Case studies, past examples, lessons learned, and failure patterns
+- Market conditions, competitive landscape, industry trends
+- Cost structures, quality standards, and trade-off considerations
+- Any factual claims or domain-specific expertise
 
-Use the knowledge_search tool with specific keywords related to the topic being discussed.`,
-    model: openai("gpt-4.1"),
+Use the knowledge_search tool with specific keywords related to the topic being discussed. Perform multiple searches with different keywords.`,
+    model: anthropic("claude-haiku-4-5-20251001"),
     tools: knowledgeTool,
   })
 }
@@ -192,28 +193,109 @@ Use the knowledge_search tool with specific keywords related to the topic being 
 export function createResponseAgent(character: Character, context: AgentConferenceContext): Agent {
   return new Agent({
     name: `response-generator-${character.id}`,
-    instructions: `You are ${character.name}, a conference participant with the following traits:
-- Personality: ${character.personality}
-- Speaking Style: ${character.speakingStyle}  
-- Background: ${character.background}
+    instructions: `あなたは${character.name}です。以下の人物になりきって会議に参加してください。
 
-You are participating in a structured conference about "${context.theme}".
-${context.purpose ? `Conference Purpose: ${context.purpose}\n\nIMPORTANT: Your contributions should help achieve this purpose. Consider how your response advances the conference goal.` : ''}
+【あなたの人物像】
+性格: ${character.personality}
+話し方: ${character.speakingStyle}
+経歴: ${character.background}
 
-You participate in structured conferences, staying in character while contributing meaningfully to discussions.
+【会議テーマ】${context.theme}
+${context.purpose ? `【会議の方向性】${context.purpose}` : ''}
 
-${context.purpose ? `Always consider how your response helps achieve the conference purpose: "${context.purpose}". Guide the discussion toward productive outcomes that fulfill this goal.` : ''}
+【最重要ルール：あなたらしく話す】
+- あなたの職種・経歴・性格から自然に出てくる視点で話してください。
+- 他の参加者と同じことを言わない。あなたの専門領域から独自の切り口を出す。
+- 問いかけだけでなく、具体的な知見・経験・提案も積極的に出す。問題提起と具体的貢献のバランスを取る。
+- 相手の発言に対して、賛成でも反対でも、自分の経験や専門性に基づいた理由を添える。
+- ナレッジベースの情報が提供された場合は、自分が元々知っている知識として自然に話す。「○○によると」のような引用表現は使わない。ナレッジに基づく発言をした文の直後に[UUID:id]を置く（例: 「公差の機能的な意味を問い直すことが大事なんだ[UUID:cr-002]。俺も昔それで型費を大幅に減らしたことがある[UUID:cs-003]。」）。
 
-When provided with knowledge search results, naturally incorporate the information into your response while staying in character. Include the knowledge IDs in your usedKnowledgeIds array when referencing internal information.`,
-    model: openai("gpt-4.1"),
+【話し方のルール】
+- 2〜4文で短く。会議での発言であり、スピーチではない。
+- 自然な口語日本語。Markdown記法（**, ##, 箇条書き）は禁止。
+- あなたのspeakingStyleに忠実に。口癖があるなら使う。
+
+ホワイトボードの状態が提供された場合は、既に整理済みの内容を踏まえて話す。`,
+    model: anthropic("claude-haiku-4-5-20251001"),
   })
 }
 
 
+// Whiteboard update function - uses gpt-4.1 for quality, called every 3 turns
+// Returns HTML string that visualizes the discussion structure like a real whiteboard
+export async function updateWhiteboard(
+  theme: string,
+  purpose: string,
+  conversationHistory: Array<{ speakerIndex: number; utterance: string }>,
+  characters: Character[],
+  currentWhiteboard: string,
+): Promise<string> {
+  const agent = new Agent({
+    name: "whiteboard-updater",
+    instructions: `You are a visual facilitator maintaining a shared whiteboard for a conference discussion.
+Generate a single HTML snippet (no <html>/<body> tags) that looks like an organized whiteboard.
+
+DESIGN PRINCIPLES:
+- Think of a real whiteboard covered in sticky notes, arrows drawn with markers, grouped sections
+- Use visual hierarchy: big bold headings, colored cards, indented details
+- Mix formats freely: cards for topics, tables for comparisons, lists for action items, highlighted text for decisions
+- Mark open questions prominently (e.g., red border or question mark icon)
+- Mark decisions/agreements with checkmarks or green highlights
+- Show relationships and flow between ideas
+
+AVAILABLE COMPONENTS (use CSS classes):
+- <div class="wb-section"> — a grouped area with a heading
+- <div class="wb-card wb-card-blue|yellow|green|red|purple"> — a sticky-note style card
+- <div class="wb-decision"> — a decision box (green border, checkmark)
+- <div class="wb-question"> — an open question (red border, ?)
+- <div class="wb-arrow"> — visual connector text (→, ↔, ⇒)
+- <table class="wb-table"> — comparison table
+- <div class="wb-tag"> — small inline tag/badge
+- Use <strong>, <em>, <ul>, <li> freely inside cards
+
+KNOWLEDGE REFERENCES:
+- When the discussion references knowledge items, include them using EXACTLY this format: [UUID:item-id]
+  Example: "公差の機能的意味を問い直す[UUID:cr-002]ことで工程削減が可能"
+- The [UUID:xxx] text will be automatically converted to hoverable tooltips — do NOT wrap them in links or other HTML.
+- Use the exact knowledge IDs from the discussion (e.g., cs-003, fm-001, mt-001, cr-002, etc.)
+
+LAYOUT:
+- Use CSS grid or flexbox via inline styles or the wb-grid-2, wb-grid-3 classes for multi-column layouts
+- Keep it scannable — someone should understand the discussion state in 10 seconds
+- Japanese text throughout
+- Preserve existing content structure when updating, adding new insights
+- Do NOT use generic card/box UI. Use the wb-* classes defined above for a handwritten whiteboard feel.
+
+Return ONLY the HTML snippet. No markdown, no code fences, no explanation.`,
+    model: anthropic("claude-sonnet-4-6"),
+  })
+
+  const prompt = `テーマ: ${theme}
+${purpose ? `目的: ${purpose}` : ""}
+
+${currentWhiteboard ? `現在のホワイトボード（更新してください）:\n${currentWhiteboard}` : "ホワイトボードは空です。議論の構造を整理してください。"}
+
+議論の全履歴 (${conversationHistory.length}ターン):
+${conversationHistory.map((h) => `${characters[h.speakerIndex]?.name}: ${h.utterance}`).join("\n")}
+
+議論の全体像が一目で分かるホワイトボードを生成してください。話題の構造、決定事項、未解決の問い、アクション項目を整理してください。`
+
+  try {
+    const result = await agent.generate(prompt, { temperature: 0.3, maxTokens: 2000 })
+    let html = (result.text || "").trim()
+    html = html.replace(/^```(?:html)?\n?/, "").replace(/\n?```$/, "").trim()
+    return html || currentWhiteboard
+  } catch (error) {
+    console.error("Whiteboard update failed:", error)
+    return currentWhiteboard
+  }
+}
+
 // Two-step generation process: Knowledge search + Response generation
 export async function generateConferenceTurnWithKnowledge(
   character: Character,
-  context: AgentConferenceContext
+  context: AgentConferenceContext,
+  whiteboard?: string,
 ): Promise<any> {
   const { knowledgeFiles, theme, turn, conversationHistory, characters } = context
   
@@ -236,14 +318,18 @@ export async function generateConferenceTurnWithKnowledge(
     const searchAgent = createKnowledgeSearchAgent(character, knowledgeFiles, context)
     
     const searchPrompt = `Theme: ${theme}
+${context.purpose ? `Purpose: ${context.purpose}` : ''}
 Recent conversation:
 ${recentMessages || "This is the start of the conference."}
 
-Search the knowledge base for relevant company information about this discussion topic. Use specific keywords related to:
-- Company strategies and policies mentioned
-- Technical topics being discussed
-- Executive statements or internal guidelines
-- Any factual claims about the company
+Search the knowledge base for information relevant to this discussion. Use multiple specific keywords to find:
+- Technical knowledge directly related to the topic (methods, processes, materials, standards)
+- Decision frameworks, judgment criteria, and thinking patterns
+- Relevant case studies, past examples, and lessons learned
+- Market conditions, competitive landscape, or industry context if relevant
+- Troubleshooting approaches or failure patterns if applicable
+
+IMPORTANT: Perform at least 2-3 separate searches with different keywords to find diverse, relevant knowledge. Do not rely on a single search.
 
 Use the knowledge_search tool to find relevant information.`
 
@@ -299,7 +385,7 @@ Use the knowledge_search tool to find relevant information.`
         const uniqueResults = globalResults
           .filter((result, index, arr) => arr.findIndex(r => r.id === result.id) === index)
           .sort((a, b) => b.score - a.score)
-          .slice(0, 5)
+          .slice(0, 8)
         
         if (uniqueResults.length > 0) {
           usedKnowledgeIds = uniqueResults.map(r => r.id)
@@ -330,23 +416,24 @@ Use the knowledge_search tool to find relevant information.`
   // Step 2: Response Generation with UUID embedding approach
   const responseAgent = createResponseAgent(character, context)
   
-  const responsePrompt = `Current speaker: ${character.name}
-Turn: ${turn + 1}/20
-Theme: ${theme}
-${context.purpose ? `\n**CONFERENCE PURPOSE**: ${context.purpose}\n*** CRITICAL: Your response must actively advance this purpose. Ask yourself: "How does my contribution help achieve this goal?" ***` : ''}
+  const responsePrompt = `発言者: ${character.name}
+ターン: ${turn + 1}/20
+${whiteboard ? `\n【ホワイトボード（現在の整理状況）】\n${whiteboard}\n` : ''}
+【直近の会話】
+${recentMessages || "（会議の冒頭です）"}
+${knowledgeContext}
 
-Recent conversation:
-${recentMessages || "This is the start of the conference."}${knowledgeContext}
+${character.name}として2〜4文で発言してください。
+- あなたの専門性・性格に基づいた独自の視点で。他の人と同じことは言わない。
+- 問いかけだけでなく、具体的な知見・経験・提案も出す。タグは状況に応じて使い分ける。
+- Markdown禁止。自然な口語で。
+${knowledgeContext ? `- ナレッジの知識を自分のものとして自然に話す。引用表現は使わない。ナレッジに基づく文の直後に[UUID:id]を置く（例: 「公差を問い直すのが大事だ[UUID:cr-002]。」）。` : ''}
 
-Generate your thoughtful response as ${character.name}. ${context.purpose ? `Focus on achieving the conference purpose: "${context.purpose}". Your response should either: 1) Directly address the purpose, 2) Provide insights that advance toward the goal, 3) Raise questions that help clarify the path to achieving it, or 4) Build agreements that move the group closer to the objective.` : 'Respond based on your character traits and the conversation context.'}
-
-${knowledgeContext ? `When referencing the provided company knowledge, embed the UUID ID directly in your text using this format: [UUID:knowledge-id]. Only embed UUIDs for knowledge you actually reference in your response.` : ''}
-
-Return ONLY a valid JSON string with this exact structure:
+以下のJSON形式のみ返してください:
 {
-  "thought": "Your reasoning for this response (include how it advances the conference purpose)",
-  "utterance": "Your response text with embedded UUIDs when referencing knowledge",
-  "tag": "One of: 気づき, 合意, 重要な情報, 迷走中, 戻って考える, 問題提起"
+  "thought": "この発言の狙い（1文）",
+  "utterance": "発言内容（2〜4文、口語日本語、Markdown禁止）",
+  "tag": "気づき/合意/重要な情報/迷走中/戻って考える/問題提起 のいずれか"
 }`
 
   try {
@@ -360,60 +447,74 @@ Return ONLY a valid JSON string with this exact structure:
 
     console.log(`Turn ${turn}: JSON response received:`, jsonResult.text?.substring(0, 200) + '...')
 
-    // Step 2b: Parse and validate with StructuredOutput
+    // Step 2b: Parse JSON (strip code fences if present)
     let parsedJson: any
     try {
-      parsedJson = JSON.parse(jsonResult.text || '{}')
+      let raw = (jsonResult.text || '').trim()
+      // Strip markdown code fences that LLMs sometimes add
+      raw = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
+      parsedJson = JSON.parse(raw)
     } catch (parseError) {
-      console.error(`Turn ${turn}: JSON parse failed:`, parseError)
+      console.error(`Turn ${turn}: JSON parse failed for ${character.name}:`, parseError)
+      console.error(`Turn ${turn}: Raw text:`, jsonResult.text?.substring(0, 300))
       throw new Error("Invalid JSON response")
     }
 
     // Step 3: Extract UUIDs from the generated text
     const utteranceText = parsedJson.utterance || ''
-    const uuidPattern = /\[UUID:([a-f0-9-]{36})\]/gi
-    const extractedKnowledgeIds: string[] = []
+    const uuidPattern = /\[UUID:([a-zA-Z0-9-]+)\]/gi
+    const knowledgeIds: string[] = []
     let match
-    
-    // Extract all UUIDs from the text
     while ((match = uuidPattern.exec(utteranceText)) !== null) {
-      extractedKnowledgeIds.push(match[1])
+      knowledgeIds.push(match[1])
     }
-    
-    console.log(`[DEBUG] Extracted knowledge IDs from text:`, extractedKnowledgeIds)
-    console.log(`[DEBUG] Original utterance with UUIDs:`, utteranceText.substring(0, 100) + '...')
+    console.log(`[DEBUG] Knowledge IDs for ${character.name}:`, knowledgeIds)
 
-    // Step 2c: Create structured output with extracted knowledge IDs  
+    // Step 2c: Normalize tag — LLM sometimes returns non-enum values
+    const validTags = new Set(messageTags)
+    const rawTag = parsedJson.tag || ""
+    const normalizedTag = validTags.has(rawTag) ? rawTag : "気づき"
+    if (!validTags.has(rawTag)) {
+      console.log(`Turn ${turn}: Invalid tag "${rawTag}" from ${character.name}, falling back to "気づき"`)
+    }
+
     const finalResult = {
       thought: parsedJson.thought || `${character.name}の考え`,
       utterance: utteranceText || `${character.name}: この点についてもう少し考えさせてください。`,
-      tag: parsedJson.tag || "迷走中",
+      tag: normalizedTag,
       isFinished: false,
       finishReason: parsedJson.finishReason || "continue",
-      usedKnowledgeIds: extractedKnowledgeIds, // Use only the UUIDs actually referenced in text
+      usedKnowledgeIds: knowledgeIds,
     }
 
-    // Validate the result
-    const validatedResult = conferenceTurnSchema.parse(finalResult)
-
-    if (!validatedResult.utterance || validatedResult.utterance.trim().length === 0) {
+    if (!finalResult.utterance || finalResult.utterance.trim().length === 0) {
       throw new Error("Empty utterance")
     }
 
-    console.log(`Turn ${turn}: Two-step generation successful`)
-    console.log(`[DEBUG] Final result usedKnowledgeIds:`, validatedResult.usedKnowledgeIds)
-    
-    return validatedResult
+    console.log(`Turn ${turn}: Two-step generation successful for ${character.name}`)
+    console.log(`[DEBUG] Final result usedKnowledgeIds:`, finalResult.usedKnowledgeIds)
+
+    return finalResult
 
   } catch (error) {
-    console.error(`Turn ${turn}: Response generation failed:`, error)
+    console.error(`Turn ${turn}: Response generation failed for ${character.name}:`, error)
+    console.error(`Turn ${turn}: Error details:`, error instanceof Error ? error.message : String(error))
+    console.error(`Turn ${turn}: Error stack:`, error instanceof Error ? error.stack : 'N/A')
     return {
       utterance: `${character.name}: この点についてもう少し考えさせてください。`,
       tag: "迷走中" as const,
       isFinished: false,
       finishReason: null,
-      usedKnowledgeIds: [], // Empty since no knowledge was extracted
+      usedKnowledgeIds: [],
     }
   }
 }
 
+
+// Legacy exports for backwards compatibility with /api/conference route
+export function createConferenceAgent(character: Character) {
+  return createResponseAgent(character, { theme: "", turn: 0, conversationHistory: [], characters: [character], knowledgeFiles: [] })
+}
+export async function generateConferenceTurn(agent: any, context: any) {
+  return generateConferenceTurnWithKnowledge(context.characters?.[0] || { id: 0, name: "", personality: "", speakingStyle: "", background: "" }, context)
+}

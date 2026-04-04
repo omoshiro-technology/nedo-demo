@@ -89,25 +89,28 @@ export function KnowledgeConfigForm({ knowledgeFiles, onUpload, onDelete }: Know
   const handleLoadSampleFile = useCallback(async () => {
     setIsUploading(true)
     try {
-      const response = await fetch('/sony-knowledge.json')
-      if (!response.ok) {
-        throw new Error('サンプルファイルの読み込みに失敗しました')
-      }
-      
-      const knowledgeData: KnowledgeFile = await response.json()
-      
-      // 重複チェック
-      const existingFile = knowledgeFiles.find(kf => kf.name === knowledgeData.name)
-      if (existingFile) {
-        if (!confirm(`「${knowledgeData.name}」は既に存在します。上書きしますか？`)) {
-          return
-        }
+      const sampleFiles = [
+        '/sheetmetal-press-knowledge.json',
+        '/sony-knowledge.json',
+      ]
+
+      let loadedCount = 0
+      for (const url of sampleFiles) {
+        const response = await fetch(url)
+        if (!response.ok) continue
+
+        const knowledgeData: KnowledgeFile = await response.json()
+
+        const existingFile = knowledgeFiles.find(kf => kf.name === knowledgeData.name)
+        if (existingFile) continue
+
+        onUpload(knowledgeData)
+        loadedCount++
       }
 
-      onUpload(knowledgeData)
       toast({
         title: "成功",
-        description: `サンプルファイル「${knowledgeData.name}」を読み込みました。`,
+        description: `サンプルファイル ${loadedCount} 件を読み込みました。`,
       })
     } catch (error) {
       console.error("Failed to load sample file:", error)
@@ -158,7 +161,7 @@ export function KnowledgeConfigForm({ knowledgeFiles, onUpload, onDelete }: Know
                   variant="secondary" 
                   onClick={handleLoadSampleFile}
                   disabled={isUploading}
-                  title="SONYの技術者インタビューや経営方針を含むサンプルデータ"
+                  title="板金プレス工程設計ナレッジ等のサンプルデータ"
                 >
                   <Download className="mr-1 h-4 w-4" />
                   サンプル
@@ -182,7 +185,7 @@ export function KnowledgeConfigForm({ knowledgeFiles, onUpload, onDelete }: Know
                       className="text-xs"
                     >
                       <Download className="mr-1 h-3 w-3" />
-                      SONYサンプルを読み込み
+                      サンプルを読み込み
                     </Button>
                   </div>
                 ) : (

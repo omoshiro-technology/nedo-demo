@@ -1,16 +1,16 @@
-import type { MessageTagType } from "@/lib/brain-room/types"
+import type { MessageTagType } from "@/lib/types"
 
 interface MessageTagProps {
   tag: MessageTagType
 }
 
 const tagConfig = {
-  気づき: { iconPath: "/icons/awareness.svg", color: "bg-blue-100 text-blue-800" },
-  合意: { iconPath: "/icons/agreement.svg", color: "bg-red-100 text-red-800" },
-  重要な情報: { iconPath: "/icons/importantInfo.svg", color: "bg-orange-100 text-orange-800" },
-  迷走中: { iconPath: "/icons/goingOffTrack.svg", color: "bg-yellow-100 text-yellow-800" },
-  戻って考える: { iconPath: "/icons/thinkAgein.svg", color: "bg-indigo-100 text-indigo-800" },
-  問題提起: { iconPath: "/icons/raisingIssues.svg", color: "bg-green-100 text-green-800" },
+  気づき: { iconPath: "/icons/awareness.svg", color: "bg-white border border-blue-300 text-blue-800" },
+  合意: { iconPath: "/icons/agreement.svg", color: "bg-white border border-red-300 text-red-800" },
+  重要な情報: { iconPath: "/icons/importantInfo.svg", color: "bg-white border border-orange-300 text-orange-800" },
+  迷走中: { iconPath: "/icons/goingOffTrack.svg", color: "bg-white border border-yellow-400 text-yellow-800" },
+  戻って考える: { iconPath: "/icons/thinkAgein.svg", color: "bg-white border border-indigo-300 text-indigo-800" },
+  問題提起: { iconPath: "/icons/raisingIssues.svg", color: "bg-white border border-green-300 text-green-800" },
 }
 
 export function MessageTag({ tag }: MessageTagProps) {

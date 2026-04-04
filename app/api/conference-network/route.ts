@@ -1,11 +1,11 @@
-import { 
-  createConferenceNetwork, 
+import {
+  createConferenceNetwork,
   selectNextSpeaker,
   generateCharacterTurn,
-  type ConferenceNetworkContext 
+  type ConferenceNetworkContext
 } from "@/lib/brain-room/conference-network"
 import { evaluateImportance, generateMindmapNodes, findRelatedNode } from "@/lib/brain-room/mindmap-generator"
-import { createConferenceAgent, generateConferenceTurn } from "@/lib/brain-room/conference-agents"
+import { updateWhiteboard } from "@/lib/brain-room/conference-agents"
 import type { Character, KnowledgeFile } from "@/lib/brain-room/types"
 
 export const maxDuration = 300
@@ -92,6 +92,7 @@ export async function POST(req: Request) {
     let consecutiveErrors = 0
     let stagnationCounter = 0
     let nextSpeakerIndex = 0 // Start with first character
+    let whiteboardHtml = "" // Shared whiteboard (HTML)
 
     const stream = new ReadableStream({
       async start(controller) {
@@ -133,10 +134,32 @@ export async function POST(req: Request) {
               selectedSpeaker = characters[nextSpeakerIndex]
               console.log(`Speaker for turn ${turn + 1}: ${selectedSpeaker.name}`)
 
+              // Step 1.5: Update whiteboard every 3 turns (after turn 2, 5, 8, 11, 14, 17)
+              if (turn > 0 && turn % 3 === 2) {
+                try {
+                  console.log(`Turn ${turn + 1}: Updating shared whiteboard...`)
+                  whiteboardHtml = await updateWhiteboard(
+                    theme, purpose, conversationHistory, characters, whiteboardHtml,
+                  )
+                  console.log(`Turn ${turn + 1}: Whiteboard updated`)
+                  sendEvent(controller, "whiteboard_update", {
+                    html: whiteboardHtml,
+                  })
+                } catch (wbError) {
+                  console.error(`Turn ${turn + 1}: Whiteboard update failed:`, wbError)
+                }
+              }
+
+              // Build whiteboard summary text for agent context (strip HTML tags for readability)
+              const whiteboardContext = whiteboardHtml
+                ? whiteboardHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+                : undefined
+
               // Step 2: Generate response from selected speaker
               const result = await generateCharacterTurn(
                 selectedSpeaker,
-                context
+                context,
+                whiteboardContext,
               )
 
               console.log(`Response generated successfully for ${selectedSpeaker.name}`)
@@ -170,99 +193,9 @@ export async function POST(req: Request) {
                 }
               }
 
-              // AI-based importance evaluation and mindmap update
-              const conversationForEval = conversationHistory.map((h, i) => ({
-                speakerName: characters[h.speakerIndex]?.name || 'Unknown',
-                utterance: h.utterance,
-                tag: undefined // We don't have tags in old conversation history
-              }))
-              
-              const existingNodesForEval = existingNodes.map(id => ({
-                id,
-                parentId: id === 'root' ? '' : 'root', // Simplified for evaluation
-                label: id === 'root' ? theme : id
-              }))
-              
-              const importance = await evaluateImportance({
-                theme,
-                conversationHistory: conversationForEval,
-                currentUtterance: {
-                  speakerName: selectedSpeaker.name,
-                  utterance: normalizedResult.utterance,
-                  tag: normalizedResult.tag,
-                  turn,
-                },
-                existingNodes: existingNodesForEval,
-              })
-              
-              if (importance.isImportant) {
-                console.log(`Turn ${turn}: Important utterance - ${importance.reason}`)
-                
-                const mindmapUpdate = await generateMindmapNodes({
-                  theme,
-                  conversationHistory: conversationForEval,
-                  currentUtterance: {
-                    speakerName: selectedSpeaker.name,
-                    utterance: normalizedResult.utterance,
-                    tag: normalizedResult.tag,
-                    turn,
-                  },
-                  existingNodes: existingNodesForEval,
-                })
-                
-                if (mindmapUpdate && mindmapUpdate.nodes.length > 0) {
-                  const node = mindmapUpdate.nodes[0] // Use first node
-                  console.log(`Turn ${turn}: Mindmap generated node:`, node)
-                  // Validate parent exists
-                  if (node.parentId === "root" || existingNodes.includes(node.parentId)) {
-                    normalizedResult.summaryUpdate = {
-                      parentId: node.parentId,
-                      nodeId: node.nodeId,
-                      label: node.label,
-                      relatedMessageIndices: [messageIndex],
-                    }
-                    console.log(`Turn ${turn}: Added node "${node.label}" - ${mindmapUpdate.reasoning}`)
-                  } else {
-                    console.log(`Turn ${turn}: Invalid parent "${node.parentId}" - available:`, existingNodes)
-                  }
-                } else {
-                  console.log(`Turn ${turn}: No mindmap update generated despite importance`)
-                }
-              } else {
-                console.log(`Turn ${turn}: Not important - ${importance.reason}`)
-                
-                // Check if this non-important utterance relates to existing nodes
-                const relatedNode = await findRelatedNode({
-                  theme,
-                  conversationHistory: conversationForEval,
-                  currentUtterance: {
-                    speakerName: selectedSpeaker.name,
-                    utterance: normalizedResult.utterance,
-                    tag: normalizedResult.tag,
-                    turn,
-                  },
-                  existingNodes: existingNodesForEval,
-                })
-                
-                console.log(`Turn ${turn}: Relation check result:`, relatedNode)
-                if (relatedNode.nodeId && relatedNode.relevanceScore >= 0.4) {
-                  console.log(`Turn ${turn}: Related to "${relatedNode.nodeId}" (score: ${relatedNode.relevanceScore}) - ${relatedNode.reason}`)
-                  
-                  // Add this message to the related node's message list
-                  if (!nodeRelatedMessages[relatedNode.nodeId]) {
-                    nodeRelatedMessages[relatedNode.nodeId] = []
-                  }
-                  nodeRelatedMessages[relatedNode.nodeId].push(messageIndex)
-                  
-                  // Send update event for the related node with updated message indices
-                  sendEvent(controller, "node_update", {
-                    nodeId: relatedNode.nodeId,
-                    relatedMessageIndices: nodeRelatedMessages[relatedNode.nodeId],
-                    reason: relatedNode.reason,
-                    relevanceScore: relatedNode.relevanceScore,
-                  })
-                }
-              }
+              // Mindmap/nodelist AI evaluation skipped for performance
+              // (evaluateImportance + generateMindmapNodes + findRelatedNode = 3 LLM calls per turn)
+              // Whiteboard handles discussion structure visualization instead
 
               const selectedSpeakerIndex = characters.findIndex(c => c.id === selectedSpeaker.id)
               conversationHistory.push({

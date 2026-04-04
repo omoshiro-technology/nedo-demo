@@ -73,4 +73,5 @@ export interface Message {
   text: string
   tag?: MessageTagType
   usedKnowledgeIds?: string[]
+  isUser?: boolean
 }

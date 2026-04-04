@@ -88,3 +88,177 @@
     @apply bg-background text-foreground;
   }
 }
+/* Whiteboard — real whiteboard feel */
+.whiteboard-container {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: #1e293b;
+}
+
+/* Sections */
+.whiteboard-container .wb-section {
+  margin-bottom: 1.25rem;
+}
+.whiteboard-container .wb-section > h2 {
+  font-weight: 800;
+  font-size: 1.15rem;
+  margin-bottom: 0.5rem;
+  color: #0f172a;
+}
+.whiteboard-container .wb-section > h3 {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 0.6rem;
+  color: #334155;
+  letter-spacing: 0.02em;
+}
+
+/* Grid layouts */
+.whiteboard-container .wb-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.whiteboard-container .wb-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+/* Sticky-note cards */
+.whiteboard-container .wb-card {
+  padding: 0.85rem 1rem;
+  border: none;
+  border-radius: 2px;
+  box-shadow: 2px 3px 7px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+  background: #fffef5;
+  margin-bottom: 0.6rem;
+}
+.whiteboard-container .wb-card-blue { background: #e8f0fe; }
+.whiteboard-container .wb-card-yellow { background: #fef9e7; }
+.whiteboard-container .wb-card-green { background: #e6f7ed; }
+.whiteboard-container .wb-card-red { background: #fde8e8; }
+.whiteboard-container .wb-card-purple { background: #f3e8ff; }
+
+/* Decision box */
+.whiteboard-container .wb-decision {
+  padding: 0.75rem 1rem;
+  border-left: 4px solid #16a34a;
+  background: #f0fdf4;
+  border-radius: 2px;
+  margin-bottom: 0.5rem;
+  box-shadow: 1px 2px 4px rgba(0,0,0,0.06);
+}
+.whiteboard-container .wb-decision::before { content: "✅ "; }
+
+/* Open question */
+.whiteboard-container .wb-question {
+  padding: 0.75rem 1rem;
+  border-left: 4px solid #dc2626;
+  background: #fef2f2;
+  border-radius: 2px;
+  margin-bottom: 0.5rem;
+  box-shadow: 1px 2px 4px rgba(0,0,0,0.06);
+  font-style: italic;
+}
+.whiteboard-container .wb-question::before { content: "❓ "; font-style: normal; }
+
+/* Arrow connector */
+.whiteboard-container .wb-arrow {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #94a3b8;
+  padding: 0.15rem 0;
+  letter-spacing: 0.1em;
+}
+
+/* Tags */
+.whiteboard-container .wb-tag {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.1rem 0.5rem;
+  border-radius: 9999px;
+  background: #f1f5f9;
+  color: #475569;
+  margin: 0.25rem 0.2rem 0 0;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* Table */
+.whiteboard-container .wb-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.82rem;
+  margin: 0.5rem 0;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.whiteboard-container .wb-table th {
+  background: #f8fafc;
+  padding: 0.5rem 0.6rem;
+  text-align: left;
+  border-bottom: 2px solid #e2e8f0;
+  font-weight: 700;
+  color: #334155;
+  font-size: 0.78rem;
+}
+.whiteboard-container .wb-table td {
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+.whiteboard-container .wb-table tr:last-child td { border-bottom: none; }
+
+/* Lists */
+.whiteboard-container ul { padding-left: 1.15rem; margin: 0.3rem 0; }
+.whiteboard-container li { margin-bottom: 0.15rem; }
+
+/* Whiteboard knowledge reference badges */
+.whiteboard-container .wb-ref-badge {
+  display: inline;
+  font-size: 0.75rem;
+  color: #1d4ed8;
+  background: #dbeafe;
+  padding: 1px 6px;
+  border-radius: 4px;
+  cursor: help;
+  position: relative;
+  border-bottom: 1px dashed #3b82f6;
+}
+.whiteboard-container .wb-ref-badge:hover {
+  background: #bfdbfe;
+}
+.whiteboard-container .wb-ref-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  max-width: 90vw;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  z-index: 50;
+  text-align: left;
+  color: #1e293b;
+  line-height: 1.4;
+}
+.whiteboard-container .wb-ref-badge:hover .wb-ref-tooltip {
+  display: block;
+}
+
+@media (max-width: 640px) {
+  .whiteboard-container .wb-grid-2,
+  .whiteboard-container .wb-grid-3 {
+    grid-template-columns: 1fr;
+  }
+  .whiteboard-container .wb-ref-tooltip {
+    width: 240px;
+  }
+}

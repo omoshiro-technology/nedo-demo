@@ -4,6 +4,7 @@ import { useState } from "react"
 import { FileText } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { MermaidDiagram } from "@/components/brain-room/mermaid-diagram"
 import type { KnowledgeFile, KnowledgeItem } from "@/lib/brain-room/types"
 
 interface MessageTextWithReferencesProps {
@@ -15,8 +16,8 @@ export function MessageTextWithReferences({ text, knowledgeFiles }: MessageTextW
   const [selectedKnowledgeId, setSelectedKnowledgeId] = useState<string | null>(null)
   const [showModal, setShowModal] = useState(false)
 
-  // UUIDパターン（一箇所で定義）
-  const uuidPattern = /\[UUID:([a-f0-9-]{36})\]/gi
+  // ナレッジIDパターン: 標準UUID (e5d140ac-...) と短縮ID (cs-003, fm-001等) の両方に対応
+  const uuidPattern = /\[UUID:([a-zA-Z0-9-]+)\]/gi
 
   const findKnowledgeItem = (knowledgeId: string): { item: KnowledgeItem; fileName: string } | null => {
     for (const file of knowledgeFiles) {
@@ -33,60 +34,82 @@ export function MessageTextWithReferences({ text, knowledgeFiles }: MessageTextW
 
   const selectedKnowledge = selectedKnowledgeId ? findKnowledgeItem(selectedKnowledgeId) : null
 
-  // テキストを解析してUUID位置でアイコンを埋め込み
-  const renderTextWithInlineReferences = () => {
-    const parts = []
+  // テキストパート内のUUID参照をインラインアイコンに変換
+  const renderTextPartWithRefs = (textPart: string, keyPrefix: string, refCounter: { value: number }) => {
+    const parts: React.ReactNode[] = []
     let lastIndex = 0
     let match
-    let refIndex = 0
 
-    // パターンをリセット
-    uuidPattern.lastIndex = 0
-
-    while ((match = uuidPattern.exec(text)) !== null) {
-      // マッチ前のテキスト部分を追加
+    const localPattern = /\[UUID:([a-zA-Z0-9-]+)\]/gi
+    while ((match = localPattern.exec(textPart)) !== null) {
       if (match.index > lastIndex) {
-        parts.push(
-          <span key={`text-${lastIndex}`}>
-            {text.slice(lastIndex, match.index)}
-          </span>
-        )
+        parts.push(<span key={`${keyPrefix}-t-${lastIndex}`}>{textPart.slice(lastIndex, match.index)}</span>)
       }
 
-      // クリッカブルなアイコンを追加
       const knowledgeId = match[1]
-      refIndex++
+      refCounter.value++
       parts.push(
         <button
-          key={`ref-${knowledgeId}`}
+          key={`${keyPrefix}-ref-${knowledgeId}`}
           onClick={() => handleKnowledgeClick(knowledgeId)}
           className="inline-flex items-center justify-center w-5 h-5 mx-1 text-xs font-semibold text-blue-700 bg-blue-100 border border-blue-300 rounded-full hover:bg-blue-200 hover:border-blue-400 transition-colors cursor-pointer"
           title={`知識を参照: ${knowledgeId}`}
         >
-          {refIndex}
+          {refCounter.value}
         </button>
       )
 
       lastIndex = match.index + match[0].length
     }
 
-    // 残りのテキスト部分を追加
-    if (lastIndex < text.length) {
-      parts.push(
-        <span key={`text-${lastIndex}`}>
-          {text.slice(lastIndex)}
-        </span>
-      )
+    if (lastIndex < textPart.length) {
+      parts.push(<span key={`${keyPrefix}-t-${lastIndex}`}>{textPart.slice(lastIndex)}</span>)
     }
 
     return parts
   }
 
+  // テキストをMermaidブロックとテキストパートに分割してレンダリング
+  const renderContent = () => {
+    const mermaidPattern = /```mermaid\n([\s\S]*?)```/g
+    const segments: React.ReactNode[] = []
+    let lastIndex = 0
+    let match
+    const refCounter = { value: 0 }
+
+    while ((match = mermaidPattern.exec(text)) !== null) {
+      // Mermaidブロック前のテキスト
+      if (match.index > lastIndex) {
+        const textBefore = text.slice(lastIndex, match.index)
+        segments.push(
+          <span key={`seg-${lastIndex}`} className="text-gray-700 whitespace-pre-wrap">
+            {renderTextPartWithRefs(textBefore, `s${lastIndex}`, refCounter)}
+          </span>
+        )
+      }
+
+      // Mermaidダイアグラム
+      segments.push(<MermaidDiagram key={`mermaid-${match.index}`} chart={match[1]} />)
+
+      lastIndex = match.index + match[0].length
+    }
+
+    // 残りのテキスト
+    if (lastIndex < text.length) {
+      const remaining = text.slice(lastIndex)
+      segments.push(
+        <span key={`seg-${lastIndex}`} className="text-gray-700 whitespace-pre-wrap">
+          {renderTextPartWithRefs(remaining, `s${lastIndex}`, refCounter)}
+        </span>
+      )
+    }
+
+    return segments
+  }
+
   return (
     <>
-      <span className="text-gray-700 whitespace-pre-wrap">
-        {renderTextWithInlineReferences()}
-      </span>
+      <div>{renderContent()}</div>
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent className="max-w-2xl max-h-[80vh]">

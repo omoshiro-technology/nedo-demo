@@ -1,4 +1,4 @@
-import type { KnowledgeFile, KnowledgeItem } from "@/lib/brain-room/types"
+import type { KnowledgeFile, KnowledgeItem } from "@/lib/types"
 
 export interface SearchResult {
   item: KnowledgeItem
