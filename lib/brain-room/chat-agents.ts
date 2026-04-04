@@ -37,15 +37,19 @@ JSON形式で返してください: { "ids": [数字の配列] }`,
       { temperature: 0.2, maxTokens: 100 },
     )
     let raw = (result.text || "").trim().replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim()
+    console.log(`[Chat Responder] Raw response: ${raw}`)
     const parsed = JSON.parse(raw)
-    let ids = (parsed.ids || parsed.responderIds || []).filter((id: number) => selectedIds.includes(id))
+    // Coerce to numbers to avoid string/number mismatch
+    const rawIds = (parsed.ids || parsed.responderIds || []).map(Number)
+    let ids = rawIds.filter((id: number) => selectedIds.map(Number).includes(id))
+    console.log(`[Chat Responder] Parsed IDs: ${rawIds}, Filtered: ${ids}, Selected: ${selectedIds}`)
     // Ensure at least 2 responders in group chat
     if (ids.length < 2 && selectedIds.length >= 2) {
       for (const sid of selectedIds) {
-        if (!ids.includes(sid)) { ids.push(sid); break }
+        if (!ids.includes(Number(sid))) { ids.push(Number(sid)); if (ids.length >= 2) break }
       }
     }
-    return ids.length > 0 ? ids : selectedIds.slice(0, 2)
+    return ids.length > 0 ? ids : selectedIds.slice(0, 2).map(Number)
   } catch {
     return selectedIds.slice(0, 2)
   }
