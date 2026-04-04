@@ -5,6 +5,7 @@ import type { Character, KnowledgeFile } from "@/lib/brain-room/types"
 import { performKnowledgeSearch } from "./knowledge-search-tool"
 
 // Select which persona(s) should respond in a group chat
+// Uses NAME-based selection (same approach as conference mode's selectNextSpeaker)
 export async function selectChatResponders(
   userMessage: string,
   characters: Character[],
@@ -14,44 +15,52 @@ export async function selectChatResponders(
   // 1-on-1: no selection needed
   if (selectedIds.length === 1) return selectedIds
 
+  const available = characters.filter((c) => selectedIds.includes(c.id))
+
   const agent = new Agent({
     name: "chat-responder-selector",
-    instructions: `グループチャットで、ユーザーの発言に対して応答するペルソナを選んでください。
-重要: これはグループチャットです。基本的に2人以上が応答するのが自然です。
-- 必ず2人以上を選ぶ（各ペルソナの異なる視点が価値）
-- 名前で呼ばれたペルソナは必ず含める
-- 3人全員が応答してもよい
-- 1人だけにするのは、本当に単純な確認（はい/いいえ）の場合のみ
-JSON形式で返してください: { "ids": [数字の配列] }`,
+    instructions: `グループチャットで、ユーザーの発言に対して誰が応答すべきか選んでください。
+名前で回答してください。
+- 2〜3人を選ぶのが基本（グループチャットなので複数人が自然）
+- 専門性がマッチする人、名前で呼ばれた人を優先
+- 1人だけにしない（はい/いいえの確認以外は必ず2人以上）
+回答は名前をカンマ区切りで返してください。例: 村田 鉄男, 安藤 美咲`,
     model: anthropic("claude-haiku-4-5-20251001"),
   })
 
-  const personaList = characters
-    .filter((c) => selectedIds.includes(c.id))
-    .map((c) => `ID ${c.id}: ${c.name}（${c.background.slice(0, 60)}）`)
+  const personaList = available
+    .map((c) => `${c.name}（${c.background.slice(0, 80)}）`)
     .join("\n")
 
   try {
     const result = await agent.generate(
-      `ペルソナ一覧:\n${personaList}\n\n直近の会話:\n${recentHistory}\n\nユーザーの発言: ${userMessage}\n\n応答すべきペルソナのIDをJSON形式で返してください。`,
-      { temperature: 0.2, maxTokens: 100 },
+      `ペルソナ一覧:\n${personaList}\n\n直近の会話:\n${recentHistory}\n\nユーザーの発言: ${userMessage}\n\n応答すべきペルソナの名前をカンマ区切りで返してください。`,
+      { temperature: 0.4, maxTokens: 100 },
     )
-    let raw = (result.text || "").trim().replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim()
-    console.log(`[Chat Responder] Raw response: ${raw}`)
-    const parsed = JSON.parse(raw)
-    // Coerce to numbers to avoid string/number mismatch
-    const rawIds = (parsed.ids || parsed.responderIds || []).map(Number)
-    let ids = rawIds.filter((id: number) => selectedIds.map(Number).includes(id))
-    console.log(`[Chat Responder] Parsed IDs: ${rawIds}, Filtered: ${ids}, Selected: ${selectedIds}`)
-    // Ensure at least 2 responders in group chat
-    if (ids.length < 2 && selectedIds.length >= 2) {
-      for (const sid of selectedIds) {
-        if (!ids.includes(Number(sid))) { ids.push(Number(sid)); if (ids.length >= 2) break }
+    const raw = (result.text || "").trim()
+    console.log(`[Chat Responder] LLM returned names: "${raw}"`)
+
+    // Match names from response
+    const ids: number[] = []
+    for (const c of available) {
+      if (raw.includes(c.name)) {
+        ids.push(c.id)
       }
     }
-    return ids.length > 0 ? ids : selectedIds.slice(0, 2).map(Number)
-  } catch {
-    return selectedIds.slice(0, 2)
+    console.log(`[Chat Responder] Matched IDs: ${ids} from available: ${available.map(c => `${c.name}(${c.id})`)}`)
+
+    if (ids.length >= 2) return ids
+    if (ids.length === 1 && available.length >= 2) {
+      // Add one more who wasn't selected
+      const extra = available.find((c) => !ids.includes(c.id))
+      if (extra) ids.push(extra.id)
+      return ids
+    }
+    // Fallback: first 2
+    return available.slice(0, 2).map((c) => c.id)
+  } catch (e) {
+    console.error(`[Chat Responder] Failed:`, e)
+    return available.slice(0, 2).map((c) => c.id)
   }
 }
 

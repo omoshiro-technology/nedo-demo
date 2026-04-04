@@ -54,7 +54,7 @@ export async function POST(req: Request) {
             .map((h) => `${h.isUser ? "ユーザー" : h.speakerName}: ${h.text}`)
             .join("\n")
 
-          // Select responders
+          // Select responders (name-based, same approach as conference mode)
           const responderIds = await selectChatResponders(
             userMessage,
             characters,
