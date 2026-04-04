@@ -1,46 +1,32 @@
 /**
- * スキルマップ サンプルデータ
+ * スキルマップ サンプル��ータ
  *
- * デモ用に3名分のアセスメント・プロファイルを生成する。
+ * デモ用に3名分のスキルプロファイルを生成する。
+ * 新しいスキルカタログ（8カテゴリ x 25項目）に対応。
  *
- * 村田 鉄男 — ベテラン（38年）: 高スコア、全軸カバー
- * 中島 康太 — 中堅（12年）: 中スコア、コスト・品質中心
- * 藤原 翔太 — 若手（3年）: 低→成長中、CAE寄り
+ * 村田 鉄男 — ベテラン（38年）: 技術系は高い、マネジメント・市場は中程度
+ * 中島 康太 — 中堅（12年）: マネジメント寄り、技術は中程度
+ * 藤原 翔太 — 若手（3年）: CAE/加工中心、他は成長途上
  */
 
 import type {
   SkillAssessment,
   SkillProfile,
-  SkillItem,
   SkillLevel,
   SessionSource,
   ThoughtQualityScore,
   QCDESCoverage,
   SkillProficiency,
 } from "../../domain/skillMap/types";
+import { SKILL_DEFINITIONS } from "../../domain/skillMap/skillCatalog";
 
 // ============================================================
-// スキル項目マスタ（板金プレス工程設計ドメイン）
+// 公開データ
 // ============================================================
-
-export const SAMPLE_SKILLS: SkillItem[] = [
-  { id: "material-selection", name: "材料選定", domain: "生産技術", relatedNodeIds: [] },
-  { id: "mold-constraint", name: "金型制約の理解", domain: "金型設計", relatedNodeIds: [] },
-  { id: "tolerance-design", name: "公差設計", domain: "設計", relatedNodeIds: [] },
-  { id: "process-sequence", name: "工程順序の構想", domain: "生産技術", relatedNodeIds: [] },
-  { id: "springback", name: "スプリングバック予測", domain: "加工技術", relatedNodeIds: [] },
-  { id: "post-process", name: "後工程整合", domain: "生産技術", relatedNodeIds: [] },
-  { id: "quality-inspection", name: "品質検査設計", domain: "品質管理", relatedNodeIds: [] },
-  { id: "cost-optimization", name: "コスト最適化", domain: "生産管理", relatedNodeIds: [] },
-  { id: "equipment-capability", name: "設備能力評価", domain: "生産技術", relatedNodeIds: [] },
-  { id: "safety-assessment", name: "安全性評価", domain: "安全管理", relatedNodeIds: [] },
-  { id: "cae-simulation", name: "CAEシミュレーション", domain: "解析", relatedNodeIds: [] },
-  { id: "troubleshooting", name: "トラブルシューティング", domain: "保守", relatedNodeIds: [] },
-];
 
 export const SAMPLE_USERS = [
   { id: "murata-tetsuo", name: "村田 鉄男", role: "ベテラン工程設計者（38年）" },
-  { id: "nakajima-kota", name: "中島 康太", role: "生産技術マネージャー（12年）" },
+  { id: "nakajima-kota", name: "中島 康太", role: "生産技術マネー���ャー（12年）" },
   { id: "fujiwara-shota", name: "藤原 翔太", role: "若手CAEエンジニア（3年）" },
 ];
 
@@ -54,10 +40,6 @@ function date(daysAgo: number): string {
   return d.toISOString();
 }
 
-function makeId(prefix: string, i: number): string {
-  return `${prefix}-${String(i).padStart(3, "0")}`;
-}
-
 function qcdes(q: boolean, c: boolean, d: boolean, e: boolean, s: boolean): QCDESCoverage {
   return { quality: q, cost: c, delivery: d, environment: e, safety: s };
 }
@@ -66,211 +48,213 @@ function tq(vc: number, st: number, pr: number, el: number, qc: QCDESCoverage): 
   return { viewpointCoverage: vc, qcdesCoverage: qc, structuralThinking: st, proactiveness: pr, expertiseLevel: el };
 }
 
+type SkillLevelMap = Record<string, SkillLevel>;
+
 // ============================================================
 // 村田 鉄男 — ベテラン
+//
+// 技術系（工程設計・加工・品質・設備）は Lv.3-4
+// マネジメント・市場��� Lv.2-3
+// コミュニケーションは Lv.3
 // ============================================================
 
-function muratAssessments(): SkillAssessment[] {
-  const userId = "murata-tetsuo";
-  const sources: SessionSource[] = ["brain_room_1shot", "compath_decision_navigator", "compath_chat", "brain_room_1shot", "compath_decision_navigator", "brain_room_1shot", "compath_chat", "brain_room_1shot"];
-  const purposes = [
-    "SUS304 板厚1.2mm曲げ加工の工程検討",
-    "金型摩耗による品質低下の原因切り分け",
-    "新規顧客の公差要求と既存設備の適合確認",
-    "多工程プレスの順送金型 vs タンデム構成比較",
-    "A社向けブラケットのコスト最適化",
-    "スプリングバック補正量の妥当性検証",
-    "後工程（溶接）との公差積み上げ確認",
-    "安全カバー部品の工程FMEAレビュー",
-  ];
+const MURATA_SKILLS: SkillLevelMap = {
+  // ビジョン・戦略
+  "biz-strategy": 2,
+  "tech-roadmap": 3,
+  "innovation-mindset": 3,
+  // マネジメント
+  "project-mgmt": 2,
+  "people-dev": 3,
+  "resource-allocation": 2,
+  // 工程設計
+  "process-sequence": 4,
+  "material-selection": 4,
+  "tolerance-design": 4,
+  "cost-estimation": 3,
+  // 加工技術
+  "press-forming": 4,
+  "springback": 4,
+  "die-design": 4,
+  // 品質管理
+  "qc-method": 3,
+  "inspection-design": 3,
+  "troubleshooting": 4,
+  // 設���・保���
+  "equipment-eval": 4,
+  "preventive-maint": 3,
+  // ��場・競合
+  "competitor-analysis": 2,
+  "customer-needs": 3,
+  "industry-trends": 2,
+  // コミュニケーション
+  "customer-negotiation": 3,
+  "cross-dept": 3,
+  "documentation": 2,
+};
 
-  return purposes.map((purpose, i) => ({
-    id: makeId("sa-murata", i),
+// ============================================================
+// 中島 康太 — 中堅（マネジメント寄り）
+//
+// マネジメント Lv.3-4
+// 市場・コミュニケーション Lv.2-3
+// 技術系は Lv.2 中心
+// ============================================================
+
+const NAKAJIMA_SKILLS: SkillLevelMap = {
+  "biz-strategy": 3,
+  "tech-roadmap": 2,
+  "innovation-mindset": 3,
+  "project-mgmt": 4,
+  "people-dev": 3,
+  "resource-allocation": 3,
+  "process-sequence": 2,
+  "material-selection": 2,
+  "tolerance-design": 2,
+  "cost-estimation": 3,
+  "press-forming": 2,
+  "springback": 1,
+  "die-design": 2,
+  "qc-method": 2,
+  "inspection-design": 2,
+  "troubleshooting": 2,
+  "equipment-eval": 2,
+  "preventive-maint": 1,
+  "competitor-analysis": 3,
+  "customer-needs": 3,
+  "industry-trends": 3,
+  "customer-negotiation": 3,
+  "cross-dept": 4,
+  "documentation": 3,
+};
+
+// ============================================================
+// 藤原 翔太 — 若手（技術特化・成長途上）
+//
+// 加工技術（CAE寄り）Lv.1-2
+// 工程設計は Lv.1
+// マネジメント・市場・ビジョンは Lv.1
+// ============================================================
+
+const FUJIWARA_SKILLS: SkillLevelMap = {
+  "biz-strategy": 1,
+  "tech-roadmap": 1,
+  "innovation-mindset": 1,
+  "project-mgmt": 1,
+  "people-dev": 1,
+  "resource-allocation": 1,
+  "process-sequence": 1,
+  "material-selection": 2,
+  "tolerance-design": 1,
+  "cost-estimation": 1,
+  "press-forming": 2,
+  "springback": 2,
+  "die-design": 1,
+  "qc-method": 1,
+  "inspection-design": 1,
+  "troubleshooting": 1,
+  "equipment-eval": 1,
+  "preventive-maint": 1,
+  "competitor-analysis": 1,
+  "customer-needs": 1,
+  "industry-trends": 1,
+  "customer-negotiation": 1,
+  "cross-dept": 1,
+  "documentation": 2,
+};
+
+// ============================================================
+// アセスメント生成
+// ============================================================
+
+function makeAssessments(
+  userId: string,
+  skillLevels: SkillLevelMap,
+  sessions: Array<{
+    source: SessionSource;
+    purpose: string;
+    tq: ThoughtQualityScore;
+    skills: string[];
+    daysAgo: number;
+  }>
+): SkillAssessment[] {
+  return sessions.map((s, i) => ({
+    id: `sa-${userId}-${String(i).padStart(3, "0")}`,
     userId,
-    sessionSource: sources[i],
-    sessionId: makeId("sess-murata", i),
-    sessionPurpose: purpose,
-    thoughtQuality: [
-      tq(85, 80, 78, 90, qcdes(true, true, true, false, true)),
-      tq(80, 85, 82, 88, qcdes(true, true, false, false, true)),
-      tq(75, 78, 72, 85, qcdes(true, true, true, false, false)),
-      tq(90, 92, 85, 92, qcdes(true, true, true, false, true)),
-      tq(82, 75, 70, 80, qcdes(true, true, true, false, false)),
-      tq(88, 90, 88, 95, qcdes(true, true, false, false, true)),
-      tq(78, 82, 75, 88, qcdes(true, true, true, true, false)),
-      tq(92, 95, 90, 93, qcdes(true, true, true, true, true)),
-    ][i],
+    sessionSource: s.source,
+    sessionId: `sess-${userId}-${String(i).padStart(3, "0")}`,
+    sessionPurpose: s.purpose,
+    thoughtQuality: s.tq,
     userRaisedPoints: [],
-    touchedSkillIds: [
-      ["material-selection", "springback", "process-sequence", "quality-inspection"],
-      ["mold-constraint", "troubleshooting", "quality-inspection"],
-      ["tolerance-design", "equipment-capability", "post-process"],
-      ["process-sequence", "mold-constraint", "cost-optimization", "equipment-capability"],
-      ["cost-optimization", "material-selection", "process-sequence"],
-      ["springback", "cae-simulation", "tolerance-design"],
-      ["post-process", "tolerance-design", "quality-inspection"],
-      ["safety-assessment", "process-sequence", "quality-inspection", "troubleshooting"],
-    ][i],
+    touchedSkillIds: s.skills,
     skillLevels: Object.fromEntries(
-      [
-        ["material-selection", "springback", "process-sequence", "quality-inspection"],
-        ["mold-constraint", "troubleshooting", "quality-inspection"],
-        ["tolerance-design", "equipment-capability", "post-process"],
-        ["process-sequence", "mold-constraint", "cost-optimization", "equipment-capability"],
-        ["cost-optimization", "material-selection", "process-sequence"],
-        ["springback", "cae-simulation", "tolerance-design"],
-        ["post-process", "tolerance-design", "quality-inspection"],
-        ["safety-assessment", "process-sequence", "quality-inspection", "troubleshooting"],
-      ][i].map((sid) => [sid, 4 as SkillLevel])
+      s.skills.map((sid) => [sid, skillLevels[sid] ?? 1])
     ),
-    assessedAt: date(56 - i * 7),
+    assessedAt: date(s.daysAgo),
   }));
 }
 
-// ============================================================
-// 中島 康太 — 中堅
-// ============================================================
+function murataAssessments(): SkillAssessment[] {
+  return makeAssessments("murata-tetsuo", MURATA_SKILLS, [
+    { source: "brain_room_1shot", purpose: "SUS304 板厚1.2mm曲げ加工の工程検討", tq: tq(85, 80, 78, 90, qcdes(true, true, true, false, true)), skills: ["material-selection", "springback", "process-sequence", "press-forming"], daysAgo: 56 },
+    { source: "compath_decision_navigator", purpose: "金型摩耗による品質低下の原因切り分け", tq: tq(80, 85, 82, 88, qcdes(true, true, false, false, true)), skills: ["die-design", "troubleshooting", "inspection-design"], daysAgo: 49 },
+    { source: "compath_chat", purpose: "新規顧客の公差要求と既存設備の適合確認", tq: tq(78, 82, 75, 88, qcdes(true, true, true, false, false)), skills: ["tolerance-design", "equipment-eval", "customer-needs"], daysAgo: 42 },
+    { source: "brain_room_1shot", purpose: "順送金型 vs タンデム構成の比較検討", tq: tq(90, 92, 85, 92, qcdes(true, true, true, false, true)), skills: ["process-sequence", "die-design", "cost-estimation", "equipment-eval"], daysAgo: 35 },
+    { source: "compath_decision_navigator", purpose: "若手への工程設計ノウハウ伝達方法の検討", tq: tq(72, 68, 65, 75, qcdes(true, false, false, false, false)), skills: ["people-dev", "documentation", "process-sequence"], daysAgo: 28 },
+    { source: "brain_room_1shot", purpose: "スプリングバック補正量の妥当��検証", tq: tq(88, 90, 88, 95, qcdes(true, true, false, false, true)), skills: ["springback", "press-forming", "tolerance-design"], daysAgo: 21 },
+    { source: "compath_chat", purpose: "後工程（溶接）との公差積み上げ確認", tq: tq(82, 85, 78, 88, qcdes(true, true, true, true, false)), skills: ["tolerance-design", "cross-dept", "qc-method"], daysAgo: 14 },
+    { source: "brain_room_1shot", purpose: "安全カバー部品の工程FMEAレビュー", tq: tq(92, 95, 90, 93, qcdes(true, true, true, true, true)), skills: ["process-sequence", "troubleshooting", "preventive-maint", "inspection-design"], daysAgo: 7 },
+  ]);
+}
 
 function nakajimaAssessments(): SkillAssessment[] {
-  const userId = "nakajima-kota";
-  const sources: SessionSource[] = ["compath_chat", "brain_room_1shot", "compath_decision_navigator", "brain_room_1shot", "compath_chat", "compath_decision_navigator"];
-  const purposes = [
-    "新ライン立ち上げの工程設計方針",
-    "材料変更に伴う曲げ条件の見直し",
-    "外注先選定の判断基準整理",
-    "生産効率とコストのトレードオフ検討",
-    "品質クレーム対応の原因分析",
-    "設備投資判断の費用対効果",
-  ];
-
-  return purposes.map((purpose, i) => ({
-    id: makeId("sa-nakajima", i),
-    userId,
-    sessionSource: sources[i],
-    sessionId: makeId("sess-nakajima", i),
-    sessionPurpose: purpose,
-    thoughtQuality: [
-      tq(55, 50, 45, 60, qcdes(true, true, true, false, false)),
-      tq(60, 55, 50, 55, qcdes(true, true, false, false, false)),
-      tq(58, 62, 48, 50, qcdes(false, true, true, false, false)),
-      tq(65, 68, 55, 58, qcdes(true, true, true, false, false)),
-      tq(70, 65, 60, 62, qcdes(true, true, false, false, true)),
-      tq(72, 70, 62, 65, qcdes(true, true, true, false, false)),
-    ][i],
-    userRaisedPoints: [],
-    touchedSkillIds: [
-      ["process-sequence", "equipment-capability", "cost-optimization"],
-      ["material-selection", "springback"],
-      ["cost-optimization", "quality-inspection"],
-      ["cost-optimization", "process-sequence", "equipment-capability"],
-      ["quality-inspection", "troubleshooting", "mold-constraint"],
-      ["cost-optimization", "equipment-capability"],
-    ][i],
-    skillLevels: Object.fromEntries(
-      [
-        ["process-sequence", "equipment-capability", "cost-optimization"],
-        ["material-selection", "springback"],
-        ["cost-optimization", "quality-inspection"],
-        ["cost-optimization", "process-sequence", "equipment-capability"],
-        ["quality-inspection", "troubleshooting", "mold-constraint"],
-        ["cost-optimization", "equipment-capability"],
-      ][i].map((sid) => {
-        const lv: SkillLevel = ["cost-optimization", "process-sequence"].includes(sid) ? 3 : 2;
-        return [sid, lv];
-      })
-    ),
-    assessedAt: date(42 - i * 7),
-  }));
+  return makeAssessments("nakajima-kota", NAKAJIMA_SKILLS, [
+    { source: "compath_chat", purpose: "新ライン立ち上げの工程設計方針", tq: tq(55, 50, 45, 60, qcdes(true, true, true, false, false)), skills: ["project-mgmt", "resource-allocation", "process-sequence"], daysAgo: 42 },
+    { source: "brain_room_1shot", purpose: "材料変更に伴う曲げ条件の見直し", tq: tq(60, 55, 50, 55, qcdes(true, true, false, false, false)), skills: ["material-selection", "cost-estimation"], daysAgo: 35 },
+    { source: "compath_decision_navigator", purpose: "外注先選定の判断基準整理", tq: tq(65, 68, 55, 58, qcdes(false, true, true, false, false)), skills: ["competitor-analysis", "cost-estimation", "customer-negotiation"], daysAgo: 28 },
+    { source: "brain_room_1shot", purpose: "チーム育成計画の見直し", tq: tq(62, 60, 52, 55, qcdes(false, false, true, false, false)), skills: ["people-dev", "resource-allocation", "cross-dept"], daysAgo: 21 },
+    { source: "compath_chat", purpose: "品質クレーム対応の原因分析", tq: tq(70, 65, 60, 62, qcdes(true, true, false, false, true)), skills: ["troubleshooting", "customer-negotiation", "cross-dept"], daysAgo: 14 },
+    { source: "compath_decision_navigator", purpose: "設備投資判断の費用対効果", tq: tq(72, 70, 62, 65, qcdes(true, true, true, false, false)), skills: ["equipment-eval", "biz-strategy", "cost-estimation"], daysAgo: 7 },
+  ]);
 }
 
-// ============================================================
-// 藤原 翔太 — 若手（成長途上）
-// ============================================================
-
 function fujiwaraAssessments(): SkillAssessment[] {
-  const userId = "fujiwara-shota";
-  const sources: SessionSource[] = ["brain_room_1shot", "brain_room_conference", "compath_chat", "brain_room_1shot", "compath_decision_navigator", "brain_room_1shot", "compath_chat", "brain_room_1shot", "compath_decision_navigator", "brain_room_1shot"];
-  const purposes = [
-    "CAE解析結果の読み方を確認",
-    "プレス成形シミュレーションの前提条件",
-    "板厚減少率の許容範囲",
-    "スプリングバックの補正方法",
-    "初めての工程設計案の作成",
-    "材料選定の基本的な考え方",
-    "金型設計の基礎を学ぶ",
-    "先輩の工程設計を分析して学ぶ",
-    "自分で工程順序を提案してレビュー",
-    "品質とコストのバランスを考える",
-  ];
-
-  // 成長を表現: スコアが徐々に上がる
-  return purposes.map((purpose, i) => {
-    const growth = i * 5;
-    const base = 15 + growth;
-    return {
-      id: makeId("sa-fujiwara", i),
-      userId,
-      sessionSource: sources[i],
-      sessionId: makeId("sess-fujiwara", i),
-      sessionPurpose: purpose,
-      thoughtQuality: tq(
-        Math.min(base + 5, 75),
-        Math.min(base, 65),
-        Math.min(base - 5, 55),
-        Math.min(base - 3, 60),
-        qcdes(
-          i >= 3,
-          i >= 1,
-          i >= 5,
-          false,
-          i >= 7
-        )
-      ),
-      userRaisedPoints: [],
-      touchedSkillIds: [
-        ["cae-simulation"],
-        ["cae-simulation", "springback"],
-        ["material-selection"],
-        ["springback", "tolerance-design"],
-        ["process-sequence", "material-selection"],
-        ["material-selection", "cost-optimization"],
-        ["mold-constraint"],
-        ["process-sequence", "post-process", "quality-inspection"],
-        ["process-sequence", "cost-optimization", "tolerance-design"],
-        ["quality-inspection", "cost-optimization"],
-      ][i],
-      skillLevels: Object.fromEntries(
-        [
-          ["cae-simulation"],
-          ["cae-simulation", "springback"],
-          ["material-selection"],
-          ["springback", "tolerance-design"],
-          ["process-sequence", "material-selection"],
-          ["material-selection", "cost-optimization"],
-          ["mold-constraint"],
-          ["process-sequence", "post-process", "quality-inspection"],
-          ["process-sequence", "cost-optimization", "tolerance-design"],
-          ["quality-inspection", "cost-optimization"],
-        ][i].map((sid) => {
-          let lv: SkillLevel = 1;
-          if (i >= 6 && sid === "cae-simulation") lv = 3;
-          else if (i >= 4 && ["cae-simulation", "springback"].includes(sid)) lv = 2;
-          else if (i >= 7) lv = 2;
-          return [sid, lv];
-        })
-      ),
-      assessedAt: date(70 - i * 7),
-    };
-  });
+  return makeAssessments("fujiwara-shota", FUJIWARA_SKILLS, [
+    { source: "brain_room_conference", purpose: "CAE解析結果の読み方を確認", tq: tq(20, 15, 10, 18, qcdes(false, false, false, false, false)), skills: ["press-forming", "springback"], daysAgo: 70 },
+    { source: "brain_room_1shot", purpose: "板厚減少率の許容範囲を学ぶ", tq: tq(25, 20, 15, 22, qcdes(true, false, false, false, false)), skills: ["material-selection", "tolerance-design"], daysAgo: 63 },
+    { source: "compath_chat", purpose: "スプリングバックの補正方法", tq: tq(30, 25, 18, 28, qcdes(true, false, false, false, false)), skills: ["springback", "press-forming"], daysAgo: 56 },
+    { source: "brain_room_1shot", purpose: "初めての工程設計案の作成", tq: tq(32, 28, 20, 30, qcdes(true, true, false, false, false)), skills: ["process-sequence", "material-selection"], daysAgo: 49 },
+    { source: "compath_decision_navigator", purpose: "材料選定の基本的な考え方", tq: tq(38, 35, 25, 35, qcdes(true, true, false, false, false)), skills: ["material-selection", "cost-estimation"], daysAgo: 42 },
+    { source: "brain_room_1shot", purpose: "先輩の工程設計を分析して学ぶ", tq: tq(42, 38, 30, 40, qcdes(true, true, true, false, false)), skills: ["process-sequence", "die-design", "documentation"], daysAgo: 35 },
+    { source: "compath_chat", purpose: "金型設計の基礎", tq: tq(45, 40, 32, 42, qcdes(true, true, true, false, false)), skills: ["die-design", "press-forming"], daysAgo: 28 },
+    { source: "brain_room_1shot", purpose: "品質検査の基本を学ぶ", tq: tq(48, 45, 35, 44, qcdes(true, true, true, false, true)), skills: ["qc-method", "inspection-design"], daysAgo: 21 },
+    { source: "compath_decision_navigator", purpose: "自分で工程順序を提案してレビュー", tq: tq(55, 50, 42, 50, qcdes(true, true, true, false, true)), skills: ["process-sequence", "cost-estimation", "tolerance-design"], daysAgo: 14 },
+    { source: "brain_room_1shot", purpose: "品質とコストのバランスを考える", tq: tq(60, 55, 48, 55, qcdes(true, true, true, false, true)), skills: ["cost-estimation", "qc-method", "customer-needs"], daysAgo: 7 },
+  ]);
 }
 
 // ============================================================
 // プロファイル構築
 // ============================================================
 
-function buildProfile(allAssessments: SkillAssessment[], userId: string): SkillProfile {
-  const userAssessments = allAssessments.filter((a) => a.userId === userId);
+function buildProfile(
+  userId: string,
+  skillLevels: SkillLevelMap,
+  assessmentsList: SkillAssessment[]
+): SkillProfile {
+  const userAssessments = assessmentsList.filter((a) => a.userId === userId);
   const proficiencies: Record<string, SkillProficiency> = {};
+
+  // 全スキルをプロファイルに含める（未接触のスキルもLv設定あり）
+  for (const skill of SKILL_DEFINITIONS) {
+    proficiencies[skill.id] = {
+      skillId: skill.id,
+      currentLevel: (skillLevels[skill.id] ?? 1) as SkillLevel,
+      touchCount: 0,
+      latestScores: null,
+      lastAssessedAt: "",
+    };
+  }
 
   const sourceCount: Record<SessionSource, number> = {
     brain_room_1shot: 0,
@@ -282,15 +266,12 @@ function buildProfile(allAssessments: SkillAssessment[], userId: string): SkillP
   for (const a of userAssessments) {
     sourceCount[a.sessionSource] = (sourceCount[a.sessionSource] ?? 0) + 1;
     for (const skillId of a.touchedSkillIds) {
-      const prev = proficiencies[skillId];
-      const newLevel = (a.skillLevels[skillId] ?? 1) as SkillLevel;
-      proficiencies[skillId] = {
-        skillId,
-        currentLevel: prev ? (Math.max(prev.currentLevel, newLevel) as SkillLevel) : newLevel,
-        touchCount: (prev?.touchCount ?? 0) + 1,
-        latestScores: a.thoughtQuality,
-        lastAssessedAt: a.assessedAt,
-      };
+      const p = proficiencies[skillId];
+      if (p) {
+        p.touchCount += 1;
+        p.latestScores = a.thoughtQuality;
+        p.lastAssessedAt = a.assessedAt;
+      }
     }
   }
 
@@ -305,7 +286,7 @@ function buildProfile(allAssessments: SkillAssessment[], userId: string): SkillP
 }
 
 // ============================================================
-// エクスポート: シード実行
+// エクスポート
 // ============================================================
 
 export function generateSeedData(): {
@@ -313,12 +294,16 @@ export function generateSeedData(): {
   profiles: SkillProfile[];
 } {
   const allAssessments = [
-    ...muratAssessments(),
+    ...murataAssessments(),
     ...nakajimaAssessments(),
     ...fujiwaraAssessments(),
   ];
 
-  const profiles = SAMPLE_USERS.map((u) => buildProfile(allAssessments, u.id));
+  const profiles = [
+    buildProfile("murata-tetsuo", MURATA_SKILLS, allAssessments),
+    buildProfile("nakajima-kota", NAKAJIMA_SKILLS, allAssessments),
+    buildProfile("fujiwara-shota", FUJIWARA_SKILLS, allAssessments),
+  ];
 
   return { assessments: allAssessments, profiles };
 }
