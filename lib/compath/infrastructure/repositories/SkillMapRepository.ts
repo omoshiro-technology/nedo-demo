@@ -43,6 +43,8 @@ const assessmentsByUser = new Map<string, string[]>();
 /** userId → SkillProfile */
 const profiles = new Map<string, SkillProfile>();
 
+let seeded = false;
+
 function computeCompositeScore(tq: SkillAssessment["thoughtQuality"]): number {
   return Math.round(
     tq.viewpointCoverage * 0.25 +
@@ -52,11 +54,31 @@ function computeCompositeScore(tq: SkillAssessment["thoughtQuality"]): number {
   );
 }
 
+/** サンプルデータを投入（初回のみ） */
+function ensureSeeded() {
+  if (seeded) return;
+  seeded = true;
+  // 動的importを避けて同期的に呼ぶため、lazy initパターン
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { generateSeedData } = require("./skillMapSeedData") as typeof import("./skillMapSeedData");
+  const { assessments: seedAssessments, profiles: seedProfiles } = generateSeedData();
+  for (const a of seedAssessments) {
+    assessments.set(a.id, a);
+    const ids = assessmentsByUser.get(a.userId) ?? [];
+    ids.push(a.id);
+    assessmentsByUser.set(a.userId, ids);
+  }
+  for (const p of seedProfiles) {
+    profiles.set(p.userId, p);
+  }
+}
+
 export const SkillMapRepository: ISkillMapRepository = {
   // ----------------------------------------------------------
   // Assessment
   // ----------------------------------------------------------
   saveAssessment(assessment: SkillAssessment): void {
+    ensureSeeded();
     assessments.set(assessment.id, assessment);
     const ids = assessmentsByUser.get(assessment.userId) ?? [];
     ids.push(assessment.id);
@@ -64,6 +86,7 @@ export const SkillMapRepository: ISkillMapRepository = {
   },
 
   findAssessmentsByUser(userId: string): SkillAssessment[] {
+    ensureSeeded();
     const ids = assessmentsByUser.get(userId) ?? [];
     return ids
       .map((id) => assessments.get(id))
@@ -71,6 +94,7 @@ export const SkillMapRepository: ISkillMapRepository = {
   },
 
   findAssessmentById(id: string): SkillAssessment | undefined {
+    ensureSeeded();
     return assessments.get(id);
   },
 
@@ -78,10 +102,12 @@ export const SkillMapRepository: ISkillMapRepository = {
   // Profile
   // ----------------------------------------------------------
   saveProfile(profile: SkillProfile): void {
+    ensureSeeded();
     profiles.set(profile.userId, profile);
   },
 
   findProfileByUser(userId: string): SkillProfile | undefined {
+    ensureSeeded();
     return profiles.get(userId);
   },
 
@@ -89,6 +115,7 @@ export const SkillMapRepository: ISkillMapRepository = {
   // Timeline
   // ----------------------------------------------------------
   getTimeline(userId: string, limit = 50): SkillTimeline {
+    ensureSeeded();
     const userAssessments = this.findAssessmentsByUser(userId);
 
     const entries: TimelineEntry[] = userAssessments

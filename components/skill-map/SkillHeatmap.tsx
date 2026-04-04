@@ -5,6 +5,12 @@ import type {
   SkillLevel,
 } from "@/lib/compath/domain/skillMap/types"
 import { SKILL_LEVEL_LABELS } from "@/lib/compath/domain/skillMap/types"
+import { SAMPLE_SKILLS } from "@/lib/compath/infrastructure/repositories/skillMapSeedData"
+
+/** スキルID → 日本語名 */
+const SKILL_NAMES: Record<string, string> = Object.fromEntries(
+  SAMPLE_SKILLS.map((s) => [s.id, s.name])
+)
 
 type Props = {
   profile: SkillProfile
@@ -79,7 +85,7 @@ export function SkillHeatmap({ profile }: Props) {
                 className="border-b border-gray-50 hover:bg-gray-50"
               >
                 <td className="py-2 pr-4 text-gray-900 font-medium">
-                  {p.skillId}
+                  {SKILL_NAMES[p.skillId] ?? p.skillId}
                 </td>
                 <td className="py-2 px-2 text-center">
                   <span

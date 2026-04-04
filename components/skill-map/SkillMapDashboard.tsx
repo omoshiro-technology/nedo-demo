@@ -5,15 +5,13 @@ import type {
   SkillProfile,
   SkillTimeline,
   SkillLevel,
-  ThoughtQualityScore,
 } from "@/lib/compath/domain/skillMap/types"
 import { SKILL_LEVEL_LABELS } from "@/lib/compath/domain/skillMap/types"
 import { QCDESRadar } from "./QCDESRadar"
 import { GrowthTimeline } from "./GrowthTimeline"
 import { SkillHeatmap } from "./SkillHeatmap"
 
-/** デモ用の仮ユーザーID */
-const DEMO_USER_ID = "demo-user"
+type SampleUser = { id: string; name: string; role: string }
 
 type TabId = "overview" | "timeline" | "heatmap"
 
@@ -25,38 +23,60 @@ const TABS: { id: TabId; label: string }[] = [
 
 export default function SkillMapDashboard() {
   const [activeTab, setActiveTab] = useState<TabId>("overview")
+  const [users, setUsers] = useState<SampleUser[]>([])
+  const [selectedUserId, setSelectedUserId] = useState<string>("")
   const [profile, setProfile] = useState<SkillProfile | null>(null)
   const [timeline, setTimeline] = useState<SkillTimeline | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // ユーザー一覧を取得
+  useEffect(() => {
+    fetch("/api/compath/skill-map/users")
+      .then((r) => r.json())
+      .then((data) => {
+        const list: SampleUser[] = data.users ?? []
+        setUsers(list)
+        if (list.length > 0 && !selectedUserId) {
+          setSelectedUserId(list[0].id)
+        }
+      })
+      .catch(() => {})
+  }, [])
+
   const fetchData = useCallback(async () => {
+    if (!selectedUserId) return
     setLoading(true)
     setError(null)
     try {
       const [profileRes, timelineRes] = await Promise.allSettled([
-        fetch(`/api/compath/skill-map/profile?userId=${DEMO_USER_ID}`),
-        fetch(`/api/compath/skill-map/timeline?userId=${DEMO_USER_ID}`),
+        fetch(`/api/compath/skill-map/profile?userId=${selectedUserId}`),
+        fetch(`/api/compath/skill-map/timeline?userId=${selectedUserId}`),
       ])
 
       if (profileRes.status === "fulfilled" && profileRes.value.ok) {
         setProfile(await profileRes.value.json())
+      } else {
+        setProfile(null)
       }
       if (timelineRes.status === "fulfilled" && timelineRes.value.ok) {
         setTimeline(await timelineRes.value.json())
+      } else {
+        setTimeline(null)
       }
     } catch {
       setError("データの取得に失敗しました。")
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [selectedUserId])
 
   useEffect(() => {
-    fetchData()
-  }, [fetchData])
+    if (selectedUserId) fetchData()
+  }, [selectedUserId, fetchData])
 
   const hasData = profile && profile.totalAssessments > 0
+  const selectedUser = users.find((u) => u.id === selectedUserId)
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
@@ -76,6 +96,24 @@ export default function SkillMapDashboard() {
             {tab.label}
           </button>
         ))}
+
+        {/* User selector */}
+        <div className="ml-auto flex items-center gap-2">
+          <select
+            value={selectedUserId}
+            onChange={(e) => setSelectedUserId(e.target.value)}
+            className="text-sm border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400"
+          >
+            {users.map((u) => (
+              <option key={u.id} value={u.id}>
+                {u.name}
+              </option>
+            ))}
+          </select>
+          {selectedUser && (
+            <span className="text-xs text-gray-400">{selectedUser.role}</span>
+          )}
+        </div>
       </div>
 
       {/* Content */}
@@ -88,15 +126,9 @@ export default function SkillMapDashboard() {
           <EmptyState />
         ) : (
           <>
-            {activeTab === "overview" && (
-              <OverviewTab profile={profile} />
-            )}
-            {activeTab === "heatmap" && (
-              <SkillHeatmap profile={profile} />
-            )}
-            {activeTab === "timeline" && (
-              <GrowthTimeline timeline={timeline} />
-            )}
+            {activeTab === "overview" && <OverviewTab profile={profile} />}
+            {activeTab === "heatmap" && <SkillHeatmap profile={profile} />}
+            {activeTab === "timeline" && <GrowthTimeline timeline={timeline} />}
           </>
         )}
       </div>
@@ -116,7 +148,6 @@ function OverviewTab({ profile }: { profile: SkillProfile }) {
     levelCounts[p.currentLevel] += 1
   }
 
-  // 最新のQCDESデータを取得（最もrecentなlatestScoresから）
   const latestScores = proficiencies
     .filter((p) => p.latestScores)
     .sort(
@@ -149,9 +180,9 @@ function OverviewTab({ profile }: { profile: SkillProfile }) {
           <div className="flex flex-wrap gap-3 text-xs text-gray-600">
             {Object.entries(profile.assessmentsBySource).map(
               ([source, count]) =>
-                count > 0 && (
+                (count as number) > 0 && (
                   <span key={source} className="bg-gray-50 px-2 py-1 rounded">
-                    {sourceLabel(source)} : {count}
+                    {sourceLabel(source)} : {count as number}
                   </span>
                 )
             )}
@@ -179,7 +210,10 @@ function OverviewTab({ profile }: { profile: SkillProfile }) {
           </h2>
           <div className="grid grid-cols-4 gap-4">
             <ScoreBar label="観点網羅度" value={latestScores.viewpointCoverage} />
-            <ScoreBar label="構造的思考度" value={latestScores.structuralThinking} />
+            <ScoreBar
+              label="構造的思考度"
+              value={latestScores.structuralThinking}
+            />
             <ScoreBar label="自発性" value={latestScores.proactiveness} />
             <ScoreBar label="専門性レベル" value={latestScores.expertiseLevel} />
           </div>
@@ -207,7 +241,9 @@ function StatCard({
       <div className="text-xs text-gray-500">{label}</div>
       <div className="mt-1 text-lg font-bold text-gray-900">
         {value}
-        {sub && <span className="text-sm font-normal text-gray-400">{sub}</span>}
+        {sub && (
+          <span className="text-sm font-normal text-gray-400">{sub}</span>
+        )}
       </div>
     </div>
   )
