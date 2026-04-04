@@ -106,7 +106,7 @@ export function SkillHeatmap({ profile }: Props) {
                       <div
                         key={skill.id}
                         className={`
-                          w-[34px] h-[30px] rounded-[3px] cursor-pointer
+                          w-[56px] h-[48px] rounded-[4px] cursor-pointer
                           flex items-center justify-center
                           border transition-all
                           ${LEVEL_BG[level]} ${LEVEL_BORDER[level]}
@@ -116,10 +116,10 @@ export function SkillHeatmap({ profile }: Props) {
                         onMouseLeave={handleMouseLeave}
                       >
                         <span
-                          className={`text-[7px] font-medium leading-[1.1] text-center px-[1px] select-none ${LEVEL_TEXT[level]}`}
+                          className={`text-[9px] font-medium leading-[1.2] text-center px-0.5 select-none ${LEVEL_TEXT[level]}`}
                         >
-                          {skill.name.length > 3
-                            ? skill.name.slice(0, 3)
+                          {skill.name.length > 5
+                            ? skill.name.slice(0, 5)
                             : skill.name}
                         </span>
                       </div>
