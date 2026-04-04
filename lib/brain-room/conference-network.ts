@@ -115,15 +115,13 @@ ${characters.map(c => `- ${c.name} (${c.background}): ${c.personality}`).join('\
 Speaking statistics:
 ${speakingStats.map(s => `${s.name}: ${s.count} times`).join(', ')}
 
-Consider (in order of priority):
-1. **Purpose Achievement**: Who can best advance the conference purpose right now?
-2. **Expertise Match**: Whose background/skills are most relevant to achieving the goal?
-3. **Natural Flow**: If someone was mentioned by name or role, they should speak next
-4. **Balance**: Avoid same person speaking too much, but prioritize purpose advancement
+RULES:
+1. **連続発言禁止**: 直前の発言者は絶対に選ばない。
+2. **バランス最優先**: 発言回数が最も少ない人を優先する。Speaking statisticsを必ず確認すること。
+3. **専門性マッチ**: 発言回数が同程度なら、議題に最も関連する専門性を持つ人を選ぶ。
+4. **名前呼び**: 直前の発言で名前やスキルが言及された場合はその人を選ぶ。
 
-${context.purpose ? `Focus on selecting the speaker who can make the most meaningful contribution toward achieving: "${context.purpose}"` : ''}
-
-Select ONE speaker name only. Respond with just the name.`
+名前を1つだけ返してください。`
 
   try {
     const facilitatorResult = await facilitatorAgent.generate(facilitatorPrompt, {
