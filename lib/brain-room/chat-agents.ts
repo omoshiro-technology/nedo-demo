@@ -16,11 +16,12 @@ export async function selectChatResponders(
 
   const agent = new Agent({
     name: "chat-responder-selector",
-    instructions: `ユーザーのメッセージに対して、どのペルソナが応答すべきか判定してください。
+    instructions: `グループチャットで、ユーザーの発言に対して応答するペルソナを選んでください。
+重要: これはグループチャットです。基本的に2人以上が応答するのが自然です。
+- 必ず2人以上を選ぶ（各ペルソナの異なる視点が価値）
 - 名前で呼ばれたペルソナは必ず含める
-- 複数の視点が有益な場合は積極的に2〜3人を選ぶ（グループチャットなので複数人の返答が自然）
-- 技術的な議論や意見を求める質問では、異なる専門性を持つ2人以上を選ぶ
-- 雑談や単純な確認なら1人でもよい
+- 3人全員が応答してもよい
+- 1人だけにするのは、本当に単純な確認（はい/いいえ）の場合のみ
 JSON形式で返してください: { "ids": [数字の配列] }`,
     model: anthropic("claude-haiku-4-5-20251001"),
   })
@@ -37,10 +38,16 @@ JSON形式で返してください: { "ids": [数字の配列] }`,
     )
     let raw = (result.text || "").trim().replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim()
     const parsed = JSON.parse(raw)
-    const ids = (parsed.ids || parsed.responderIds || []).filter((id: number) => selectedIds.includes(id))
-    return ids.length > 0 ? ids.slice(0, 3) : [selectedIds[0]]
+    let ids = (parsed.ids || parsed.responderIds || []).filter((id: number) => selectedIds.includes(id))
+    // Ensure at least 2 responders in group chat
+    if (ids.length < 2 && selectedIds.length >= 2) {
+      for (const sid of selectedIds) {
+        if (!ids.includes(sid)) { ids.push(sid); break }
+      }
+    }
+    return ids.length > 0 ? ids : selectedIds.slice(0, 2)
   } catch {
-    return [selectedIds[0]]
+    return selectedIds.slice(0, 2)
   }
 }
 

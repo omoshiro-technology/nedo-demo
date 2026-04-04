@@ -838,6 +838,18 @@ export function DiscussionInterface({
               </CardHeader>
               <CardContent>
                 <ScrollArea className="h-[50vh] w-full p-4 border rounded-md" ref={chatScrollRef}>
+                  {appMode === "chat" && status === "running" && messages.length === 0 && (
+                    <div className="text-center text-gray-500 text-sm py-4 mb-4 border-b border-gray-200">
+                      <p className="font-medium mb-1">
+                        {selectedChatPersonas.length === 1
+                          ? `${characters.find(c => c.id === selectedChatPersonas[0])?.name}とのチャット`
+                          : `グループチャット`}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        参加者: {selectedChatPersonas.map(id => characters.find(c => c.id === id)?.name).filter(Boolean).join("、")}
+                      </p>
+                    </div>
+                  )}
                   {messages.map((msg, index) => (
                     <div
                       key={index}
