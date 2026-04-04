@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 const navItems = [
   { label: "BRAIN-Room", href: "/brain-room" },
   { label: "ComPath", href: "/compath" },
+  { label: "スキルマップ", href: "/skill-map" },
 ]
 
 export function AppHeader() {
