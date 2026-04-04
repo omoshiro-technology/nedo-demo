@@ -91,8 +91,8 @@ export function SkillHeatmap({ profile }: Props) {
             return (
               <div key={category.id} className="flex items-center gap-0 mb-0.5">
                 {/* カ���ゴリラベル */}
-                <div className="w-28 shrink-0 pr-2 text-right">
-                  <span className="text-[11px] font-medium text-slate-500 leading-none">
+                <div className="w-24 shrink-0 pr-2 text-right">
+                  <span className="text-[10px] font-medium text-slate-500 leading-none">
                     {category.name}
                   </span>
                 </div>
@@ -106,7 +106,7 @@ export function SkillHeatmap({ profile }: Props) {
                       <div
                         key={skill.id}
                         className={`
-                          w-[42px] h-[36px] rounded-[3px] cursor-pointer
+                          w-[34px] h-[30px] rounded-[3px] cursor-pointer
                           flex items-center justify-center
                           border transition-all
                           ${LEVEL_BG[level]} ${LEVEL_BORDER[level]}
@@ -116,10 +116,10 @@ export function SkillHeatmap({ profile }: Props) {
                         onMouseLeave={handleMouseLeave}
                       >
                         <span
-                          className={`text-[8px] font-medium leading-[1.1] text-center px-[2px] select-none ${LEVEL_TEXT[level]}`}
+                          className={`text-[7px] font-medium leading-[1.1] text-center px-[1px] select-none ${LEVEL_TEXT[level]}`}
                         >
-                          {skill.name.length > 4
-                            ? skill.name.slice(0, 4)
+                          {skill.name.length > 3
+                            ? skill.name.slice(0, 3)
                             : skill.name}
                         </span>
                       </div>
