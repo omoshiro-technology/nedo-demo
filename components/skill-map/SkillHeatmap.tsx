@@ -149,6 +149,9 @@ export function SkillHeatmap({ profile }: Props) {
           position={tooltipPos}
         />
       )}
+
+      {/* レベル定義の説明 */}
+      <LevelGuide />
     </div>
   )
 }
@@ -224,6 +227,77 @@ function SkillTooltip({
       {/* 矢印 */}
       <div className="flex justify-center">
         <div className="w-2 h-2 bg-gray-900 rotate-45 -mt-1" />
+      </div>
+    </div>
+  )
+}
+
+// ============================================================
+// レベル定義の説明
+// ============================================================
+
+const LEVEL_GUIDE: Array<{
+  level: SkillLevel
+  name: string
+  description: string
+  criteria: string
+}> = [
+  {
+    level: 1,
+    name: "認知",
+    description: "そのスキル領域の存在と基本的な概念を知っている段階。",
+    criteria:
+      "用語や基本原理を聞いたことがある。マニュアルや指示に従って作業できるが、理由の説明はできない。",
+  },
+  {
+    level: 2,
+    name: "理解",
+    description: "なぜそうするのかを含めて論理的に説明できる段階。",
+    criteria:
+      "原理・根拠を理解し、標準的な状況で自律的に判断できる。他者に概要を教えられる。",
+  },
+  {
+    level: 3,
+    name: "応用",
+    description: "非定型な状況でも自ら論点を立てて対処できる段階。",
+    criteria:
+      "前例のない状況で仮説を立て、複数の選択肢を比較して最適解を導ける。改善提案や後輩指導ができる。",
+  },
+  {
+    level: 4,
+    name: "統合",
+    description: "複数の領域を横断的に俯瞰し、組織をリードできる段階。",
+    criteria:
+      "異なる専門領域のトレードオフを統合的に判断し、戦略や仕組みを設計できる。組織の技術方針に影響を与えられる。",
+  },
+]
+
+function LevelGuide() {
+  return (
+    <div className="mt-6 pt-5 border-t border-gray-100">
+      <h3 className="text-xs font-bold text-gray-700 mb-3">
+        習熟レベルの定義
+      </h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+        {LEVEL_GUIDE.map((item) => (
+          <div
+            key={item.level}
+            className="rounded-lg border border-gray-100 p-3"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <span
+                className={`px-2 py-0.5 rounded text-xs font-bold ${LEVEL_BG[item.level]} ${LEVEL_TEXT[item.level]}`}
+              >
+                Lv.{item.level}
+              </span>
+              <span className="text-sm font-bold text-gray-900">
+                {item.name}
+              </span>
+            </div>
+            <p className="text-xs text-gray-700 mb-1.5">{item.description}</p>
+            <p className="text-xs text-gray-500">{item.criteria}</p>
+          </div>
+        ))}
       </div>
     </div>
   )

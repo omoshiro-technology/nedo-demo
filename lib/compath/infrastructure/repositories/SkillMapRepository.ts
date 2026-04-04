@@ -9,10 +9,14 @@
 import type {
   SkillAssessment,
   SkillProfile,
-  SessionSource,
+  SkillLevel,
   TimelineEntry,
   SkillTimeline,
 } from "../../domain/skillMap/types";
+import {
+  SKILL_CATEGORIES,
+  SKILL_DEFINITIONS,
+} from "../../domain/skillMap/skillCatalog";
 
 // ============================================================
 // インターフェース
@@ -45,13 +49,56 @@ const profiles = new Map<string, SkillProfile>();
 
 let seeded = false;
 
-function computeCompositeScore(tq: SkillAssessment["thoughtQuality"]): number {
-  return Math.round(
-    tq.viewpointCoverage * 0.25 +
-      tq.structuralThinking * 0.30 +
-      tq.proactiveness * 0.25 +
-      tq.expertiseLevel * 0.20
-  );
+/** スキルID → カテゴリID のルックアップ */
+const skillToCategoryMap = new Map(
+  SKILL_DEFINITIONS.map((s) => [s.id, s.categoryId])
+);
+const categoryIds = SKILL_CATEGORIES.map((c) => c.id);
+
+/**
+ * ア��スメントを時系列で累積し、各時点でのカテゴリ別スコアを算出する。
+ *
+ * 各アセスメント時点で「それまでの全アセスメントで到達した最高レベル」を
+ * スキルごとに保持し、カテゴリ単位で平均を取る。
+ */
+function computeTimelineEntries(sorted: SkillAssessment[]): TimelineEntry[] {
+  // skillId → 累積最高レベル
+  const cumulativeLevels = new Map<string, SkillLevel>();
+
+  return sorted.map((a) => {
+    // この時点までのスキルレベルを更新
+    for (const [skillId, level] of Object.entries(a.skillLevels)) {
+      const prev = cumulativeLevels.get(skillId) ?? 0;
+      if (level > prev) cumulativeLevels.set(skillId, level as SkillLevel);
+    }
+
+    // カテゴリ別スコア算出
+    const categoryScores: Record<string, number> = {};
+    for (const catId of categoryIds) {
+      const skillsInCat = SKILL_DEFINITIONS.filter((s) => s.categoryId === catId);
+      const total = skillsInCat.reduce((sum, s) => {
+        return sum + (cumulativeLevels.get(s.id) ?? 0);
+      }, 0);
+      // 0-100 にスケール (max = skillsInCat.length * 4)
+      categoryScores[catId] = skillsInCat.length > 0
+        ? Math.round((total / (skillsInCat.length * 4)) * 100)
+        : 0;
+    }
+
+    // 総合 = カテゴリスコアの平均
+    const catValues = Object.values(categoryScores);
+    const compositeScore = catValues.length > 0
+      ? Math.round(catValues.reduce((a, b) => a + b, 0) / catValues.length)
+      : 0;
+
+    return {
+      assessmentId: a.id,
+      sessionSource: a.sessionSource,
+      compositeScore,
+      categoryScores,
+      assessedAt: a.assessedAt,
+    };
+  });
 }
 
 /** サンプルデータを投入（初回のみ） */
@@ -118,19 +165,12 @@ export const SkillMapRepository: ISkillMapRepository = {
     ensureSeeded();
     const userAssessments = this.findAssessmentsByUser(userId);
 
-    const entries: TimelineEntry[] = userAssessments
-      .sort(
-        (a, b) =>
-          new Date(a.assessedAt).getTime() - new Date(b.assessedAt).getTime()
-      )
-      .slice(-limit)
-      .map((a) => ({
-        assessmentId: a.id,
-        sessionSource: a.sessionSource,
-        compositeScore: computeCompositeScore(a.thoughtQuality),
-        thoughtQuality: a.thoughtQuality,
-        assessedAt: a.assessedAt,
-      }));
+    const sorted = [...userAssessments].sort(
+      (a, b) =>
+        new Date(a.assessedAt).getTime() - new Date(b.assessedAt).getTime()
+    );
+
+    const entries = computeTimelineEntries(sorted).slice(-limit);
 
     return { userId, entries };
   },

@@ -165,13 +165,14 @@ export type SkillProfile = {
 // タイムライン（成長曲線用）
 // ============================================================
 
-/** タイムライン上の1データポイント */
+/** タイムライン上の1データポイント — カテゴリ別スコア */
 export type TimelineEntry = {
   assessmentId: string;
   sessionSource: SessionSource;
-  /** 思考品質の総合スコア（4軸の加重平均） */
+  /** 総合スコア（全カテゴリの平均） */
   compositeScore: number;
-  thoughtQuality: ThoughtQualityScore;
+  /** カテゴリ別スコア（0-100）— カテゴリ内の平均習熟レベル / 4 * 100 */
+  categoryScores: Record<string, number>;
   assessedAt: string;
 };
 
