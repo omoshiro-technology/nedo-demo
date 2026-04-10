@@ -7,7 +7,7 @@
  * LLMに判定を任せることで、文脈を理解した精度の高い判定を行う
  */
 
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../infrastructure/llm/jsonExtractor";
 
 /** 意思決定ナビゲーター提案データ */

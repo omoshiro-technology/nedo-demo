@@ -31,7 +31,7 @@ import { generateRationalePresets, generatePresetsForThinkingPattern } from "../
 import { LAYOUT, LAYOUT_V2 } from "../../domain/decisionNavigator/layoutConstants";
 import { calculateGoalPosition } from "../../domain/decisionNavigator/layoutHelpers";
 import type { SelectionHistoryEntry } from "./types";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import { buildRecommendedPathPromptSet } from "./llm/recommendedPathPrompt";
 import { parseDecisionTreeResponse, buildRetryPrompt, type LLMDecisionTreeResponse, type LLMTreeNode, type LLMCriteriaOrder } from "./llm/llmParser";
 import { THINKING_PATTERN_LABELS } from "./types";
@@ -109,7 +109,7 @@ export async function generateRecommendedPath(
   }
 
   // LLM APIキーがある場合はLLM生成を試行
-  if (env.openaiApiKey) {
+  if (env.anthropicApiKey) {
     try {
       debugLog("generateRecommendedPath", "Attempting LLM generation...", { supportMode, thinkingStrategy });
       const result = await generateRecommendedPathWithLLM(context, supportMode, thinkingStrategy);

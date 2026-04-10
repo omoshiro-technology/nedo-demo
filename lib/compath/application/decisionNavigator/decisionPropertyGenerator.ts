@@ -7,7 +7,7 @@
 
 import { env } from "../../config/env";
 import { generateId, getTimestamp } from "./utils";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import type { DecisionFlowNode } from "./types";
 import type {
   DecisionProperty,
@@ -52,7 +52,7 @@ export async function generateDecisionProperty(
   context: GenerateDecisionPropertyContext
 ): Promise<DecisionProperty | null> {
   // APIキーがない場合はフォールバック
-  if (!env.openaiApiKey) {
+  if (!env.anthropicApiKey) {
     return generateFallbackDecisionProperty(node, context);
   }
 

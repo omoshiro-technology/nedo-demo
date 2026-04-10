@@ -1,6 +1,6 @@
 import type { GraphResult, GraphNode } from "../../domain/types";
 import type { MissingNodeSuggestion } from "./detectMissingNodes";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../infrastructure/llm/jsonExtractor";
 import { env } from "../../config/env";
 
@@ -25,7 +25,7 @@ export async function suggestFillingApproach(
   graph: GraphResult,
   fullText: string
 ): Promise<FillingSuggestion> {
-  if (!env.openaiApiKey) {
+  if (!env.anthropicApiKey) {
     return {
       originalMissing: missing,
       fillingOptions: [],
@@ -44,7 +44,7 @@ export async function suggestFillingApproach(
 2. infer: 既存情報から論理的に推論可能な情報
 3. prompt-user: ユーザーへの質問が必要な情報`,
       userContent: prompt,
-      model: env.openaiModelMid,
+      model: env.anthropicModelDefault,
       temperature: 0.3,
       maxTokens: 1200
     });

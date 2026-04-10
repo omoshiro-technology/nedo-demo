@@ -7,7 +7,7 @@
  */
 
 import type { SupportMode, SupportModeDetectionResult } from "./types";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../infrastructure/llm/jsonExtractor";
 import { env } from "../../config/env";
 
@@ -168,7 +168,7 @@ async function detectByLLM(
 ): Promise<SupportModeDetectionResult> {
   try {
     const content = await generateChatCompletion({
-      model: env.openaiModelDefault,
+      model: env.anthropicModelDefault,
       systemPrompt: MODE_DETECTION_SYSTEM_PROMPT,
       userContent: `質問: ${purpose}`,
       temperature: 0.3,

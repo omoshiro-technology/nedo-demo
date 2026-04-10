@@ -4,7 +4,7 @@
  * 生成結果の品質を検証し、閾値を下回る場合は再生成を促す
  */
 
-import { generateChatCompletion } from "../../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../../infrastructure/llm/jsonExtractor";
 
 /**

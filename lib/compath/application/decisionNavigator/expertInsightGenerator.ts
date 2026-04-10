@@ -9,7 +9,7 @@
 
 import { env } from "../../config/env";
 import { generateId, getTimestamp } from "./utils";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../infrastructure/llm/jsonExtractor";
 import type {
   ExpertInsight,
@@ -309,7 +309,7 @@ export async function generateInsights(
   insights.push(...knowledgeBasedInsights);
 
   // 4. LLMによるインサイト生成（APIキーがある場合）
-  if (env.openaiApiKey && triggerTiming === "on_node_selection") {
+  if (env.anthropicApiKey && triggerTiming === "on_node_selection") {
     try {
       const llmInsights = await generateLLMInsights(
         session.purpose,

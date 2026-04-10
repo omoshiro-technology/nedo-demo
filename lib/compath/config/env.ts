@@ -6,6 +6,12 @@ export const env = {
   openaiModelGraph: process.env.OPENAI_MODEL_GRAPH ?? "gpt-5.2",
   openaiModelFast: process.env.OPENAI_MODEL_FAST ?? "gpt-4o-mini",
   openaiModelMid: process.env.OPENAI_MODEL_MID ?? "gpt-4o",
+
+  anthropicApiKey: process.env.ANTHROPIC_API_KEY ?? "",
+  anthropicBaseUrl: process.env.ANTHROPIC_BASE_URL ?? "https://api.anthropic.com/v1/messages",
+  anthropicModelDefault: process.env.ANTHROPIC_MODEL_DEFAULT ?? "claude-sonnet-4-6",
+  anthropicModelFast: process.env.ANTHROPIC_MODEL_FAST ?? "claude-haiku-4-5-20251001",
+
   port: Number(process.env.PORT ?? 3001),
 
   debugLlmLog: process.env.DEBUG_LLM_LOG === "true",

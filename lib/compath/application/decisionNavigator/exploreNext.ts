@@ -10,7 +10,7 @@
 
 import { SessionStore } from "./sessionStore";
 import { generateId, getTimestamp } from "./utils";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../infrastructure/llm/jsonExtractor";
 import type {
   DecisionNavigatorSession,

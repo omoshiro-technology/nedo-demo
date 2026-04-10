@@ -5,7 +5,7 @@
  * 適切なエージェントを提案する
  */
 
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../infrastructure/llm/jsonExtractor";
 import { env } from "../../config/env";
 
@@ -296,7 +296,7 @@ export async function classifyDocument(
   userMessage: string
 ): Promise<ClassificationResult> {
   // APIキーがない場合はフォールバック
-  if (!env.openaiApiKey) {
+  if (!env.anthropicApiKey) {
     console.log("[DocumentClassifier] No API key, using keyword-based fallback");
     return classifyByKeywords(filePreview, fileName);
   }
@@ -308,7 +308,7 @@ export async function classifyDocument(
     const response = await generateChatCompletion({
       systemPrompt: CLASSIFICATION_SYSTEM_PROMPT,
       userContent: buildUserPrompt(truncatedPreview, fileName, userMessage),
-      model: env.openaiModelFast, // 高速レスポンス用モデルを使用
+      model: env.anthropicModelFast, // 高速レスポンス用モデルを使用
       temperature: 0.1, // 一貫性のために低めの温度
       maxTokens: 256,
     });

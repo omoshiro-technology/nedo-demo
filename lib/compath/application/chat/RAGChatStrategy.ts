@@ -13,7 +13,7 @@ import type {
   RetrievedKnowledge
 } from "../../infrastructure/vectordb/KnowledgeRetriever";
 import { buildChatPrompt } from "./buildChatPrompt";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 
 const SYSTEM_PROMPT = `あなたは構造化ノードと要約を補助する対話アシスタントです。
 

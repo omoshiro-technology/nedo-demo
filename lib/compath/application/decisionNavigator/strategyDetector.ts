@@ -11,7 +11,7 @@
  */
 
 import type { ThinkingStrategyId } from "../../domain/decisionNavigator/strategies/IThinkingStrategy";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../infrastructure/llm/jsonExtractor";
 import { env } from "../../config/env";
 
@@ -162,7 +162,7 @@ const STRATEGY_DETECTION_PROMPT = `あなたはユーザーの質問を分類す
 async function detectByLLM(purpose: string): Promise<StrategyDetectionResult> {
   try {
     const content = await generateChatCompletion({
-      model: env.openaiModelDefault,
+      model: env.anthropicModelDefault,
       systemPrompt: STRATEGY_DETECTION_PROMPT,
       userContent: `質問: ${purpose}`,
       temperature: 0.3,

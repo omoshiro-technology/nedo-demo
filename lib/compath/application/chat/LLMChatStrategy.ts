@@ -4,7 +4,7 @@
  */
 import type { ChatStrategy, ChatRequest, ChatResponse } from "../../domain/chat/ChatStrategy";
 import { buildChatPrompt } from "./buildChatPrompt";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 
 const SYSTEM_PROMPT = `あなたは専門知識を持つ対話アシスタントです。
 

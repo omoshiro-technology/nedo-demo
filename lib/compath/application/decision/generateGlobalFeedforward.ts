@@ -16,7 +16,7 @@ import type {
   GlobalFeedforwardAction,
   VeteranVoice,
 } from "../../domain/types";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../infrastructure/llm/jsonExtractor";
 import { env } from "../../config/env";
 import { createHash } from "node:crypto";
@@ -54,7 +54,7 @@ export async function generateGlobalFeedforward(
   context?: string
 ): Promise<GlobalFeedforward | undefined> {
   // APIキーがない場合は生成しない
-  if (!env.openaiApiKey) {
+  if (!env.anthropicApiKey) {
     return undefined;
   }
 
@@ -161,7 +161,7 @@ JSONで回答してください。`;
     const response = await generateChatCompletion({
       systemPrompt,
       userContent: userPrompt,
-      model: env.openaiModelDefault,
+      model: env.anthropicModelDefault,
       temperature: 0.7,
       maxTokens: 2500,
     });

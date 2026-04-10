@@ -3,7 +3,7 @@
  */
 
 import type { DecisionFlowEdge } from "./types";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../infrastructure/llm/jsonExtractor";
 import {
   RELATED_CRITERIA_SYSTEM_PROMPT,

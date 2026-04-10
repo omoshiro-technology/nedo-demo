@@ -1,5 +1,5 @@
 import type { DecisionItem, DecisionPatternType, ConfidenceLevel } from "../../domain/types";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../infrastructure/llm/jsonExtractor";
 import { env } from "../../config/env";
 import { createHash } from "node:crypto";
@@ -36,7 +36,7 @@ export async function extractDecisionsWithLLM(
   documentDate: string
 ): Promise<DecisionItem[]> {
   // APIキーがない場合はnullを返す（フォールバック用）
-  if (!env.openaiApiKey) {
+  if (!env.anthropicApiKey) {
     return [];
   }
 
@@ -120,7 +120,7 @@ ${truncatedText}
     const response = await generateChatCompletion({
       systemPrompt,
       userContent,
-      model: env.openaiModelDefault,
+      model: env.anthropicModelDefault,
       temperature: 0,  // 決定論的な出力で安定性を確保
       maxTokens: 8192,  // reasoning_tokensを含めるため増加
     });
@@ -355,5 +355,5 @@ function generateDecisionId(fileName: string, content: string, index: number): s
  * LLM抽出が利用可能かどうかを確認
  */
 export function isLLMExtractionAvailable(): boolean {
-  return !!env.openaiApiKey;
+  return !!env.anthropicApiKey;
 }

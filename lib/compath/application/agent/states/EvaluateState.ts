@@ -8,7 +8,7 @@ import type { AgentContext } from "../AgentContext";
 import type { EvaluationResult, AgentPlan } from "../../../domain/agent/types";
 import type { ActResult } from "./ActState";
 import type { SenseResult } from "./SenseState";
-import { generateChatCompletion } from "../../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../../infrastructure/llm/jsonExtractor";
 
 /**

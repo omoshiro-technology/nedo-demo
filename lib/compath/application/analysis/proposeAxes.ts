@@ -1,7 +1,7 @@
 import { AXIS_DEFINITIONS } from "../../domain/axes";
 import type { AxisDefinition, AxisLevel, AxisProposal, DocumentTypeLabel } from "../../domain/types";
 import { env } from "../../config/env";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 
 const MIN_LLM_AXIS_SCORE = 0.35;
 const MIN_ACCEPTED_SCORE = 0.35;
@@ -13,8 +13,8 @@ export async function proposeAxes(
   const cleaned = text.replace(/\s+/g, " ").trim();
 
   // APIキーがない場合はフリーモードにフォールバック
-  if (!env.openaiApiKey) {
-    console.warn("[proposeAxes] OPENAI_API_KEY未設定のためフリーモードで動作します");
+  if (!env.anthropicApiKey) {
+    console.warn("[proposeAxes] ANTHROPIC_API_KEY未設定のためフリーモードで動作します");
     return [makeFreeModeProposal()];
   }
 
@@ -65,7 +65,7 @@ async function proposeAxesWithLLM(
       systemPrompt:
         "あなたは文書の内容に最適な分析軸を選定するアシスタントです。与えられた候補軸の中から適合度を0〜1でスコアリングし、JSONのみで返してください。",
       userContent,
-      model: env.openaiModelSummary,
+      model: env.anthropicModelDefault,
       temperature: 0,
       maxTokens: 256
     });
@@ -143,7 +143,7 @@ async function proposeDynamicAxis(
       systemPrompt:
         "あなたは文書構造化の設計者です。与えられた文書に最適な軸を1つ設計し、JSONのみ返してください。",
       userContent,
-      model: env.openaiModelSummary,
+      model: env.anthropicModelDefault,
       temperature: 0,
       maxTokens: 320
     });

@@ -1,10 +1,10 @@
 /**
  * チャット機能
- * - GPT-5.2を使用（env.openaiModelDefaultで設定）
+ * - Claude Sonnetを使用（env.anthropicModelDefaultで設定）
  * - 選択されたノード・エッジをコンテキストとして渡す
  */
 
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import { generateId, getTimestamp } from "./utils";
 import { SessionStore } from "./sessionStore";
 import type {

@@ -932,7 +932,7 @@ export async function recordSelection(
     // 旧来の動的生成方式（Phase 8以前のセッション用）
     // デバッグログ
     debugLog("recordSelection", "LLM check:", {
-      hasApiKey: !!env.openaiApiKey,
+      hasApiKey: !!env.anthropicApiKey,
       generationMode: session.generationMode,
       selectedNodeLevel: selectedNode.level,
     });
@@ -940,7 +940,7 @@ export async function recordSelection(
     // LLM統合: LLMで次の選択肢を動的生成（APIキーがある場合）
     // Note: generationMode が "llm" または "fallback" の場合はLLMを試みる
     // "template" の場合のみテンプレートを使用（APIキーがない場合）
-    if (env.openaiApiKey && session.generationMode !== "template") {
+    if (env.anthropicApiKey && session.generationMode !== "template") {
       // プリフェッチキャッシュを確認
       const cachedOptions = getPrefetchedOptions(session.id, request.nodeId);
       if (cachedOptions && cachedOptions.options.length > 0) {
@@ -1028,7 +1028,7 @@ export async function recordSelection(
       if (nextOptions.options.length > 0 && !nextOptions.warnings) {
         nextOptions.warnings = [];
       }
-      if (nextOptions.options.length > 0 && env.openaiApiKey && session.generationMode !== "template") {
+      if (nextOptions.options.length > 0 && env.anthropicApiKey && session.generationMode !== "template") {
         nextOptions.warnings?.push("AI生成に失敗したため、テンプレートベースの選択肢を表示しています。");
       }
     }
@@ -1126,7 +1126,7 @@ export async function recordSelection(
 
     // Phase 7: DecisionPropertyをバックグラウンドで生成（レスポンスをブロックしない）
     // 生成完了後にSessionStoreを更新するため、クライアントは次回取得時に反映される
-    if (newNodes.length > 0 && env.openaiApiKey) {
+    if (newNodes.length > 0 && env.anthropicApiKey) {
       const propertyContext: GenerateDecisionPropertyContext = {
         purpose: session.purpose,
         selectedPath: session.selectionHistory.map((h) => h.nodeLabel),

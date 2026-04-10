@@ -1,5 +1,5 @@
 import type { GraphResult, GraphNode, AxisLevel } from "../../domain/types";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../infrastructure/llm/jsonExtractor";
 import { env } from "../../config/env";
 
@@ -19,7 +19,7 @@ export async function detectMissingNodesWithAI(
   graph: GraphResult,
   fullText: string
 ): Promise<MissingNodeSuggestion[]> {
-  if (!env.openaiApiKey) {
+  if (!env.anthropicApiKey) {
     return [];
   }
 
@@ -69,7 +69,7 @@ async function detectMissingForLevel(
 文書から欠落している重要な情報を検出し、構造化されたナレッジとして抽出します。
 必ず指定されたJSON形式で返してください。`,
       userContent: prompt,
-      model: env.openaiModelMid,
+      model: env.anthropicModelDefault,
       temperature: 0.2,
       maxTokens: 1000
     });

@@ -11,7 +11,7 @@ import type {
   GraphResult
 } from "../../domain/types";
 import { env } from "../../config/env";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import { LRUCache } from "../../infrastructure/cache/LRUCache";
 import {
   type LlmGraphNode,
@@ -143,7 +143,7 @@ async function extractNodesForLevel(
     systemPrompt:
       "あなたは日本語の情報抽出ツールです。指定されたJSONのみを返してください。余計な文字やコードブロックを含めないでください。",
     userContent: prompt,
-    model: env.openaiModelGraph,
+    model: env.anthropicModelDefault,
     temperature: 0,
     maxTokens: 600
   });
@@ -192,7 +192,7 @@ async function extractEdgesWithLLM(
       systemPrompt:
         "あなたは日本語の関係抽出ツールです。指定されたJSONのみを返し、不要な文字やコードブロックは含めないでください。",
       userContent: prompt,
-      model: env.openaiModelGraph,
+      model: env.anthropicModelDefault,
       temperature: 0,
       maxTokens: 400
     });

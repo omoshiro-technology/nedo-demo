@@ -10,7 +10,7 @@ import type {
   FeedforwardAction,
   VeteranVoice,
 } from "../../domain/types";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../infrastructure/llm/jsonExtractor";
 import { env } from "../../config/env";
 import { createHash } from "node:crypto";
@@ -54,7 +54,7 @@ export async function generateFeedforward(
   context?: string
 ): Promise<GenerateFeedforwardResult> {
   // APIキーがない場合は空を返す
-  if (!env.openaiApiKey) {
+  if (!env.anthropicApiKey) {
     return { feedforwardActions: [] };
   }
 
@@ -121,7 +121,7 @@ JSONで回答してください。`;
     const response = await generateChatCompletion({
       systemPrompt,
       userContent: userPrompt,
-      model: env.openaiModelDefault,
+      model: env.anthropicModelDefault,
       temperature: 0.7,
       maxTokens: 1500,
     });

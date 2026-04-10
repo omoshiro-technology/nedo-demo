@@ -1,11 +1,11 @@
 /**
  * 問題カテゴリの自動判定
  * - キーワードベース判定（高速・フォールバック用）
- * - LLM判定（高精度・OPENAI_API_KEYがある場合）
+ * - LLM判定（高精度・ANTHROPIC_API_KEYがある場合）
  */
 
 import { env } from "../../config/env";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../infrastructure/llm/jsonExtractor";
 import type { ProblemCategory, ProblemCategoryResult } from "./types";
 
@@ -193,12 +193,12 @@ async function categorizeByLLM(purpose: string): Promise<ProblemCategoryResult> 
 
 /**
  * 問題カテゴリを判定する
- * - OPENAI_API_KEYがある場合: LLM判定（高精度）
+ * - ANTHROPIC_API_KEYがある場合: LLM判定（高精度）
  * - ない場合: キーワードベース判定（高速）
  */
 export async function categorizeProblem(purpose: string): Promise<ProblemCategoryResult> {
   // APIキーがない場合はキーワードベース判定
-  if (!env.openaiApiKey) {
+  if (!env.anthropicApiKey) {
     return categorizeByKeywords(purpose);
   }
 

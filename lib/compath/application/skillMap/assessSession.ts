@@ -10,7 +10,7 @@
  *   D. 専門性レベル（語彙・仮説の具体度）
  */
 
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../infrastructure/llm/jsonExtractor";
 import type {
   SkillAssessment,

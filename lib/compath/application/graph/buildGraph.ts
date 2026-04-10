@@ -20,10 +20,10 @@ export async function buildGraph(
   fullText: string
 ): Promise<BuildGraphResult> {
   // APIキーがない場合はヒューリスティックにフォールバック
-  if (!env.openaiApiKey) {
+  if (!env.anthropicApiKey) {
     return {
       graph: buildGraphHeuristic(axis, pages),
-      warnings: ["OPENAI_API_KEY が設定されていないためローカル抽出にフォールバックしました。"]
+      warnings: ["ANTHROPIC_API_KEY が設定されていないためローカル抽出にフォールバックしました。"]
     };
   }
 

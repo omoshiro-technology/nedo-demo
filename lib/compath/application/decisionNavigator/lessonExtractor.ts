@@ -10,7 +10,7 @@
 import { env } from "../../config/env";
 import { parseJsonFromLLMResponse } from "../../infrastructure/llm/jsonExtractor";
 import { generateId, getTimestamp } from "./utils";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import type { DecisionFlowNode } from "./types";
 import type {
   OverlookedWarningDetail,
@@ -78,7 +78,7 @@ export async function extractLessonsFromPastCases(
   }
 
   // LLMが使えない場合はルールベースで抽出
-  if (!env.openaiApiKey) {
+  if (!env.anthropicApiKey) {
     return extractLessonsRuleBased(pastCases, currentNode, now);
   }
 

@@ -9,7 +9,7 @@ import type { DecisionFlowNode, DecisionNavigatorSession } from "../types";
 import type { Learning } from "../../../domain/decisionNavigator/expertThinking/executionResult";
 import { KnowledgeRepository } from "../../../infrastructure/repositories/KnowledgeRepository";
 import { env } from "../../../config/env";
-import { generateChatCompletion } from "../../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../../infrastructure/llm/jsonExtractor";
 import { generateId, getTimestamp } from "../utils";
 
@@ -108,7 +108,7 @@ export async function autoExtractInsightFromSelection(
     }
 
     // 5. LLMを使った深い知見抽出（APIキーがある場合）
-    if (env.openaiApiKey && session.selectionHistory.length >= 2) {
+    if (env.anthropicApiKey && session.selectionHistory.length >= 2) {
       try {
         const llmInsight = await extractInsightWithLLM(session, selectedNode, rationale);
         if (llmInsight) {

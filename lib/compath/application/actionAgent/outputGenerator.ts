@@ -12,7 +12,7 @@ import type {
   OutputFormat,
 } from "../../domain/actionAgent/outputTemplates";
 import { findTemplateById, MANUFACTURING_TEMPLATES } from "../../domain/actionAgent/outputTemplates";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 
 /** 出力生成のコンテキスト */
 export type OutputGenerationContext = {

@@ -12,7 +12,7 @@ import type {
   CriteriaLabel,
 } from "./types";
 import { generateId, getTimestamp } from "./utils";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 
 // ノードサイズ（幅は統一、高さも統一）
 const NODE_WIDTH = 220;

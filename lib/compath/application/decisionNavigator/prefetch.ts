@@ -150,8 +150,8 @@ async function prefetchSingleNode(
  */
 export function startPrefetch(session: DecisionNavigatorSession): void {
   // LLM APIキーがない場合はプリフェッチしない
-  if (!env.openaiApiKey) {
-    console.log("[Prefetch] Skipped: No OpenAI API key");
+  if (!env.anthropicApiKey) {
+    console.log("[Prefetch] Skipped: No Anthropic API key");
     return;
   }
 

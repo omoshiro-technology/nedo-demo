@@ -5,7 +5,7 @@
  */
 
 import type { AgentContext } from "../AgentContext";
-import { generateChatCompletion } from "../../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../../infrastructure/llm/jsonExtractor";
 
 /**

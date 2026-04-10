@@ -1,5 +1,5 @@
 import { env } from "../../config/env";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 
 const SENTENCE_SPLIT = /(?<=[。！？\n])/u;
 
@@ -21,7 +21,7 @@ export async function summarizeText(text: string): Promise<SummarizeResult> {
     };
   }
 
-  if (env.openaiApiKey) {
+  if (env.anthropicApiKey) {
     const llmResult = await summarizeWithLLM(cleaned);
     if (llmResult.summary) {
       return llmResult;
@@ -93,7 +93,7 @@ async function summarizeWithLLM(text: string): Promise<SummarizeResult> {
       systemPrompt:
         "あなたは日本語のドキュメント要約者です。簡潔で具体的に、箇条書きで返してください。不要な説明は書かないでください。",
       userContent: prompt,
-      model: env.openaiModelSummary,
+      model: env.anthropicModelDefault,
       temperature: 0,
       maxTokens: 512
     });

@@ -6,7 +6,7 @@
 
 import type { AgentContext } from "../AgentContext";
 import type { AgentPlan, PlanStep } from "../../../domain/agent/types";
-import { generateChatCompletion } from "../../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../../infrastructure/llm/jsonExtractor";
 import type { SenseResult } from "./SenseState";
 

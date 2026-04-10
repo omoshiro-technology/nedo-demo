@@ -7,7 +7,7 @@
  * - 安定運転を重視する現場で培った判断構造を活用
  */
 
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../infrastructure/llm/jsonExtractor";
 import { env } from "../../config/env";
 
@@ -380,7 +380,7 @@ export async function generateProposal(
 
   // gpt-5.2はreasoning tokensで2分以上かかるため中速モデルを使用
   // gpt-4oは20-30秒で応答し、品質も十分
-  const model = env.openaiModelMid;
+  const model = env.anthropicModelDefault;
   console.log("[generateProposal] Starting proposal generation...");
   console.log("[generateProposal] Using model:", model);
 

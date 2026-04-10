@@ -97,7 +97,7 @@ export function classifyError(error: unknown): ErrorCode {
     if (message.includes("json") || message.includes("parse")) {
       return ErrorCode.LLM_PARSE_ERROR;
     }
-    if (message.includes("api") || message.includes("openai")) {
+    if (message.includes("api") || message.includes("openai") || message.includes("anthropic")) {
       return ErrorCode.LLM_API_ERROR;
     }
 

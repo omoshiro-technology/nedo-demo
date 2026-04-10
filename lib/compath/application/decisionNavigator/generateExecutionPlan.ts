@@ -5,7 +5,7 @@
 
 import { env } from "../../config/env";
 import { generateId, getTimestamp } from "./utils";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import { parseJsonFromLLMResponse } from "../../infrastructure/llm/jsonExtractor";
 import type {
   DecisionNavigatorSession,
@@ -194,7 +194,7 @@ function generatePlanByTemplate(
 
 /**
  * 実行計画を生成する
- * - OPENAI_API_KEYがある場合: LLMベース生成
+ * - ANTHROPIC_API_KEYがある場合: LLMベース生成
  * - ない場合: テンプレートベース生成
  */
 export async function generateExecutionPlan(
@@ -205,7 +205,7 @@ export async function generateExecutionPlan(
 
   let planData: { summary: string; items: Omit<ExecutionPlanItem, "id" | "order" | "status">[]; risks: ExecutionRisk[] };
 
-  if (env.openaiApiKey) {
+  if (env.anthropicApiKey) {
     try {
       planData = await generatePlanByLLM(session);
     } catch (error) {

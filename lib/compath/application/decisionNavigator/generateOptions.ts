@@ -34,7 +34,7 @@ import {
   generateOverlookedWarningsForOption,
   type QCDESViewpoint,
 } from "./followups";
-import { generateChatCompletion } from "../../infrastructure/llm/openaiClient";
+import { generateChatCompletion } from "../../infrastructure/llm/anthropicClient";
 import { buildNextOptionsPromptSetWithThreeSets } from "./llm/nextOptionsPrompt";
 import { parseNextOptionsResponse, buildRetryPrompt } from "./llm/llmParser";
 import { getOrCreateContext } from "./contextBuilder";
@@ -288,7 +288,7 @@ export async function prefetchNextOptions(
   nodeIds: string[]
 ): Promise<void> {
   // LLM APIキーがない場合はスキップ
-  if (!env.openaiApiKey) {
+  if (!env.anthropicApiKey) {
     return;
   }
 
@@ -342,7 +342,7 @@ async function generateNextOptionsWithLLMInternal(
   const context = getOrCreateContext(session);
 
   // LLM APIキーがない場合はテンプレートフォールバック
-  if (!env.openaiApiKey) {
+  if (!env.anthropicApiKey) {
     return generateNextOptionsWithTemplate(session, selectedNode);
   }
 
@@ -367,7 +367,7 @@ async function generateNextOptionsWithLLMInternal(
     );
 
     const startTime = Date.now();
-    debugLog("generateNextOptionsWithLLM", "Using fast model:", env.openaiModelFast);
+    debugLog("generateNextOptionsWithLLM", "Using fast model:", env.anthropicModelFast);
 
     // Phase 2: 小モデル（gpt-4o-mini）で高速生成（1-3秒目標）
     let response = await generateChatCompletion({
@@ -375,7 +375,7 @@ async function generateNextOptionsWithLLMInternal(
       userContent: userPrompt,
       maxTokens: 2048, // 小モデルはトークン数を抑える
       temperature: 0.7,
-      model: env.openaiModelFast, // gpt-4o-mini
+      model: env.anthropicModelFast, // gpt-4o-mini
     });
 
     const elapsed = Date.now() - startTime;
@@ -393,7 +393,7 @@ async function generateNextOptionsWithLLMInternal(
         userContent: retryPrompt,
         maxTokens: 2048,
         temperature: 0.5,
-        model: env.openaiModelFast,
+        model: env.anthropicModelFast,
       });
       parseResult = parseNextOptionsResponse(response);
 
