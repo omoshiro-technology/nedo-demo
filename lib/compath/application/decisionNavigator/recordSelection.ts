@@ -484,9 +484,17 @@ export async function recordSelection(
     }
 
     // 進捗インジケータ用にcurrentColumnIndexを更新
-    const nextColumnIndex = selectedNodeColumnIndex + 1;
-    if (nextColumnIndex < totalColumns && nextColumnIndex > updatedCurrentColumnIndex) {
-      updatedCurrentColumnIndex = nextColumnIndex;
+    // 最初の未完了（active）列に自動ナビゲート
+    // 探索で追加された列が完了しても、元の未完了列に戻れるようにする
+    const firstActiveIndex = updatedColumnStates.findIndex(s => s === "active");
+    if (firstActiveIndex >= 0) {
+      updatedCurrentColumnIndex = firstActiveIndex;
+    } else {
+      // 全てcompletedまたはlockedの場合: 次のlocked列またはそのまま
+      const nextColumnIndex = selectedNodeColumnIndex + 1;
+      if (nextColumnIndex < totalColumns && nextColumnIndex > updatedCurrentColumnIndex) {
+        updatedCurrentColumnIndex = nextColumnIndex;
+      }
     }
 
     debugLog("recordSelection", "Selection recorded, progress updated:", {
