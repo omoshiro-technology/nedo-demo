@@ -23,40 +23,32 @@ export function QCDESRadar({ scores }: Props) {
     { axis: "安全 (S)", value: scores.qcdesCoverage.safety ? 100 : 0 },
   ]
 
-  // カバー率を計算
   const covered = Object.values(scores.qcdesCoverage).filter(Boolean).length
-  const total = 5
 
   return (
-    <div>
-      <ResponsiveContainer width="100%" height={200}>
-        <RadarChart data={data}>
-          <PolarGrid stroke="#e5e7eb" />
-          <PolarAngleAxis
-            dataKey="axis"
-            tick={{ fontSize: 11, fill: "#6b7280" }}
-          />
-          <PolarRadiusAxis
-            angle={90}
-            domain={[0, 100]}
-            tick={false}
-            axisLine={false}
-          />
-          <Radar
-            name="QCDES"
-            dataKey="value"
-            stroke="#3b82f6"
-            fill="#3b82f6"
-            fillOpacity={0.2}
-            strokeWidth={2}
-            isAnimationActive={true}
-            animationDuration={600}
-            animationEasing="ease-in-out"
-          />
-        </RadarChart>
-      </ResponsiveContainer>
-      <p className="text-center text-xs text-gray-500 mt-1">
-        カバー率: {covered} / {total} 軸
+    <div className="h-full flex flex-col">
+      <div className="flex-1 min-h-0">
+        <ResponsiveContainer width="100%" height="100%">
+          <RadarChart data={data}>
+            <PolarGrid stroke="#e5e7eb" />
+            <PolarAngleAxis dataKey="axis" tick={{ fontSize: 11, fill: "#6b7280" }} />
+            <PolarRadiusAxis angle={90} domain={[0, 100]} tick={false} axisLine={false} />
+            <Radar
+              name="QCDES"
+              dataKey="value"
+              stroke="#3b82f6"
+              fill="#3b82f6"
+              fillOpacity={0.2}
+              strokeWidth={2}
+              isAnimationActive={true}
+              animationDuration={600}
+              animationEasing="ease-in-out"
+            />
+          </RadarChart>
+        </ResponsiveContainer>
+      </div>
+      <p className="text-center text-xs text-gray-500 mt-1 shrink-0">
+        カバー率: {covered} / 5 軸
       </p>
     </div>
   )
