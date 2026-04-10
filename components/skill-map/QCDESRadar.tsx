@@ -29,7 +29,7 @@ export function QCDESRadar({ scores }: Props) {
 
   return (
     <div>
-      <ResponsiveContainer width="100%" height={240}>
+      <ResponsiveContainer width="100%" height={200}>
         <RadarChart data={data}>
           <PolarGrid stroke="#e5e7eb" />
           <PolarAngleAxis
