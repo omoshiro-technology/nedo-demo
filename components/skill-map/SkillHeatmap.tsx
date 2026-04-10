@@ -63,92 +63,90 @@ export function SkillHeatmap({ profile }: Props) {
   }
 
   return (
-    <div ref={containerRef} className="space-y-5">
-      <div className="bg-white rounded-xl border border-slate-200 p-5 relative">
-        <h2 className="text-sm font-bold text-slate-800 mb-1">
-          スキル習熟度マップ
-        </h2>
-        <p className="text-xs text-slate-400 mb-4">
-          セルをホバ��すると全レベルの詳細が表示されます
-        </p>
-
-        {/* 凡例 */}
-        <div className="flex gap-4 mb-4">
+    <div ref={containerRef} className="bg-white rounded-xl border border-slate-200 p-4 h-full flex flex-col">
+      {/* ヘッダー + 凡例 */}
+      <div className="flex items-center justify-between mb-3">
+        <div>
+          <h2 className="text-sm font-bold text-slate-800">
+            スキル習熟度マップ
+          </h2>
+          <p className="text-[10px] text-slate-400">
+            セルをホバーすると詳細が表示されます
+          </p>
+        </div>
+        <div className="flex gap-3">
           {([1, 2, 3, 4] as SkillLevel[]).map((lv) => (
-            <div key={lv} className="flex items-center gap-1.5">
-              <div className={`w-3.5 h-3.5 rounded-sm ${LEVEL_BG[lv]} border ${LEVEL_BORDER[lv]}`} />
-              <span className="text-[11px] text-slate-500">
+            <div key={lv} className="flex items-center gap-1">
+              <div className={`w-3 h-3 rounded-sm ${LEVEL_BG[lv]} border ${LEVEL_BORDER[lv]}`} />
+              <span className="text-[10px] text-slate-500">
                 Lv.{lv} {SKILL_LEVEL_LABELS[lv]}
               </span>
             </div>
           ))}
         </div>
-
-        {/* 2Dヒートマップ — コンパクト */}
-        <div className="overflow-x-auto">
-          {SKILL_CATEGORIES.map((category) => {
-            const skills = skillsByCategory.get(category.id) ?? []
-            return (
-              <div key={category.id} className="flex items-center gap-0 mb-0.5">
-                {/* カ���ゴリラベル */}
-                <div className="w-24 shrink-0 pr-2 text-right">
-                  <span className="text-[10px] font-medium text-slate-500 leading-none">
-                    {category.name}
-                  </span>
-                </div>
-                {/* スキルセル */}
-                <div className="flex gap-[2px]">
-                  {skills.map((skill) => {
-                    const proficiency = profile.proficiencies[skill.id]
-                    const level = (proficiency?.currentLevel ?? 1) as SkillLevel
-                    const isHovered = hoveredSkill === skill.id
-                    return (
-                      <div
-                        key={skill.id}
-                        className={`
-                          w-[56px] h-[48px] rounded-[4px] cursor-pointer
-                          flex items-center justify-center
-                          border transition-all
-                          ${LEVEL_BG[level]} ${LEVEL_BORDER[level]}
-                          ${isHovered ? "ring-2 ring-indigo-400 scale-110 z-10" : "hover:brightness-95"}
-                        `}
-                        onMouseEnter={(e) => handleMouseEnter(skill.id, e)}
-                        onMouseLeave={handleMouseLeave}
-                      >
-                        <span
-                          className={`text-[9px] font-medium leading-[1.2] text-center px-0.5 select-none ${LEVEL_TEXT[level]}`}
-                        >
-                          {skill.name.length > 5
-                            ? skill.name.slice(0, 5)
-                            : skill.name}
-                        </span>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            )
-          })}
-        </div>
-
-        {/* ホバーツールチップ */}
-        {hoveredSkill && (
-          <SkillTooltip
-            skillId={hoveredSkill}
-            profile={profile}
-            position={tooltipPos}
-          />
-        )}
       </div>
 
-      {/* レベル定義の説明 */}
-      <LevelGuide />
+      {/* 2Dヒートマップ — 9x8 長方形 */}
+      <div className="flex-1 flex flex-col justify-center">
+        {SKILL_CATEGORIES.map((category) => {
+          const skills = skillsByCategory.get(category.id) ?? []
+          return (
+            <div key={category.id} className="flex items-center gap-0 mb-[2px]">
+              {/* カテゴリラベル */}
+              <div className="w-32 shrink-0 pr-2 text-right">
+                <span className="text-[10px] font-medium text-slate-500 leading-none">
+                  {category.name}
+                </span>
+              </div>
+              {/* スキルセル */}
+              <div className="flex gap-[2px]">
+                {skills.map((skill) => {
+                  const proficiency = profile.proficiencies[skill.id]
+                  const level = (proficiency?.currentLevel ?? 1) as SkillLevel
+                  const isHovered = hoveredSkill === skill.id
+                  return (
+                    <div
+                      key={skill.id}
+                      className={`
+                        w-[60px] h-[44px] rounded-[4px] cursor-pointer
+                        flex items-center justify-center
+                        border transition-all
+                        ${LEVEL_BG[level]} ${LEVEL_BORDER[level]}
+                        ${isHovered ? "ring-2 ring-indigo-400 scale-110 z-10" : "hover:brightness-95"}
+                      `}
+                      onMouseEnter={(e) => handleMouseEnter(skill.id, e)}
+                      onMouseLeave={handleMouseLeave}
+                    >
+                      <span
+                        className={`text-[9px] font-medium leading-[1.2] text-center px-0.5 select-none ${LEVEL_TEXT[level]}`}
+                      >
+                        {skill.name.length > 6
+                          ? skill.name.slice(0, 6)
+                          : skill.name}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* ホバーツールチップ */}
+      {hoveredSkill && (
+        <SkillTooltip
+          skillId={hoveredSkill}
+          profile={profile}
+          position={tooltipPos}
+        />
+      )}
     </div>
   )
 }
 
 // ============================================================
-// ツールチッ��� — 全レベル表示 + 明るいUI
+// ツールチップ — 全レベル表示
 // ============================================================
 
 function SkillTooltip({
@@ -218,7 +216,6 @@ function SkillTooltip({
                 }`}
               >
                 <div className="flex items-center gap-2 mb-1">
-                  {/* レベルバッジ */}
                   <span
                     className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
                       isCurrent
@@ -228,11 +225,11 @@ function SkillTooltip({
                           : "bg-slate-100 text-slate-400"
                     }`}
                   >
-                    {isCompleted ? "✓" : ""} Lv.{lv} {SKILL_LEVEL_LABELS[lv]}
+                    {isCompleted ? "\u2713" : ""} Lv.{lv} {SKILL_LEVEL_LABELS[lv]}
                   </span>
                   {isCurrent && (
                     <span className="text-[9px] font-medium text-indigo-500">
-                      ← 現在
+                      &larr; 現在
                     </span>
                   )}
                 </div>
@@ -245,7 +242,7 @@ function SkillTooltip({
                 </p>
                 {isCurrent && lv < 4 && (
                   <p className="text-[10px] text-amber-600 mt-1 font-medium">
-                    → {levelDef.nextStep}
+                    &rarr; {levelDef.nextStep}
                   </p>
                 )}
               </div>
@@ -262,77 +259,6 @@ function SkillTooltip({
       {/* 矢印 */}
       <div className="flex justify-center">
         <div className="w-2.5 h-2.5 bg-white border-b border-r border-slate-200 rotate-45 -mt-[6px]" />
-      </div>
-    </div>
-  )
-}
-
-// ============================================================
-// レベル定義の説明
-// ============================================================
-
-const LEVEL_GUIDE: Array<{
-  level: SkillLevel
-  name: string
-  description: string
-  criteria: string
-}> = [
-  {
-    level: 1,
-    name: "認知",
-    description: "そのスキル領域の存在と基本的な概念を知っている段階。",
-    criteria:
-      "用語や基本原理を聞いたことがある。マニュアルや指示に従って作業できるが、理由の説明はできない。",
-  },
-  {
-    level: 2,
-    name: "理解",
-    description: "なぜそうするのかを含めて論理的に説明できる段階。",
-    criteria:
-      "原理・根拠を理解し、標準的な状況で自律的に判断できる。他者に概要を教えられる。",
-  },
-  {
-    level: 3,
-    name: "応用",
-    description: "非定型な状況でも自ら論点を立てて対処できる段階。",
-    criteria:
-      "前例のない状況で仮説を立て、複数の選択肢を比較して最適解を導ける。改���提案や後輩指導ができる。",
-  },
-  {
-    level: 4,
-    name: "統合",
-    description: "複数の領域を横断的に俯瞰し、組織をリードできる段階。",
-    criteria:
-      "異なる専門領域のトレードオフを統合的に判断し、戦略や仕組みを設計できる。組織の技術方針に影響を与えられる。",
-  },
-]
-
-function LevelGuide() {
-  return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 className="text-xs font-bold text-slate-700 mb-3">
-        習熟レベルの定義
-      </h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-        {LEVEL_GUIDE.map((item) => (
-          <div
-            key={item.level}
-            className={`rounded-lg border p-3 ${LEVEL_BORDER[item.level]} bg-gradient-to-b from-white to-slate-50/50`}
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <span
-                className={`px-2 py-0.5 rounded text-xs font-bold ${LEVEL_BG[item.level]} ${LEVEL_TEXT[item.level]}`}
-              >
-                Lv.{item.level}
-              </span>
-              <span className="text-sm font-bold text-slate-800">
-                {item.name}
-              </span>
-            </div>
-            <p className="text-xs text-slate-600 mb-1.5">{item.description}</p>
-            <p className="text-[11px] text-slate-400">{item.criteria}</p>
-          </div>
-        ))}
       </div>
     </div>
   )
