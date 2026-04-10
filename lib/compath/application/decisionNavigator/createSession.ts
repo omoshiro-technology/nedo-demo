@@ -80,39 +80,30 @@ export async function createSession(
   const requestV2 = request as CreateSessionRequestV2;
   let supportMode: SupportMode;
 
-  if (requestV2.supportMode) {
-    // 明示的に指定されている場合
-    supportMode = requestV2.supportMode;
-    console.log("[createSession] supportMode: 明示指定 =", supportMode);
-  } else {
-    // 自動判定
-    const modeResult = await detectSupportMode(request.purpose);
-    supportMode = modeResult.mode;
-    console.log("[createSession] supportMode: 自動判定 =", supportMode, {
-      confidence: modeResult.confidence,
-      reason: modeResult.reason,
-    });
-  }
+  // LLM呼び出しを並列実行（Gateway Timeout対策）
+  const supportModePromise = requestV2.supportMode
+    ? Promise.resolve({ mode: requestV2.supportMode, confidence: 1, reason: "明示指定" } as { mode: SupportMode; confidence: number; reason: string })
+    : detectSupportMode(request.purpose);
+
+  // supportMode/strategy/category/goalを並列実行
+  const [modeResult, strategyResult, problemCategory, goalResult] = await Promise.all([
+    supportModePromise,
+    detectStrategy(request.purpose),
+    categorizeProblem(request.purpose),
+    purposeToGoal(request.purpose),
+  ]);
+
+  supportMode = modeResult.mode;
+  console.log("[createSession] supportMode:", supportMode, { confidence: modeResult.confidence, reason: modeResult.reason });
 
   // Phase Strategy: 思考戦略を自動判定
-  // process → forward、thinking → 5戦略から自動判定（デフォルト: backcast）
   let thinkingStrategy: import("../../domain/decisionNavigator/strategies/IThinkingStrategy").ThinkingStrategyId;
   if (supportMode === "process") {
     thinkingStrategy = "forward";
   } else {
-    const strategyResult = await detectStrategy(request.purpose);
     thinkingStrategy = strategyResult.strategy;
-    console.log("[createSession] thinkingStrategy: 自動判定 =", thinkingStrategy, {
-      confidence: strategyResult.confidence,
-      reason: strategyResult.reason,
-    });
+    console.log("[createSession] thinkingStrategy:", thinkingStrategy, { confidence: strategyResult.confidence, reason: strategyResult.reason });
   }
-
-  // Phase A: 問題カテゴリを判定
-  const problemCategory = await categorizeProblem(request.purpose);
-
-  // 目的を逆算してゴール形式に変換
-  const goalResult = await purposeToGoal(request.purpose);
   const goalPurpose = goalResult.goal;
   console.log("[createSession] ===== PURPOSE CONVERSION =====");
   console.log("[createSession] Input (original):", request.purpose);

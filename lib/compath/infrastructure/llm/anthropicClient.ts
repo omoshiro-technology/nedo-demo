@@ -68,7 +68,7 @@ export async function generateChatCompletion(options: ChatOptions): Promise<stri
   }
 
   const maxRetries = 3;
-  const timeoutMs = options.timeout ?? 60000;
+  const timeoutMs = options.timeout ?? 30000;
   let lastError: Error | null = null;
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
