@@ -80,6 +80,25 @@ export function createConferenceNetwork(_context: ConferenceNetworkContext): any
 }
 
 
+// Fallback: pick the character with fewest speaking turns, avoiding the last speaker
+function pickLeastSpokenCharacter(
+  characters: Character[],
+  conversationHistory: Array<{ speakerIndex: number; utterance: string }>,
+): Character {
+  const lastSpeakerIdx = conversationHistory.length > 0
+    ? conversationHistory[conversationHistory.length - 1].speakerIndex
+    : -1
+  const candidates = characters
+    .map((c, i) => ({
+      character: c,
+      index: i,
+      count: conversationHistory.filter(h => h.speakerIndex === i).length,
+    }))
+    .filter(c => c.index !== lastSpeakerIdx)
+    .sort((a, b) => a.count - b.count)
+  return candidates[0]?.character || characters[0]
+}
+
 // ファシリテーターによる話者選択関数
 export async function selectNextSpeaker(
   context: ConferenceNetworkContext,
@@ -129,19 +148,24 @@ RULES:
       maxTokens: 50,
     })
 
-    const selectedName = facilitatorResult.text?.trim()
+    const selectedName = (facilitatorResult.text?.trim() || "")
+    console.log(`Facilitator returned: "${selectedName}"`)
+
+    // Robust name matching: exact → contains → space-normalized
     const selectedCharacter = characters.find(c => c.name === selectedName)
-    
+      || characters.find(c => selectedName.includes(c.name))
+      || characters.find(c => selectedName.replace(/\s+/g, '').includes(c.name.replace(/\s+/g, '')))
+
     if (selectedCharacter) {
       console.log(`Facilitator selected: ${selectedCharacter.name}`)
       return selectedCharacter
     } else {
-      console.log(`Facilitator selection failed, using fallback`)
-      return characters[0]
+      console.log(`Facilitator selection failed (returned: "${selectedName}"), using balance fallback`)
+      return pickLeastSpokenCharacter(characters, conversationHistory)
     }
   } catch (error) {
     console.error('Facilitator selection error:', error)
-    return characters[0]
+    return pickLeastSpokenCharacter(characters, conversationHistory)
   }
 }
 
