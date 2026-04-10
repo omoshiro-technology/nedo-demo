@@ -199,9 +199,11 @@ export async function recordSelection(
       updatedColumnStates[criteriaRowIndex] = "completed";
     }
 
-    // 全列完了チェック
+    // 全列完了チェック（元の列のみ）
     const totalColumns = session.criteriaLabels?.length ?? 0;
-    const allColumnsCompleted = updatedColumnStates.every(state => state === "completed");
+    const origLabels = (session.criteriaLabels ?? []).filter(c => c.orderReason !== "探索により追加");
+    const allColumnsCompleted = origLabels.length > 0 &&
+      origLabels.every(c => updatedColumnStates[c.columnIndex] === "completed");
 
     if (allColumnsCompleted && totalColumns > 0) {
       debugLog("recordSelection", "Phase 22: All criteria completed - Goal achieved!");
@@ -521,28 +523,43 @@ export async function recordSelection(
       "locked:", updatedColumnStates.filter(s => s === "locked").length,
       "total:", totalColumns);
 
-    // 全列が完了した場合
-    const allColumnsCompleted = updatedColumnStates.every(state => state === "completed");
-    debugLog("recordSelection", "allColumnsCompleted:", allColumnsCompleted);
-    if (allColumnsCompleted) {
-      debugLog("recordSelection", "All columns completed! Confirming goal node.");
+    // ゴール達成判定: 元の列（探索で追加されたもの以外）が全て完了していればOK
+    const criteriaLabels = session.criteriaLabels ?? [];
+    const originalColumnIndices = criteriaLabels
+      .map((c, i) => ({ label: c, index: i }))
+      .filter(({ label }) => label.orderReason !== "探索により追加")
+      .map(({ index }) => index);
+    const allOriginalCompleted = originalColumnIndices.length > 0 &&
+      originalColumnIndices.every(i => updatedColumnStates[i] === "completed");
+
+    console.log("[DN-DEBUG] Goal check: originalColumns:", originalColumnIndices.length,
+      "completedOriginals:", originalColumnIndices.filter(i => updatedColumnStates[i] === "completed").length,
+      "allOriginalCompleted:", allOriginalCompleted);
+
+    if (allOriginalCompleted) {
+      console.log("[DN-DEBUG] Goal achieved! All original columns completed.");
+
+      // 残りの探索列も完了扱いにする（UI整合性のため）
+      for (let i = 0; i < updatedColumnStates.length; i++) {
+        if (updatedColumnStates[i] !== "completed") {
+          updatedColumnStates[i] = "completed";
+        }
+      }
 
       // ゴールノード（outcome）を確定状態に変更（dimmed → selected）
       const outcomeNode = updatedNodes.find(n => n.level === "outcome");
-      debugLog("recordSelection", "outcomeNode found:", outcomeNode ? { id: outcomeNode.id, level: outcomeNode.level, status: outcomeNode.status } : "NOT FOUND");
-      debugLog("recordSelection", "All nodes levels:", updatedNodes.map(n => ({ id: n.id, level: n.level })));
+      console.log("[DN-DEBUG] outcomeNode found:", !!outcomeNode);
       if (outcomeNode) {
         // ゴールノードを選択済み状態に（薄い色から通常色へ）
         outcomeNode.status = "selected";
         outcomeNode.pathRole = "selected";
         outcomeNode.selectedAt = now;
 
-        // Phase 18: 最終列で選択されたノード → ゴールへのエッジを生成（実線）
-        // 「最後に選択されたノード」ではなく「最終列（最後のカラム）で選択されたノード」を使用
-        // これにより、選択順序に依存しない正しいエッジ接続になる
-        const lastColumnIndex = totalColumns - 1; // 最終列のdepth（0-indexed: 列0=depth0, 列1=depth1, ...）
+        // 最後に選択されたノードからゴールへのエッジを生成
+        // 元の列の最後で選択されたノードを使用
+        const lastOriginalIndex = originalColumnIndices[originalColumnIndices.length - 1];
         const lastColumnSelectedNode = updatedNodes.find(
-          n => n.depth === lastColumnIndex && n.status === "selected" && n.level === "strategy"
+          n => n.depth === lastOriginalIndex && n.status === "selected" && n.level === "strategy"
         );
 
         const sourceNodeId = lastColumnSelectedNode?.id ?? request.nodeId; // フォールバックとして現在のノード
@@ -708,10 +725,11 @@ export async function recordSelection(
     decisionValue: goalEvaluation.decisionValue,
   });
 
-  // 全列完了チェック（Phase 8モードの場合）
+  // 全列完了チェック（Phase 8モードの場合、元の列のみ）
+  const origCriteriaForCheck = (session.criteriaLabels ?? []).filter(c => c.orderReason !== "探索により追加");
   const isAllColumnsCompleted = isPhase8Mode
-    && updatedColumnStates.length > 0
-    && updatedColumnStates.every(s => s === "completed");
+    && origCriteriaForCheck.length > 0
+    && origCriteriaForCheck.every(c => updatedColumnStates[c.columnIndex] === "completed");
 
   // 目的達成している場合はLLMをスキップして終了
   if (goalEvaluation.status === "achieved" || isAllColumnsCompleted) {

@@ -355,11 +355,13 @@ function FlowChartInner({
               : 0,
           // カバレッジマップ: outcomeノードに全criteriaの状態を注入
           coveragePieces: node.level === "outcome"
-            ? (session.criteriaLabels ?? []).map((cl, i) => ({
-                id: cl.id,
-                label: cl.question,
-                state: (session.columnStates ?? [])[i] ?? "locked",
-              }))
+            ? (session.criteriaLabels ?? [])
+                .filter((cl) => cl.orderReason !== "探索により追加")
+                .map((cl) => ({
+                  id: cl.id,
+                  label: cl.question,
+                  state: (session.columnStates ?? [])[cl.columnIndex] ?? "locked",
+                }))
             : undefined,
         } as FlowNodeData,
       };

@@ -43,10 +43,11 @@ export function StrategyGoalCompass({
 }: StrategyGoalCompassProps) {
   const { dimensions } = goalDistance;
 
-  // 判断軸の完了状況を計算
-  const totalCriteria = criteriaLabels?.length ?? 0;
+  // 判断軸の完了状況を計算（元の列のみで達成判定）
+  const originalLabels = (criteriaLabels ?? []).filter(c => c.orderReason !== "探索により追加");
+  const totalCriteria = originalLabels.length;
   const completedCriteria = columnStates
-    ? columnStates.filter(s => s === "completed").length
+    ? originalLabels.filter(c => columnStates[c.columnIndex] === "completed").length
     : 0;
   const remainingCriteria = totalCriteria - completedCriteria;
   const isAllCompleted = totalCriteria > 0 && remainingCriteria === 0;

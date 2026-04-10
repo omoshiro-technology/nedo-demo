@@ -135,10 +135,15 @@ export function QuestionPanel({
     onSelectOption,
   ]);
 
-  // 全完了判定
+  // 全完了判定: 元の列（探索追加以外）が全て完了すればOK
+  const originalLabels = criteriaLabels.filter((c) => c.orderReason !== "探索により追加");
+  const originalCount = originalLabels.length;
+  const originalCompletedCount = originalLabels.filter(
+    (c) => columnStates[c.columnIndex] === "completed"
+  ).length;
   const completedCount = columnStates.filter((s) => s === "completed").length;
   const totalCount = criteriaLabels.length;
-  const isAllCompleted = totalCount > 0 && completedCount === totalCount;
+  const isAllCompleted = originalCount > 0 && originalCompletedCount === originalCount;
 
   if (criteriaLabels.length === 0) {
     return (
@@ -166,7 +171,7 @@ export function QuestionPanel({
         <span className="question-panel__coverage-text">
           {isAllCompleted
             ? "全観点カバー完了"
-            : `${completedCount} / ${totalCount} 観点回答済み`}
+            : `${originalCompletedCount} / ${originalCount} 観点回答済み`}
         </span>
       </div>
 
