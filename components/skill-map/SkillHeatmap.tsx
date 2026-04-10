@@ -133,6 +133,9 @@ export function SkillHeatmap({ profile }: Props) {
         })}
       </div>
 
+      {/* レベル定義 */}
+      <LevelGuide />
+
       {/* ホバーツールチップ */}
       {hoveredSkill && (
         <SkillTooltip
@@ -259,6 +262,72 @@ function SkillTooltip({
       {/* 矢印 */}
       <div className="flex justify-center">
         <div className="w-2.5 h-2.5 bg-white border-b border-r border-slate-200 rotate-45 -mt-[6px]" />
+      </div>
+    </div>
+  )
+}
+
+// ============================================================
+// レベル定義ガイド（コンパクト版）
+// ============================================================
+
+const LEVEL_GUIDE: Array<{
+  level: SkillLevel
+  description: string
+  criteria: string
+}> = [
+  {
+    level: 1,
+    description: "基本手順に従い定型作業を遂行できる段階。",
+    criteria:
+      "マニュアルや指示に沿って作業できるが、判断理由の説明はまだ難しい。",
+  },
+  {
+    level: 2,
+    description: "標準的な問題を自力で特定・解決できる段階。",
+    criteria:
+      "原理を理解し、標準的な状況で自律的に判断・対処できる。基本的な問題解決が可能。",
+  },
+  {
+    level: 3,
+    description: "非定型な問題にQCDEの観点から解決策を立案できる段階。",
+    criteria:
+      "前例のない状況でも仮説を立て、品質・コスト・納期・環境のトレードオフを評価して最適解を導ける。",
+  },
+  {
+    level: 4,
+    description: "複数領域を横断しQCDEの最適バランスで問題解決できる段階。",
+    criteria:
+      "異なる専門領域の問題を統合的に判断し、工程全体の最適解を導ける。技術的課題を確実に解決できる。",
+  },
+]
+
+function LevelGuide() {
+  return (
+    <div className="mt-3 pt-3 border-t border-slate-100">
+      <h3 className="text-[10px] font-bold text-slate-500 mb-2">
+        習熟レベルの定義
+      </h3>
+      <div className="grid grid-cols-4 gap-2">
+        {LEVEL_GUIDE.map((item) => (
+          <div
+            key={item.level}
+            className={`rounded-lg border p-2 ${LEVEL_BORDER[item.level]} bg-gradient-to-b from-white to-slate-50/50`}
+          >
+            <div className="flex items-center gap-1.5 mb-1">
+              <span
+                className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${LEVEL_BG[item.level]} ${LEVEL_TEXT[item.level]}`}
+              >
+                Lv.{item.level}
+              </span>
+              <span className="text-[11px] font-bold text-slate-800">
+                {SKILL_LEVEL_LABELS[item.level]}
+              </span>
+            </div>
+            <p className="text-[10px] text-slate-600 leading-relaxed mb-0.5">{item.description}</p>
+            <p className="text-[9px] text-slate-400 leading-relaxed">{item.criteria}</p>
+          </div>
+        ))}
       </div>
     </div>
   )

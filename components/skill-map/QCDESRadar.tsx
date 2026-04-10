@@ -49,6 +49,9 @@ export function QCDESRadar({ scores }: Props) {
             fill="#3b82f6"
             fillOpacity={0.2}
             strokeWidth={2}
+            isAnimationActive={true}
+            animationDuration={600}
+            animationEasing="ease-in-out"
           />
         </RadarChart>
       </ResponsiveContainer>

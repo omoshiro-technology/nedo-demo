@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import type {
   SkillProfile,
   SkillLevel,
@@ -15,8 +15,11 @@ export default function SkillMapDashboard() {
   const [users, setUsers] = useState<SampleUser[]>([])
   const [selectedUserId, setSelectedUserId] = useState<string>("")
   const [profile, setProfile] = useState<SkillProfile | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [initialLoading, setInitialLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  // 切替時にフェード用
+  const [transitioning, setTransitioning] = useState(false)
+  const fetchRef = useRef(0)
 
   // ユーザー一覧を取得
   useEffect(() => {
@@ -34,27 +37,39 @@ export default function SkillMapDashboard() {
 
   const fetchData = useCallback(async () => {
     if (!selectedUserId) return
-    setLoading(true)
+    const fetchId = ++fetchRef.current
+    // 初回のみフルローディング、切替時は前データを維持
+    if (!profile) {
+      setInitialLoading(true)
+    } else {
+      setTransitioning(true)
+    }
     setError(null)
     try {
       const res = await fetch(
         `/api/compath/skill-map/profile?userId=${selectedUserId}`
       )
+      // stale fetchを無視
+      if (fetchRef.current !== fetchId) return
       if (res.ok) {
         setProfile(await res.json())
       } else {
         setProfile(null)
       }
     } catch {
+      if (fetchRef.current !== fetchId) return
       setError("データの取得に失敗しました。")
     } finally {
-      setLoading(false)
+      if (fetchRef.current === fetchId) {
+        setInitialLoading(false)
+        setTransitioning(false)
+      }
     }
-  }, [selectedUserId])
+  }, [selectedUserId, profile])
 
   useEffect(() => {
     if (selectedUserId) fetchData()
-  }, [selectedUserId, fetchData])
+  }, [selectedUserId]) // fetchDataを依存に入れるとprofile変更で無限ループするので意図的に除外
 
   const hasData = profile && profile.totalAssessments > 0
   const selectedUser = users.find((u) => u.id === selectedUserId)
@@ -64,7 +79,6 @@ export default function SkillMapDashboard() {
       {/* ヘッダー */}
       <div className="flex items-center gap-1 border-b border-gray-200 bg-white px-5 py-2">
         <h1 className="text-sm font-bold text-gray-900 mr-4">スキルマップ</h1>
-        {/* User selector */}
         <div className="ml-auto flex items-center gap-2">
           <select
             value={selectedUserId}
@@ -85,14 +99,18 @@ export default function SkillMapDashboard() {
 
       {/* メインコンテンツ — 一画面完結 */}
       <div className="flex-1 overflow-hidden p-4">
-        {loading ? (
+        {initialLoading ? (
           <LoadingState />
-        ) : error ? (
+        ) : error && !hasData ? (
           <ErrorState message={error} onRetry={fetchData} />
         ) : !hasData ? (
           <EmptyState />
         ) : (
-          <div className="flex gap-4 h-full">
+          <div
+            className={`flex gap-4 h-full transition-opacity duration-200 ${
+              transitioning ? "opacity-60" : "opacity-100"
+            }`}
+          >
             {/* 左: ヒートマップ（メイン） */}
             <div className="flex-1 min-w-0">
               <SkillHeatmap profile={profile} />
@@ -220,7 +238,7 @@ function ScoreBar({ label, value }: { label: string; value: number }) {
       </div>
       <div className="h-1.5 rounded-full bg-gray-100">
         <div
-          className={`h-1.5 rounded-full ${color} transition-all`}
+          className={`h-1.5 rounded-full ${color} transition-all duration-500`}
           style={{ width: `${value}%` }}
         />
       </div>
