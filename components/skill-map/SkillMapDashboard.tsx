@@ -109,20 +109,20 @@ export default function SkillMapDashboard() {
   return (
     <div className="flex flex-col h-full bg-gray-50">
       {/* ヘッダー */}
-      <div className="flex items-center border-b border-gray-200 bg-white px-5 py-2 shrink-0">
-        <h1 className="text-lg font-bold text-gray-900 mr-4">スキルマップ</h1>
-        <div className="ml-auto flex items-center gap-2">
+      <div className="flex items-center border-b border-gray-200 bg-white px-5 py-2.5 shrink-0">
+        <h1 className="text-xl font-bold text-gray-900 mr-4">スキルマップ</h1>
+        <div className="ml-auto flex items-center gap-3">
           <select
             value={selectedUserId}
             onChange={(e) => setSelectedUserId(e.target.value)}
-            className="text-base border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400"
+            className="text-base border border-gray-200 rounded-md px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400"
           >
             {users.map((u) => (
               <option key={u.id} value={u.id}>{u.name}</option>
             ))}
           </select>
           {selectedUser && (
-            <span className="text-sm text-gray-400">{selectedUser.role}</span>
+            <span className="text-base text-gray-400">{selectedUser.role}</span>
           )}
         </div>
       </div>
@@ -171,12 +171,12 @@ function FullScreenCard({ profile }: { profile: SkillProfile }) {
     <div className="bg-white rounded-xl border border-slate-200 p-4 h-full flex flex-col">
       {/* タイトル + 凡例 */}
       <div className="flex items-center justify-between mb-2 shrink-0">
-        <h2 className="text-base font-bold text-slate-800">スキル習熟度マップ</h2>
-        <div className="flex gap-3">
+        <h2 className="text-lg font-bold text-slate-800">スキル習熟度マップ</h2>
+        <div className="flex gap-4">
           {([1, 2, 3, 4] as SkillLevel[]).map((lv) => (
-            <div key={lv} className="flex items-center gap-1">
+            <div key={lv} className="flex items-center gap-1.5">
               <div className={`w-4 h-4 rounded-sm ${LEVEL_BG[lv]} border ${LEVEL_BORDER[lv]}`} />
-              <span className="text-xs text-slate-500">Lv.{lv} {SKILL_LEVEL_LABELS[lv]}</span>
+              <span className="text-sm text-slate-500">Lv.{lv} {SKILL_LEVEL_LABELS[lv]}</span>
             </div>
           ))}
         </div>
@@ -192,7 +192,7 @@ function FullScreenCard({ profile }: { profile: SkillProfile }) {
               <div key={category.id} className="flex-1 flex items-stretch min-h-0">
                 {/* カテゴリラベル — 15%幅 */}
                 <div className="w-[15%] shrink-0 flex items-center justify-end pr-2">
-                  <span className="text-xs font-medium text-slate-500 leading-tight text-right">
+                  <span className="text-sm font-medium text-slate-500 leading-tight text-right">
                     {category.name}
                   </span>
                 </div>
@@ -206,17 +206,17 @@ function FullScreenCard({ profile }: { profile: SkillProfile }) {
                       <div
                         key={skill.id}
                         className={`
-                          flex-1 rounded-[4px] cursor-pointer
+                          flex-1 rounded-[4px] cursor-pointer overflow-hidden
                           flex items-center justify-center
-                          border transition-all
+                          border transition-all px-1
                           ${LEVEL_BG[level]} ${LEVEL_BORDER[level]}
                           ${isHovered ? "ring-2 ring-indigo-400 scale-105 z-10" : "hover:brightness-95"}
                         `}
                         onMouseEnter={(e) => handleMouseEnter(skill.id, e)}
                         onMouseLeave={() => setHoveredSkill(null)}
                       >
-                        <span className={`text-[11px] font-medium leading-[1.2] text-center px-0.5 select-none ${LEVEL_TEXT[level]}`}>
-                          {skill.name.length > 6 ? skill.name.slice(0, 6) : skill.name}
+                        <span className={`text-xs font-medium truncate select-none ${LEVEL_TEXT[level]}`}>
+                          {skill.name}
                         </span>
                       </div>
                     )
@@ -229,7 +229,7 @@ function FullScreenCard({ profile }: { profile: SkillProfile }) {
 
         {/* 右: レーダーチャートのみ — 35%幅 */}
         <div className="w-[35%] min-h-0 rounded-lg border border-gray-100 bg-gray-50/50 p-4 flex flex-col">
-          <h3 className="text-sm font-bold text-gray-600 mb-1 shrink-0">観点網羅度（QCDES）</h3>
+          <h3 className="text-base font-bold text-gray-600 mb-1 shrink-0">観点網羅度（QCDES）</h3>
           <div className="flex-1 min-h-0">
             {latestScores ? (
               <QCDESRadar scores={latestScores} />
@@ -242,18 +242,18 @@ function FullScreenCard({ profile }: { profile: SkillProfile }) {
 
       {/* 下段: レベル定義 — shrink-0 で固定高 */}
       <div className="shrink-0 mt-3 pt-3 border-t border-slate-100">
-        <h3 className="text-xs font-bold text-slate-500 mb-1.5">習熟レベルの定義</h3>
+        <h3 className="text-sm font-bold text-slate-500 mb-2">習熟レベルの定義</h3>
         <div className="grid grid-cols-4 gap-2">
           {LEVEL_GUIDE.map((item) => (
-            <div key={item.level} className={`rounded-lg border p-2 ${LEVEL_BORDER[item.level]} bg-gradient-to-b from-white to-slate-50/50`}>
-              <div className="flex items-center gap-1.5 mb-0.5">
-                <span className={`px-1.5 py-0.5 rounded text-[11px] font-bold ${LEVEL_BG[item.level]} ${LEVEL_TEXT[item.level]}`}>
+            <div key={item.level} className={`rounded-lg border p-2.5 ${LEVEL_BORDER[item.level]} bg-gradient-to-b from-white to-slate-50/50`}>
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className={`px-2 py-0.5 rounded text-xs font-bold ${LEVEL_BG[item.level]} ${LEVEL_TEXT[item.level]}`}>
                   Lv.{item.level}
                 </span>
-                <span className="text-sm font-bold text-slate-800">{SKILL_LEVEL_LABELS[item.level]}</span>
+                <span className="text-base font-bold text-slate-800">{SKILL_LEVEL_LABELS[item.level]}</span>
               </div>
-              <p className="text-xs text-slate-600 leading-relaxed">{item.description}</p>
-              <p className="text-[11px] text-slate-400 leading-relaxed">{item.criteria}</p>
+              <p className="text-sm text-slate-600 leading-relaxed">{item.description}</p>
+              <p className="text-xs text-slate-400 leading-relaxed">{item.criteria}</p>
             </div>
           ))}
         </div>
@@ -291,13 +291,13 @@ function SkillTooltip({ skillId, profile, position }: { skillId: string; profile
 
   return (
     <div className="fixed z-50 pointer-events-none" style={{ left: `${position.x}px`, top: `${position.y}px`, transform: "translate(-50%, -100%)" }}>
-      <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-4 w-[380px]">
+      <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-5 w-[420px]">
         <div className="flex items-center justify-between gap-3 mb-3">
           <div>
-            <div className="text-xs text-slate-400">{categoryName}</div>
-            <div className="text-base font-bold text-slate-800">{skill.name}</div>
+            <div className="text-sm text-slate-400">{categoryName}</div>
+            <div className="text-lg font-bold text-slate-800">{skill.name}</div>
           </div>
-          <span className={`shrink-0 px-2.5 py-1 rounded text-sm font-bold ${LEVEL_BG[currentLevel]} ${LEVEL_TEXT[currentLevel]} border ${LEVEL_BORDER[currentLevel]}`}>
+          <span className={`shrink-0 px-3 py-1 rounded text-base font-bold ${LEVEL_BG[currentLevel]} ${LEVEL_TEXT[currentLevel]} border ${LEVEL_BORDER[currentLevel]}`}>
             Lv.{currentLevel} {SKILL_LEVEL_LABELS[currentLevel]}
           </span>
         </div>
@@ -310,19 +310,19 @@ function SkillTooltip({ skillId, profile, position }: { skillId: string; profile
             return (
               <div key={lv} className={`rounded-lg border p-2.5 ${isCurrent ? `${TT_BG[lv]} ring-1 ring-indigo-300` : isCompleted ? "bg-slate-50/50 border-slate-100" : "bg-white border-slate-100"}`}>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${isCurrent ? `${LEVEL_BG[lv]} ${LEVEL_TEXT[lv]}` : isCompleted ? "bg-emerald-100 text-emerald-600" : "bg-slate-100 text-slate-400"}`}>
+                  <span className={`text-sm font-bold px-2 py-0.5 rounded ${isCurrent ? `${LEVEL_BG[lv]} ${LEVEL_TEXT[lv]}` : isCompleted ? "bg-emerald-100 text-emerald-600" : "bg-slate-100 text-slate-400"}`}>
                     {isCompleted ? "\u2713" : ""} Lv.{lv} {SKILL_LEVEL_LABELS[lv]}
                   </span>
-                  {isCurrent && <span className="text-[11px] font-medium text-indigo-500">&larr; 現在</span>}
+                  {isCurrent && <span className="text-sm font-medium text-indigo-500">&larr; 現在</span>}
                 </div>
                 <p className={`text-sm leading-relaxed ${isFuture ? "text-slate-400" : "text-slate-600"}`}>{def.description}</p>
-                {isCurrent && lv < 4 && <p className="text-xs text-amber-600 mt-1 font-medium">&rarr; {def.nextStep}</p>}
+                {isCurrent && lv < 4 && <p className="text-sm text-amber-600 mt-1 font-medium">&rarr; {def.nextStep}</p>}
               </div>
             )
           })}
         </div>
         {proficiency && proficiency.touchCount > 0 && (
-          <div className="mt-2 text-xs text-slate-400 text-right">{proficiency.touchCount} 回のセッションで接触</div>
+          <div className="mt-2 text-sm text-slate-400 text-right">{proficiency.touchCount} 回のセッションで接触</div>
         )}
       </div>
       <div className="flex justify-center">
