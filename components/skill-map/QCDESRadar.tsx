@@ -31,7 +31,7 @@ export function QCDESRadar({ scores }: Props) {
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart data={data}>
             <PolarGrid stroke="#e5e7eb" />
-            <PolarAngleAxis dataKey="axis" tick={{ fontSize: 11, fill: "#6b7280" }} />
+            <PolarAngleAxis dataKey="axis" tick={{ fontSize: 13, fill: "#6b7280" }} />
             <PolarRadiusAxis angle={90} domain={[0, 100]} tick={false} axisLine={false} />
             <Radar
               name="QCDES"
@@ -47,7 +47,7 @@ export function QCDESRadar({ scores }: Props) {
           </RadarChart>
         </ResponsiveContainer>
       </div>
-      <p className="text-center text-xs text-gray-500 mt-1 shrink-0">
+      <p className="text-center text-sm text-gray-500 mt-1 shrink-0">
         カバー率: {covered} / 5 軸
       </p>
     </div>
