@@ -129,7 +129,7 @@ export async function generateChatCompletion(options: ChatOptions): Promise<stri
   }
 
   // リトライ設定
-  const maxRetries = 2; // 最大2回（初回 + 1リトライ）
+  const maxRetries = 3; // 最大3回（初回 + 2リトライ）
   const timeoutMs = options.timeout ?? 60000; // デフォルト60秒タイムアウト
   let lastError: Error | null = null;
 
@@ -160,10 +160,13 @@ export async function generateChatCompletion(options: ChatOptions): Promise<stri
 
         // Rate limitの場合は長めに待機
         if (category === "rate_limit") {
-          const waitTime = Math.min(10000, 2000 * Math.pow(2, attempt));
-          console.log(`[OpenAI] Rate limited, waiting ${waitTime}ms before retry ${attempt + 1}/${maxRetries}`);
-          await sleep(waitTime);
-          continue;
+          if (attempt < maxRetries - 1) {
+            const waitTime = Math.min(10000, 2000 * Math.pow(2, attempt));
+            console.log(`[OpenAI] Rate limited, waiting ${waitTime}ms before retry ${attempt + 1}/${maxRetries}`);
+            await sleep(waitTime);
+            continue;
+          }
+          throw new Error("AIサービスがレート制限中です。しばらく待ってから再試行してください。");
         }
 
         // 一時的エラーの場合はリトライ
@@ -281,7 +284,7 @@ export async function generateFunctionCallingCompletion(
   }
 
   // リトライ設定
-  const maxRetries = 2;
+  const maxRetries = 3;
   const timeoutMs = options.timeout ?? 60000;
   let lastError: Error | null = null;
 
@@ -312,10 +315,13 @@ export async function generateFunctionCallingCompletion(
 
         // Rate limitの場合は長めに待機
         if (category === "rate_limit") {
-          const waitTime = Math.min(10000, 2000 * Math.pow(2, attempt));
-          console.log(`[OpenAI FC] Rate limited, waiting ${waitTime}ms before retry ${attempt + 1}/${maxRetries}`);
-          await sleep(waitTime);
-          continue;
+          if (attempt < maxRetries - 1) {
+            const waitTime = Math.min(10000, 2000 * Math.pow(2, attempt));
+            console.log(`[OpenAI FC] Rate limited, waiting ${waitTime}ms before retry ${attempt + 1}/${maxRetries}`);
+            await sleep(waitTime);
+            continue;
+          }
+          throw new Error("AIサービスがレート制限中です。しばらく待ってから再試行してください。");
         }
 
         // 一時的エラーの場合はリトライ
@@ -436,7 +442,7 @@ export async function continueWithToolResults(options: {
   }
 
   // リトライ設定
-  const maxRetries = 2;
+  const maxRetries = 3;
   const timeoutMs = options.timeout ?? 60000;
   let lastError: Error | null = null;
 
@@ -467,10 +473,13 @@ export async function continueWithToolResults(options: {
 
         // Rate limitの場合は長めに待機
         if (category === "rate_limit") {
-          const waitTime = Math.min(10000, 2000 * Math.pow(2, attempt));
-          console.log(`[OpenAI Continue] Rate limited, waiting ${waitTime}ms before retry ${attempt + 1}/${maxRetries}`);
-          await sleep(waitTime);
-          continue;
+          if (attempt < maxRetries - 1) {
+            const waitTime = Math.min(10000, 2000 * Math.pow(2, attempt));
+            console.log(`[OpenAI Continue] Rate limited, waiting ${waitTime}ms before retry ${attempt + 1}/${maxRetries}`);
+            await sleep(waitTime);
+            continue;
+          }
+          throw new Error("AIサービスがレート制限中です。しばらく待ってから再試行してください。");
         }
 
         // 一時的エラーの場合はリトライ
