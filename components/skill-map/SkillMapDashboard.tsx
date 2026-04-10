@@ -1,5 +1,22 @@
 "use client"
 
+/**
+ * スキルマップ — 一画面統合レイアウト
+ *
+ * 16:9 (1920x1080) でのレイアウト計算:
+ *   ヘッダー: 44px
+ *   コンテンツ余白: 16px x 2 = 32px
+ *   カード内余白: 20px x 2 = 40px
+ *   → カード内利用可能: 1808 x 964px
+ *
+ *   グリッド部: 112px(ラベル) + 8*(60+2)px(セル) = 608px
+ *   右パネル: 残り 1808 - 608 - 24(gap) = 1176px → max-w-[340px] に制限
+ *   レベルガイド: 下部全幅
+ *
+ * グリッド右の空白にレーダー+サマリーを配置することで
+ * 空間を有効活用し、スクロール不要の一画面に収める。
+ */
+
 import { useState, useEffect, useCallback, useRef } from "react"
 import type {
   SkillProfile,
@@ -7,7 +24,11 @@ import type {
 } from "@/lib/compath/domain/skillMap/types"
 import { SKILL_LEVEL_LABELS } from "@/lib/compath/domain/skillMap/types"
 import { QCDESRadar } from "./QCDESRadar"
-import { SkillHeatmap } from "./SkillHeatmap"
+import {
+  SkillHeatmapGrid,
+  LevelGuide,
+  HeatmapLegend,
+} from "./SkillHeatmap"
 
 type SampleUser = { id: string; name: string; role: string }
 
@@ -17,11 +38,9 @@ export default function SkillMapDashboard() {
   const [profile, setProfile] = useState<SkillProfile | null>(null)
   const [initialLoading, setInitialLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  // 切替時にフェード用
   const [transitioning, setTransitioning] = useState(false)
   const fetchRef = useRef(0)
 
-  // ユーザー一覧を取得
   useEffect(() => {
     fetch("/api/compath/skill-map/users")
       .then((r) => r.json())
@@ -38,7 +57,6 @@ export default function SkillMapDashboard() {
   const fetchData = useCallback(async () => {
     if (!selectedUserId) return
     const fetchId = ++fetchRef.current
-    // 初回のみフルローディング、切替時は前データを維持
     if (!profile) {
       setInitialLoading(true)
     } else {
@@ -49,7 +67,6 @@ export default function SkillMapDashboard() {
       const res = await fetch(
         `/api/compath/skill-map/profile?userId=${selectedUserId}`
       )
-      // stale fetchを無視
       if (fetchRef.current !== fetchId) return
       if (res.ok) {
         setProfile(await res.json())
@@ -69,7 +86,7 @@ export default function SkillMapDashboard() {
 
   useEffect(() => {
     if (selectedUserId) fetchData()
-  }, [selectedUserId]) // fetchDataを依存に入れるとprofile変更で無限ループするので意図的に除外
+  }, [selectedUserId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const hasData = profile && profile.totalAssessments > 0
   const selectedUser = users.find((u) => u.id === selectedUserId)
@@ -97,8 +114,8 @@ export default function SkillMapDashboard() {
         </div>
       </div>
 
-      {/* メインコンテンツ — 一画面完結 */}
-      <div className="flex-1 overflow-hidden p-4">
+      {/* メインコンテンツ */}
+      <div className="flex-1 overflow-auto p-4">
         {initialLoading ? (
           <LoadingState />
         ) : error && !hasData ? (
@@ -107,17 +124,11 @@ export default function SkillMapDashboard() {
           <EmptyState />
         ) : (
           <div
-            className={`flex gap-4 h-full transition-opacity duration-200 ${
+            className={`transition-opacity duration-200 ${
               transitioning ? "opacity-60" : "opacity-100"
             }`}
           >
-            {/* 左: ヒートマップ（メイン） */}
-            <div className="flex-1 min-w-0">
-              <SkillHeatmap profile={profile} />
-            </div>
-
-            {/* 右: レーダーチャート + サマリー */}
-            <Sidebar profile={profile} />
+            <UnifiedCard profile={profile} />
           </div>
         )}
       </div>
@@ -126,10 +137,10 @@ export default function SkillMapDashboard() {
 }
 
 // ============================================================
-// サイドバー（レーダー + サマリー）
+// 統合カード: グリッド + レーダー + サマリー + レベルガイド
 // ============================================================
 
-function Sidebar({ profile }: { profile: SkillProfile }) {
+function UnifiedCard({ profile }: { profile: SkillProfile }) {
   const proficiencies = Object.values(profile.proficiencies)
   const totalSkills = proficiencies.length
   const levelCounts: Record<SkillLevel, number> = { 1: 0, 2: 0, 3: 0, 4: 0 }
@@ -146,50 +157,85 @@ function Sidebar({ profile }: { profile: SkillProfile }) {
     )[0]?.latestScores ?? null
 
   return (
-    <div className="w-[280px] shrink-0 flex flex-col gap-3">
-      {/* QCDES レーダー */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <h2 className="text-xs font-bold text-gray-800 mb-2">
-          観点網羅度（QCDES）
-        </h2>
-        {latestScores ? (
-          <QCDESRadar scores={latestScores} />
-        ) : (
-          <p className="text-xs text-gray-400">データなし</p>
-        )}
-      </div>
-
-      {/* サマリーカード */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <h2 className="text-xs font-bold text-gray-800 mb-3">サマリー</h2>
-        <div className="grid grid-cols-2 gap-2">
-          <StatCard label="アセスメント" value={profile.totalAssessments} />
-          <StatCard label="スキル項目" value={totalSkills} />
-          {([1, 2, 3, 4] as SkillLevel[]).map((lv) => (
-            <StatCard
-              key={lv}
-              label={`Lv.${lv} ${SKILL_LEVEL_LABELS[lv]}`}
-              value={levelCounts[lv]}
-              sub={`/${totalSkills}`}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* 思考品質スコア */}
-      {latestScores && (
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <h2 className="text-xs font-bold text-gray-800 mb-3">
-            思考品質（直近）
+    <div className="bg-white rounded-xl border border-slate-200 p-5">
+      {/* タイトル行 */}
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h2 className="text-sm font-bold text-slate-800">
+            スキル習熟度マップ
           </h2>
-          <div className="space-y-2">
-            <ScoreBar label="観点網羅度" value={latestScores.viewpointCoverage} />
-            <ScoreBar label="構造的思考" value={latestScores.structuralThinking} />
-            <ScoreBar label="自発性" value={latestScores.proactiveness} />
-            <ScoreBar label="専門性" value={latestScores.expertiseLevel} />
-          </div>
+          <p className="text-[10px] text-slate-400">
+            セルをホバーすると詳細が表示されます
+          </p>
         </div>
-      )}
+        <HeatmapLegend />
+      </div>
+
+      {/* メイン: グリッド(左) + 情報パネル(右) */}
+      <div className="flex gap-6">
+        {/* 左: ヒートマップグリッド — shrink-0 で自然幅を保持 */}
+        <div className="shrink-0">
+          <SkillHeatmapGrid profile={profile} />
+        </div>
+
+        {/* 右: レーダー + サマリー — 残りスペースを使用 */}
+        <div className="flex-1 min-w-[280px] max-w-[380px] flex flex-col gap-3">
+          {/* QCDES レーダー */}
+          <div className="rounded-lg border border-gray-100 bg-gray-50/50 p-3">
+            <h3 className="text-[10px] font-bold text-gray-600 mb-1">
+              観点網羅度（QCDES）
+            </h3>
+            {latestScores ? (
+              <QCDESRadar scores={latestScores} />
+            ) : (
+              <p className="text-xs text-gray-400 py-8 text-center">データなし</p>
+            )}
+          </div>
+
+          {/* サマリー */}
+          <div className="rounded-lg border border-gray-100 bg-gray-50/50 p-3">
+            <h3 className="text-[10px] font-bold text-gray-600 mb-2">サマリー</h3>
+            <div className="grid grid-cols-3 gap-1.5">
+              <MiniStat label="アセスメント" value={profile.totalAssessments} />
+              <MiniStat label="スキル項目" value={totalSkills} />
+              <MiniStat
+                label={`Lv.4 ${SKILL_LEVEL_LABELS[4]}`}
+                value={levelCounts[4]}
+              />
+              {([1, 2, 3] as SkillLevel[]).map((lv) => (
+                <MiniStat
+                  key={lv}
+                  label={`Lv.${lv} ${SKILL_LEVEL_LABELS[lv]}`}
+                  value={levelCounts[lv]}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* 思考品質スコア */}
+          {latestScores && (
+            <div className="rounded-lg border border-gray-100 bg-gray-50/50 p-3">
+              <h3 className="text-[10px] font-bold text-gray-600 mb-2">
+                思考品質（直近）
+              </h3>
+              <div className="space-y-1.5">
+                <ScoreBar label="観点網羅度" value={latestScores.viewpointCoverage} />
+                <ScoreBar label="構造的思考" value={latestScores.structuralThinking} />
+                <ScoreBar label="自発性" value={latestScores.proactiveness} />
+                <ScoreBar label="専門性" value={latestScores.expertiseLevel} />
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* レベル定義ガイド — 全幅 */}
+      <div className="mt-4 pt-3 border-t border-slate-100">
+        <h3 className="text-[10px] font-bold text-slate-500 mb-2">
+          習熟レベルの定義
+        </h3>
+        <LevelGuide />
+      </div>
     </div>
   )
 }
@@ -198,24 +244,11 @@ function Sidebar({ profile }: { profile: SkillProfile }) {
 // 小コンポーネント
 // ============================================================
 
-function StatCard({
-  label,
-  value,
-  sub,
-}: {
-  label: string
-  value: number
-  sub?: string
-}) {
+function MiniStat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-md bg-gray-50 p-2">
-      <div className="text-[10px] text-gray-500">{label}</div>
-      <div className="text-base font-bold text-gray-900">
-        {value}
-        {sub && (
-          <span className="text-xs font-normal text-gray-400">{sub}</span>
-        )}
-      </div>
+    <div className="rounded bg-white border border-gray-100 px-2 py-1.5">
+      <div className="text-[9px] text-gray-400">{label}</div>
+      <div className="text-sm font-bold text-gray-900">{value}</div>
     </div>
   )
 }
@@ -233,8 +266,8 @@ function ScoreBar({ label, value }: { label: string; value: number }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-0.5">
-        <span className="text-[10px] text-gray-600">{label}</span>
-        <span className="text-[10px] font-medium text-gray-900">{value}</span>
+        <span className="text-[9px] text-gray-600">{label}</span>
+        <span className="text-[9px] font-medium text-gray-900">{value}</span>
       </div>
       <div className="h-1.5 rounded-full bg-gray-100">
         <div
