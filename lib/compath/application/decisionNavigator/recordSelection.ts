@@ -566,7 +566,7 @@ export async function recordSelection(
         const lastSelectedEdgeId = `edge-${sourceNodeId}-${outcomeNode.id}`;
 
         debugLog("recordSelection", "Phase 18: Finding last column selected node:", {
-          lastColumnIndex,
+          lastOriginalIndex,
           lastColumnSelectedNodeId: lastColumnSelectedNode?.id,
           sourceNodeId,
         });
@@ -669,7 +669,7 @@ export async function recordSelection(
       selectedNodeRowIndex: selectedNodeColumnIndex,
       updatedRowStates: updatedColumnStates,
       updatedCurrentRowIndex: updatedCurrentColumnIndex,
-      allRowsCompleted: allColumnsCompleted,
+      allRowsCompleted: allOriginalCompleted,
     });
 
     // 最終的なエッジ状態をログ出力
