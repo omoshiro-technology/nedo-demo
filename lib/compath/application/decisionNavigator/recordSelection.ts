@@ -204,7 +204,7 @@ export async function recordSelection(
     const allColumnsCompleted = updatedColumnStates.every(state => state === "completed");
 
     if (allColumnsCompleted && totalColumns > 0) {
-      debugLog("recordSelection", "Phase 22: All criteria completed!");
+      debugLog("recordSelection", "Phase 22: All criteria completed - Goal achieved!");
       // ゴールノードを確定状態に
       const outcomeNode = updatedNodes.find(n => n.level === "outcome");
       if (outcomeNode) {
@@ -212,6 +212,57 @@ export async function recordSelection(
         outcomeNode.pathRole = "selected";
         outcomeNode.selectedAt = now;
       }
+
+      // 目的達成フロー
+      const goalDefinition = session.goalDefinition ?? inferGoalDefinition(session.purpose);
+      const goalState: GoalState = {
+        status: "achieved",
+        decisionValue: selectedOption.label,
+        decidedAt: now,
+        reason: "all criteria columns completed",
+      };
+      const followupMessage = generateFollowupMessage(
+        goalDefinition.target,
+        selectedOption.label
+      );
+      const completionChatMessage: DecisionChatMessage = {
+        id: generateId(),
+        role: "assistant",
+        content: `✅ **目的達成**\n\n${followupMessage}`,
+        timestamp: now,
+        relatedNodeId: optionNodeId,
+        type: "confirmation",
+      };
+      const pendingSelection: PendingSelection = {
+        nodeId: optionNodeId,
+        nodeLabel: selectedOption.label,
+        level: "strategy",
+        selectedAt: now,
+        rationale: request.rationale,
+      };
+      const completedSession: DecisionNavigatorSession = {
+        ...session,
+        nodes: computeSelectability(updatedNodes),
+        edges: updatedEdges,
+        currentNodeId: optionNodeId,
+        pendingSelection,
+        columnStates: updatedColumnStates,
+        goalDefinition,
+        goalState,
+        chatHistory: [...session.chatHistory, completionChatMessage],
+        updatedAt: now,
+        stats: {
+          totalNodes: updatedNodes.length,
+          selectedNodes: session.stats.selectedNodes + 1,
+          pastCasesUsed: session.stats.pastCasesUsed,
+        },
+      };
+      await SessionStore.save(completedSession);
+      await sessionRepository.save(completedSession);
+      return {
+        session: completedSession,
+        nextOptions: { options: [] },
+      };
     }
 
     // pendingSelectionを設定
@@ -638,16 +689,24 @@ export async function recordSelection(
     decisionValue: goalEvaluation.decisionValue,
   });
 
+  // 全列完了チェック（Phase 8モードの場合）
+  const isAllColumnsCompleted = isPhase8Mode
+    && updatedColumnStates.length > 0
+    && updatedColumnStates.every(s => s === "completed");
+
   // 目的達成している場合はLLMをスキップして終了
-  if (goalEvaluation.status === "achieved") {
-    debugLog("recordSelection", "Goal achieved! Skipping LLM generation.");
+  if (goalEvaluation.status === "achieved" || isAllColumnsCompleted) {
+    debugLog("recordSelection", "Goal achieved! Skipping LLM generation.", {
+      goalEvalStatus: goalEvaluation.status,
+      allColumnsCompleted: isAllColumnsCompleted,
+    });
 
     // ゴール状態を更新
     const goalState: GoalState = {
       status: "achieved",
-      decisionValue: goalEvaluation.decisionValue,
+      decisionValue: goalEvaluation.decisionValue ?? selectedNode.label,
       decidedAt: now,
-      reason: goalEvaluation.reason,
+      reason: goalEvaluation.reason ?? "all criteria columns completed",
     };
 
     // フォローアップメッセージを生成
