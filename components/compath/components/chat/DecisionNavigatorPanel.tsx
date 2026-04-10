@@ -431,12 +431,20 @@ export function DecisionNavigatorPanel({
       try {
         const result = await api.recordSelection(session.id, nodeId, rationale);
 
+        console.log("[DN-DEBUG-FE] recordSelection returned:", {
+          columnStates: result.session.columnStates,
+          currentColumnIndex: result.session.currentColumnIndex,
+          criteriaLabelsCount: result.session.criteriaLabels?.length,
+        });
+
         // Phase 8モード: 深さ優先探索を自動発火
         if (isPhase8Mode) {
           const explorationNodeId = `exploration-${nodeId}`;
           const explorationNode = result.session.nodes.find(
             (n) => n.id === explorationNodeId && n.isExplorationNode
           );
+
+          console.log("[DN-DEBUG-FE] explorationNode found:", !!explorationNode, explorationNode ? { id: explorationNode.id, status: explorationNode.status } : null);
 
           if (explorationNode) {
             // React 18バッチング: 3つの状態更新が1レンダーにまとまる
@@ -448,13 +456,19 @@ export function DecisionNavigatorPanel({
             skipAutoExploreRef.current = false;
             try {
               const exploreResult = await api.exploreNext(session.id, explorationNodeId);
+              console.log("[DN-DEBUG-FE] exploreNext result:", {
+                success: exploreResult.success,
+                columnStates: exploreResult.success ? exploreResult.session.columnStates : null,
+                currentColumnIndex: exploreResult.success ? exploreResult.session.currentColumnIndex : null,
+                reason: !exploreResult.success ? exploreResult.reason : null,
+              });
               if (!skipAutoExploreRef.current && exploreResult.success && exploreResult.session) {
                 setSession(exploreResult.session);
                 // → バックエンドがcurrentColumnIndexを深さ優先の新criteriaに設定済み
                 // → QuestionPanelは自動的に深さ優先の質問を表示
               }
             } catch (err) {
-              console.error("[DepthFirst] exploreNext failed:", err);
+              console.error("[DN-DEBUG-FE] exploreNext FAILED:", err);
             } finally {
               if (!skipAutoExploreRef.current) {
                 setIsAutoExploring(false);
@@ -463,6 +477,7 @@ export function DecisionNavigatorPanel({
             }
           } else {
             // 探索ノードなし（最大深度到達等）→ CriteriaSelectorが自然に表示される
+            console.log("[DN-DEBUG-FE] No exploration node, setting session directly");
             setSession(result.session);
           }
         } else {

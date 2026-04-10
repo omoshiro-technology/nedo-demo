@@ -464,11 +464,22 @@ export async function recordSelection(
   // depth は 0-indexed（depth=0 が列0 に対応）
   const selectedNodeColumnIndex = selectedNode.depth ?? -1;
 
+  console.log("[DN-DEBUG] === recordSelection column state START ===");
+  console.log("[DN-DEBUG] selectedNode:", { id: selectedNode.id, label: selectedNode.label, depth: selectedNode.depth, level: selectedNode.level, parentId: selectedNode.parentId });
+  console.log("[DN-DEBUG] selectedNodeColumnIndex:", selectedNodeColumnIndex);
+  console.log("[DN-DEBUG] BEFORE columnStates:", JSON.stringify(updatedColumnStates));
+  console.log("[DN-DEBUG] BEFORE currentColumnIndex:", updatedCurrentColumnIndex);
+  console.log("[DN-DEBUG] criteriaLabels count:", session.criteriaLabels?.length ?? 0);
+  console.log("[DN-DEBUG] criteriaLabels:", session.criteriaLabels?.map((c, i) => `[${i}] ${c.id} "${c.question}"`));
+
   // 判断軸ラベルが存在し、選択されたノードが有効な列に属している場合
   if (session.criteriaLabels && session.criteriaLabels.length > 0 && selectedNodeColumnIndex >= 0) {
     // 現在の列を完了状態に
     if (selectedNodeColumnIndex < updatedColumnStates.length) {
       updatedColumnStates[selectedNodeColumnIndex] = "completed";
+      console.log("[DN-DEBUG] Marked column", selectedNodeColumnIndex, "as completed");
+    } else {
+      console.log("[DN-DEBUG] WARNING: selectedNodeColumnIndex", selectedNodeColumnIndex, "out of bounds for columnStates length", updatedColumnStates.length);
     }
 
     // 段階的開示: 列完了時に次のlocked列をアンロック
@@ -478,10 +489,12 @@ export async function recordSelection(
     const nextLockedIndex = updatedColumnStates.findIndex(s => s === "locked");
     if (nextLockedIndex >= 0) {
       updatedColumnStates[nextLockedIndex] = "active";
-      debugLog("recordSelection", "Progressive disclosure: Unlocked column:", {
-        unlockedColumnIndex: nextLockedIndex,
-      });
+      console.log("[DN-DEBUG] Unlocked column", nextLockedIndex, "(was locked → active)");
+    } else {
+      console.log("[DN-DEBUG] No locked columns to unlock");
     }
+
+    console.log("[DN-DEBUG] AFTER unlock columnStates:", JSON.stringify(updatedColumnStates));
 
     // 進捗インジケータ用にcurrentColumnIndexを更新
     // 最初の未完了（active）列に自動ナビゲート
@@ -489,28 +502,26 @@ export async function recordSelection(
     const firstActiveIndex = updatedColumnStates.findIndex(s => s === "active");
     if (firstActiveIndex >= 0) {
       updatedCurrentColumnIndex = firstActiveIndex;
+      console.log("[DN-DEBUG] Navigated to first active column:", firstActiveIndex);
     } else {
       // 全てcompletedまたはlockedの場合: 次のlocked列またはそのまま
       const nextColumnIndex = selectedNodeColumnIndex + 1;
       if (nextColumnIndex < totalColumns && nextColumnIndex > updatedCurrentColumnIndex) {
         updatedCurrentColumnIndex = nextColumnIndex;
+        console.log("[DN-DEBUG] No active columns, advanced to next:", nextColumnIndex);
+      } else {
+        console.log("[DN-DEBUG] No active columns, staying at:", updatedCurrentColumnIndex);
       }
     }
 
-    debugLog("recordSelection", "Selection recorded, progress updated:", {
-      selectedColumnIndex: selectedNodeColumnIndex,
-      completedCount: updatedColumnStates.filter(s => s === "completed").length,
-      activeCount: updatedColumnStates.filter(s => s === "active").length,
-      lockedCount: updatedColumnStates.filter(s => s === "locked").length,
-      totalColumns,
-    });
+    console.log("[DN-DEBUG] FINAL columnStates:", JSON.stringify(updatedColumnStates));
+    console.log("[DN-DEBUG] FINAL currentColumnIndex:", updatedCurrentColumnIndex);
+    console.log("[DN-DEBUG] completed:", updatedColumnStates.filter(s => s === "completed").length,
+      "active:", updatedColumnStates.filter(s => s === "active").length,
+      "locked:", updatedColumnStates.filter(s => s === "locked").length,
+      "total:", totalColumns);
 
     // 全列が完了した場合
-    debugLog("recordSelection", "Checking allColumnsCompleted:", {
-      updatedColumnStates,
-      totalColumns: session.criteriaLabels.length,
-      selectedNodeColumnIndex,
-    });
     const allColumnsCompleted = updatedColumnStates.every(state => state === "completed");
     debugLog("recordSelection", "allColumnsCompleted:", allColumnsCompleted);
     if (allColumnsCompleted) {

@@ -612,6 +612,12 @@ export async function exploreNext(request: ExploreNextRequest): Promise<ExploreN
   const updatedCriteriaLabels = [...(session.criteriaLabels ?? []), newCriteriaLabel];
   const updatedColumnStates = [...(session.columnStates ?? []), "active" as const];
 
+  console.log("[DN-DEBUG] === exploreNext column state ===");
+  console.log("[DN-DEBUG] BEFORE columnStates:", JSON.stringify(session.columnStates));
+  console.log("[DN-DEBUG] AFTER columnStates:", JSON.stringify(updatedColumnStates));
+  console.log("[DN-DEBUG] new currentColumnIndex:", updatedCriteriaLabels.length - 1);
+  console.log("[DN-DEBUG] new criteriaLabel:", newCriteriaLabel.id, newCriteriaLabel.question);
+
   const updatedSession: DecisionNavigatorSession = {
     ...session,
     nodes: [...finalNodes],

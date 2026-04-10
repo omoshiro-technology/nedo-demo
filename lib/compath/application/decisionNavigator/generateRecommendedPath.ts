@@ -593,8 +593,10 @@ function convertDecisionTreeToGraph(
   }
 
   // [DEBUG] columnStates初期化後のログ出力
+  console.log("[DN-DEBUG] === generateRecommendedPath INIT ===");
+  console.log("[DN-DEBUG] columnStates:", JSON.stringify(columnStates));
+  console.log("[DN-DEBUG] criteriaLabels:", criteriaLabels.map((l, i) => `[${i}] ${l.id} "${l.question}" depth=${l.columnIndex}`));
   debugLog("generateRecommendedPath", "columnStates initialized:", columnStates);
-  debugLog("generateRecommendedPath", "criteriaLabels isPreSelected:", criteriaLabels.map(l => ({ id: l.id, isPreSelected: l.isPreSelected })));
 
   // Step 4: ゴールノード（outcome）を配置
   // ゴールは全ノードの右端＋オフセット、縦方向は中央に配置
