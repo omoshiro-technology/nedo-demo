@@ -192,126 +192,77 @@ export function DiscussionInterface({
 
     abortControllerRef.current = new AbortController()
 
+    const maxTurns = 15
+    const conversationHistory: Array<{ speakerIndex: number; utterance: string }> = []
+    let nextSpeakerIndex = 0
+    let currentWhiteboardHtml = ""
+    let consecutiveErrors = 0
+
     try {
-      console.log("Sending request to /api/conference-network")
-      const response = await fetch("/api/conference-network", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ theme, purpose, characters, knowledgeFiles }),
-        signal: abortControllerRef.current.signal,
-      })
-
-      console.log("Response status:", response.status)
-      console.log("Response headers:", Object.fromEntries(response.headers.entries()))
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error("API Error Response:", errorText)
-        throw new Error(`API error: ${response.status} ${response.statusText}`)
-      }
-
-      if (!response.body) {
-        throw new Error("No response body received")
-      }
-
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder()
-      let buffer = ""
-
-      console.log("Starting to read stream...")
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) {
-          console.log("Stream reading completed")
+      for (let turn = 0; turn < maxTurns; turn++) {
+        if (abortControllerRef.current?.signal.aborted) {
+          console.log("Conference aborted by user")
           break
         }
 
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split("\n")
+        console.log(`=== Turn ${turn + 1}/${maxTurns} ===`)
 
-        buffer = lines.pop() || ""
+        const shouldUpdateWhiteboard = turn > 0 && turn % 3 === 2
 
-        for (const line of lines) {
-          if (line.trim() === "") continue
+        const response = await fetch("/api/conference-network/turn", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            theme,
+            purpose,
+            characters,
+            knowledgeFiles,
+            conversationHistory,
+            turn,
+            nextSpeakerIndex,
+            whiteboardHtml: currentWhiteboardHtml,
+            updateWhiteboard: shouldUpdateWhiteboard,
+          }),
+          signal: abortControllerRef.current.signal,
+        })
 
-          // ハートビートの処理（ログのみ）
-          if (line.startsWith(": heartbeat")) {
-            console.log("Heartbeat received at", new Date().toISOString())
-            continue
+        if (!response.ok) {
+          console.error(`Turn ${turn + 1} failed:`, response.status)
+          consecutiveErrors++
+          if (consecutiveErrors >= 3) {
+            toast({ title: "会議エラー", description: "連続エラーのため会議を終了しました。", variant: "destructive" })
+            break
           }
+          continue
+        }
 
-          if (line.startsWith("data: ")) {
-            const dataString = line.slice(6)
-            try {
-              const event = JSON.parse(dataString)
-              console.log("Received event:", event.type)
+        consecutiveErrors = 0
+        const result = await response.json()
 
-              if (event.type === "message") {
-                const newMessage = event.data
-                setMessages((prev) => {
-                  const updated = [...prev, newMessage]
-                  return updated
-                })
-              } else if (event.type === "summary_update") {
-                const { parentId, nodeId, label, relatedMessageIndices } = event.data
-                setSummaryNodes((prev) => {
-                  const newNodes = { ...prev }
-                  if (!newNodes[nodeId]) {
-                    newNodes[nodeId] = {
-                      id: nodeId,
-                      label,
-                      children: [],
-                      relatedMessages: relatedMessageIndices || [],
-                      summary: `${label}に関する議論`,
-                    }
-                  }
-                  if (parentId && newNodes[parentId] && !newNodes[parentId].children.includes(nodeId)) {
-                    newNodes[parentId] = {
-                      ...newNodes[parentId],
-                      children: [...newNodes[parentId].children, nodeId],
-                    }
-                  }
-                  return newNodes
-                })
-              } else if (event.type === "node_update") {
-                const { nodeId, relatedMessageIndices } = event.data
-                setSummaryNodes((prev) => {
-                  const newNodes = { ...prev }
-                  if (newNodes[nodeId]) {
-                    newNodes[nodeId] = {
-                      ...newNodes[nodeId],
-                      relatedMessages: relatedMessageIndices || [],
-                    }
-                  }
-                  return newNodes
-                })
-              } else if (event.type === "whiteboard_update") {
-                console.log("Whiteboard updated")
-                setWhiteboardHtml(event.data.html || "")
-              } else if (event.type === "end") {
-                console.log("Conference ended:", event.data.reason)
-                setStatus("finished")
-                generateTopicSummaries()
-                toast({
-                  title: "会議完了",
-                  description: event.data.reason,
-                  duration: 5000,
-                })
-                reader.cancel()
-                return
-              } else if (event.type === "error") {
-                console.error("Stream error:", event.data)
-                toast({
-                  title: "会議エラー",
-                  description: "会議中に問題が発生しましたが、続行します。",
-                  variant: "destructive",
-                })
-              }
-            } catch (e) {
-              console.error("Error parsing JSON:", e, "Data string:", dataString)
-            }
-          }
+        // Update conversation history
+        conversationHistory.push({
+          speakerIndex: nextSpeakerIndex,
+          utterance: result.message.text,
+        })
+
+        // Update UI
+        setMessages((prev) => [...prev, result.message])
+
+        if (result.whiteboardHtml && result.whiteboardHtml !== currentWhiteboardHtml) {
+          currentWhiteboardHtml = result.whiteboardHtml
+          setWhiteboardHtml(currentWhiteboardHtml)
+        }
+
+        nextSpeakerIndex = result.nextSpeakerIndex
+
+        if (result.isFinished || turn >= maxTurns - 1) {
+          console.log("Conference ended:", result.finishReason || "Max turns reached")
+          toast({
+            title: "会議完了",
+            description: result.finishReason || "会議が完了しました。",
+            duration: 5000,
+          })
+          break
         }
       }
     } catch (error: any) {
@@ -323,16 +274,14 @@ export function DiscussionInterface({
           variant: "destructive",
         })
         setStatus("idle")
+        return
       } else {
         console.log("Conference was aborted by user")
-        setStatus("finished")
-      }
-    } finally {
-      if (status === "running") {
-        setStatus("finished")
-        generateTopicSummaries()
       }
     }
+
+    setStatus("finished")
+    generateTopicSummaries()
   }
 
   const generateTopicSummaries = async () => {
