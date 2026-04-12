@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import dynamic from "next/dynamic"
+import { DemoScenarioProvider } from "@/components/compath/data/DemoScenarioContext"
 
 // DecisionNavigatorPanelはReactFlowを使うのでSSR不可
 const DecisionNavigatorPanel = dynamic(
@@ -24,14 +25,16 @@ export default function DecisionDemoPage() {
   }
 
   return (
-    <div className="compath-scope" style={{ height: "100vh" }}>
-      <DecisionNavigatorPanel
-        initialPurpose={session.purpose}
-        onClose={() => window.history.back()}
-        skipPreconditionModal={true}
-        skipPastCasePanel={true}
-        presetSession={session}
-      />
-    </div>
+    <DemoScenarioProvider>
+      <div className="compath-scope" style={{ height: "100vh" }}>
+        <DecisionNavigatorPanel
+          initialPurpose={session.purpose}
+          onClose={() => window.history.back()}
+          skipPreconditionModal={true}
+          skipPastCasePanel={true}
+          presetSession={session}
+        />
+      </div>
+    </DemoScenarioProvider>
   )
 }
