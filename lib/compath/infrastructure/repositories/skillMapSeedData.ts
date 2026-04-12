@@ -340,33 +340,33 @@ export function generateSeedData(): {
   // 田中大輝のレベルアップ根拠を注入（デモ用）
   const tanakaEvidence: Record<string, import("../../domain/skillMap/types").LevelUpEvidence[]> = {
     "drawing-read": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-002", project: "図面から読み取るべき品質要求の整理", reason: "A社向けブラケット図面の幾何公差（平面度0.05）を見落としていた箇所を特定し、加工基準面の選定根拠として反映", date: date(38) },
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "顧客図面の注記「バリなきこと」から後工程のバレル研磨追加を判断し、工程設計に組み込んだ", date: date(7) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-002", project: "A社ブラケットの品質要求整理", reason: "図面の寸法公差だけ見て工程設計しかけたが、注記欄の幾何公差（平面度0.05）を見落としていた。加工基準面の取り方を変えないと達成できないと判断し、工程案を修正した", date: date(38) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "図面注記「バリなきこと」をトリム工程だけで対応するか、後工程にバレル研磨を追加するか検討。トリム型の刃先管理コストとバレル研磨の工程追加コストを比較し、バレル研磨追加を選択", date: date(7) },
     ],
     "tolerance": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-002", project: "図面から読み取るべき品質要求の整理", reason: "A社ブラケットの穴位置公差±0.1mmに対し、順送型のパイロットピン方式を選定。抜き→曲げの工程順で累積誤差を±0.05mm以内に設計", date: date(38) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-002", project: "A社ブラケットの品質要求整理", reason: "穴位置公差±0.1mmを単発型で保証するか順送型にするか検討。単発型では工程間搬送で±0.15mm程度のズレが生じるリスクがあり、順送型のパイロットピン方式を選択", date: date(38) },
     ],
     "steel": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-003", project: "B社カバー部品の材料選定", reason: "SPCC-SD（引張強度270MPa）からSPCE（同270MPa・伸び率41%）への変更を提案。絞り比2.1の成形で割れリスクを低減しつつ材料単価差+8円/kgのコスト増を試算", date: date(25) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-003", project: "B社カバー部品の材料選定", reason: "SPCC-SD（伸び率28%）のままで絞り比2.1に挑むか、SPCEに変更するか比較。SPCCでは試作で底部コーナーに微小亀裂が出ており、伸び率41%のSPCEに変更して割れリスクを回避する判断をした", date: date(25) },
     ],
     "press-forming": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-003", project: "B社カバー部品の材料選定", reason: "SPCEへの材料変更に伴いBHF（しわ押さえ力）を45kN→38kNに下げる条件変更を設計。試作時のしわ・割れ判定基準も合わせて設定", date: date(25) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-003", project: "B社カバー部品の材料選定", reason: "SPCE変更後のBHFを現行45kNで据え置くか下げるか検討。伸び率向上でしわ押さえを緩められるため38kNに下げる案を選択。ただし下げすぎるとフランジしわが出るため、試作で35kN/38kN/40kNの3条件を比較する計画とした", date: date(25) },
     ],
     "cost-est": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-003", project: "B社カバー部品の材料選定", reason: "SPCE採用による材料費増（+8円/kg×月産5000個）と、SPCC時の不良率3%→1%低減による廃棄コスト削減を比較し、月次で約12万円のコスト改善を試算", date: date(25) },
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "3工程案（型費1,800万円・サイクル12s）と4工程案（型費2,200万円・サイクル9s）のLCCを月産3000個・5年で比較し、4工程案が累計で約340万円有利と算出", date: date(7) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-003", project: "B社カバー部品の材料選定", reason: "SPCE変更の材料費増（+8円/kg×月産5000個）を許容するか、SPCCのまま金型改修で対応するかを比較。金型改修費120万円+不良率3%維持 vs 材料費増+不良率1%を試算し、6ヶ月で材料変更案が逆転する判断に至った", date: date(25) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "初期投資を抑える3工程案（型費1,800万円）か、ランニングで有利な4工程案（型費2,200万円）かをLCCで比較。月産3000個���5年の前提で4工程案が累計約340万円有利となり、型費増を許容する判断をした", date: date(7) },
     ],
     "process-seq": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "3工程（絞り→再絞り→トリム）では2工程目の絞り比1.8が限界を超えるため、4工程（絞り→再絞り→再絞り→トリム）とし各工程の絞り比を1.4以下に設計", date: date(7) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "3工程案では2工程目の絞り比が1.8となり加工限界（1.6〜1.7）を超えるリスクが��った。4工程に分割して各工程の絞り比を1.4以下に抑えるか、3工程+中間焼鈍で対応するか検討し、品質安定性を優先して4工程案を選択", date: date(7) },
     ],
     "stainless": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "SUS304の加工硬化（HV180→HV280）を考慮し、2工程目と3工程目の間に中間焼鈍（1050℃×3min）を挿入する工程設計を選択", date: date(7) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "SUS304の加工硬化（HV180→HV280）に対し、中間焼鈍なしで4工程とするか、3工程+中間焼鈍（1050℃×3min）とするか比較。焼鈍の外注リードタイム（+3日）と酸化スケール除去コストを考慮し、中間焼鈍なし4工程を選択", date: date(7) },
     ],
     "die-maint": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "SUS304のカジリ対策としてダイスにTiCNコーティングを選定。型メンテ周期を5万ショット→8万ショットに延長し、年間メンテ費を約60万円削減する設計とした", date: date(7) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "SUS304のカジリ対策としてダイス表面処理をTD処理（寿命10万ショット・処理費40万円）とTiCNコーティング（寿命8万ショット・処理費15万円）で比較。型本数4本×年2回の再処理頻度を考慮し、トータルコストで有利なTiCNを選択", date: date(7) },
     ],
     "qc-method": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "試作検証を3段階に分割。初期50個で板厚減少率を測定（許容15%以下）、中期200個でCpk確認（目標1.33以上）、後期で連続500個の工程能力検証を計画", date: date(7) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "試作検証を一括500個で行うか段階的に進めるか検討。初期50個で板厚減少率が許容15%を超えた場合に早期に条件修正できるよう、3段階（初期50個→中期200個でCpk確認→後期500個で工程能力検証）に分割する方針を選択", date: date(7) },
     ],
   };
 
