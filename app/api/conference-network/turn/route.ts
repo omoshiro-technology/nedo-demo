@@ -1,4 +1,4 @@
-import { selectNextSpeaker, generateCharacterTurn, type ConferenceNetworkContext } from "@/lib/brain-room/conference-network"
+import { selectNextSpeaker, generateCharacterTurn, getConferencePhase, type ConferenceNetworkContext } from "@/lib/brain-room/conference-network"
 import { updateWhiteboard } from "@/lib/brain-room/conference-agents"
 import type { Character, KnowledgeFile } from "@/lib/brain-room/types"
 
@@ -35,6 +35,8 @@ export async function POST(req: Request) {
       return Response.json({ error: "Invalid request" }, { status: 400 })
     }
 
+    const phase = getConferencePhase(turn, 20)
+
     const context: ConferenceNetworkContext = {
       theme,
       purpose,
@@ -43,6 +45,7 @@ export async function POST(req: Request) {
       turn,
       conversationHistory,
       knowledgeFiles,
+      phase,
     }
 
     // 1. Generate response from the selected speaker
@@ -101,6 +104,7 @@ export async function POST(req: Request) {
       whiteboardHtml: newWhiteboardHtml,
       isFinished: result.isFinished || false,
       finishReason: result.finishReason,
+      phase,
     })
   } catch (error) {
     console.error("[Conference Turn API Error]", error)

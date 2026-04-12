@@ -16,6 +16,23 @@ export const conferenceTurnSchema = z.object({
   usedKnowledgeIds: z.array(z.string()).optional().describe("IDs of knowledge items referenced in this response"),
 })
 
+export type ConferencePhase = "explore" | "converge" | "decide" | "summarize"
+
+export function getConferencePhase(turn: number, maxTurns: number = 20): ConferencePhase {
+  const progress = turn / maxTurns
+  if (progress < 0.4) return "explore"    // turns 0-7: 論点を広げる
+  if (progress < 0.7) return "converge"   // turns 8-13: 選択肢を絞る
+  if (progress < 0.9) return "decide"     // turns 14-17: 結論を出す
+  return "summarize"                       // turns 18-19: まとめ
+}
+
+const PHASE_LABELS: Record<ConferencePhase, string> = {
+  explore: "探索フェーズ（論点を広げる）",
+  converge: "収束フェーズ（選択肢を絞る）",
+  decide: "決定フェーズ（結論を出す）",
+  summarize: "まとめフェーズ（合意事項を確認する）",
+}
+
 export interface ConferenceNetworkContext {
   theme: string
   purpose?: string
@@ -24,6 +41,7 @@ export interface ConferenceNetworkContext {
   turn: number
   conversationHistory: Array<{ speakerIndex: number; utterance: string }>
   knowledgeFiles?: KnowledgeFile[]
+  phase?: ConferencePhase
 }
 
 // ファシリテーターAgent - 純粋に進行管理のみ
@@ -37,28 +55,29 @@ function createFacilitatorAgent(context: ConferenceNetworkContext): Agent {
     background: char.background
   }))
   
+  const phase = context.phase || getConferencePhase(turn)
+  const phaseLabel = PHASE_LABELS[phase]
+
+  const phaseGuidance: Record<ConferencePhase, string> = {
+    explore: `【探索フェーズ】多様な観点を引き出す。まだ出ていない論点を持つ人を優先。異なる専門領域からの切り口を歓迎する。`,
+    converge: `【収束フェーズ】論点を絞り込む段階。新しい話題を広げるのではなく、既出の論点を深掘りし、選択肢を比較・評価できる人を選ぶ。トレードオフの整理を促す。`,
+    decide: `【決定フェーズ】結論を出す段階。具体的な判断・推奨を示せる人を選ぶ。「結局どうするか」を明確にするよう導く。曖昧な発言より、明確な立場表明を促す。`,
+    summarize: `【まとめフェーズ】合意事項と残課題を確認する段階。これまでの議論で決まったこと・決まっていないことを整理できる人を選ぶ。新しい論点は出さない。`,
+  }
+
   const instructions = `You are a conference facilitator for a discussion about "${theme}".
-${purpose ? `\n**CONFERENCE PURPOSE**: ${purpose}\n*** CRITICAL: Every speaker selection must advance this purpose. Choose speakers who can best contribute to achieving this goal. ***` : ''}
+${purpose ? `\n**CONFERENCE PURPOSE**: ${purpose}\n*** CRITICAL: Every speaker selection must advance this purpose. ***` : ''}
 
 Current turn: ${turn + 1}/20
+Current phase: ${phaseLabel}
+
+${phaseGuidance[phase]}
 
 Speaking statistics:
 ${speakingCounts.map(s => `- ${s.name} (${s.background}): ${s.count} times`).join('\n')}
 
-Your role is ONLY to:
-1. Analyze the discussion flow toward achieving the purpose
-2. Select the next speaker who can best advance the conference goal
-3. Provide purpose-focused guidance for their contribution
-
-IMPORTANT: You do NOT speak in the conference. You only manage the flow.
-
-When using transmit tool to a character:
-- Tell them how to advance the conference purpose: "${purpose || theme}"
-- Indicate if they should agree, challenge, or explore new angles that serve the goal
-- Guide them to contribute meaningfully to achieving the objective
-- If they mention someone else's name or ask for specific expertise, consider if that person can better serve the purpose
-
-Balance participation while prioritizing speakers who can most effectively advance the conference purpose.`
+Your role is ONLY to select the next speaker. You do NOT speak in the conference.
+Balance participation while prioritizing speakers who can most effectively advance the current phase.`
 
   return new Agent({
     name: "facilitator",
@@ -264,6 +283,7 @@ export async function generateCharacterTurn(
     conversationHistory: context.conversationHistory,
     characters: context.characters,
     knowledgeFiles: context.knowledgeFiles || [],
+    phase: context.phase,
   }
 
   // 2段階生成プロセスを使用（既存実装）

@@ -14,6 +14,7 @@ export interface AgentConferenceContext {
   conversationHistory: Array<{ speakerIndex: number; utterance: string }>
   characters: Character[]
   knowledgeFiles: KnowledgeFile[]
+  phase?: string
 }
 
 // Conference turn schema for structured output - only content, no speaker selection
@@ -191,6 +192,15 @@ Use the knowledge_search tool with specific keywords related to the topic being 
 
 // Step 2: Response Generation Agent (Structured output only)
 export function createResponseAgent(character: Character, context: AgentConferenceContext): Agent {
+  const phase = context.phase || "explore"
+
+  const phaseInstruction: Record<string, string> = {
+    explore: `【現在のフェーズ：探索】新しい論点や観点を積極的に出してください。問題提起、リスクの指摘、見落としの発見を歓迎。`,
+    converge: `【現在のフェーズ：収束】新しい話題を広げず、既出の論点を深掘りしてください。選択肢の比較、トレードオフの整理、優先順位の提案を行う。「つまり○○か△△かの判断になる」のように論点を絞り込む。`,
+    decide: `【現在のフェーズ：決定】結論を出してください。「私は○○を推奨する。理由は〜」のように明確な立場を示す。曖昧な表現は避け、具体的な判断・推奨を述べる。`,
+    summarize: `【現在のフェーズ：まとめ】議論で決まったことと残った課題を確認してください。新しい論点は出さない。「今回の議論で○○は合意できた。△△は次回の課題」のように整理する。`,
+  }
+
   return new Agent({
     name: `response-generator-${character.id}`,
     instructions: `あなたは${character.name}です。以下の人物になりきって会議に参加してください。
@@ -202,6 +212,8 @@ export function createResponseAgent(character: Character, context: AgentConferen
 
 【会議テーマ】${context.theme}
 ${context.purpose ? `【会議の方向性】${context.purpose}` : ''}
+
+${phaseInstruction[phase]}
 
 【最重要ルール：あなたらしく話す】
 - あなたの職種・経歴・性格から自然に出てくる視点で話してください。

@@ -192,7 +192,7 @@ export function DiscussionInterface({
 
     abortControllerRef.current = new AbortController()
 
-    const maxTurns = 15
+    const maxTurns = 20
     const conversationHistory: Array<{ speakerIndex: number; utterance: string }> = []
     let nextSpeakerIndex = 0
     let currentWhiteboardHtml = ""
