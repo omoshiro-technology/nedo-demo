@@ -340,33 +340,33 @@ export function generateSeedData(): {
   // 田中大輝のレベルアップ根拠を注入（デモ用）
   const tanakaEvidence: Record<string, import("../../domain/skillMap/types").LevelUpEvidence[]> = {
     "drawing-read": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-002", project: "図面から読み取るべき品質要求の整理", reason: "公差記号の優先順位と、図面に明記されていない暗黙の品質要求を整理する視点を獲得", date: date(38) },
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "3工程vs4工程の判断を整理", reason: "顧客要求仕様から工程数を逆算する際、図面の暗黙の品質要求を読み取る力が向上", date: date(7) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-002", project: "図面から読み取るべき品質要求の整理", reason: "A社向けブラケット図面の幾何公差（平面度0.05）を見落としていた箇所を特定し、加工基準面の選定根拠として反映", date: date(38) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "顧客図面の注記「バリなきこと」から後工程のバレル研磨追加を判断し、工程設計に組み込んだ", date: date(7) },
     ],
     "tolerance": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-002", project: "図面から読み取るべき品質要求の整理", reason: "公差の厳しさがコストに直結することを理解し、公差設計の基本的な考え方を整理", date: date(38) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-002", project: "図面から読み取るべき品質要求の整理", reason: "A社ブラケットの穴位置公差±0.1mmに対し、順送型のパイロットピン方式を選定。抜き→曲げの工程順で累積誤差を±0.05mm以内に設計", date: date(38) },
     ],
     "steel": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-003", project: "材料選定がコスト・品質に与える影響の整理", reason: "鋼材の種類ごとの特性差（SPCC vs SPCE）が工程設計に与える影響を整理", date: date(25) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-003", project: "B社カバー部品の材料選定", reason: "SPCC-SD（引張強度270MPa）からSPCE（同270MPa・伸び率41%）への変更を提案。絞り比2.1の成形で割れリスクを低減しつつ材料単価差+8円/kgのコスト増を試算", date: date(25) },
     ],
     "press-forming": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-003", project: "材料選定がコスト・品質に与える影響の整理", reason: "材料の加工性（引張強度・伸び）がプレス成形の条件設定に直結することを構造的に理解", date: date(25) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-003", project: "B社カバー部品の材料選定", reason: "SPCEへの材料変更に伴いBHF（しわ押さえ力）を45kN→38kNに下げる条件変更を設計。試作時のしわ・割れ判定基準も合わせて設定", date: date(25) },
     ],
     "cost-est": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-003", project: "材料選定がコスト・品質に与える影響の整理", reason: "材料費と加工費のトレードオフを初めて数値で比較する経験を積んだ", date: date(25) },
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "3工程vs4工程の判断を整理", reason: "ライフサイクルコストの構成要素（型費・メンテ費・停止コスト）を自分で整理できるようになった", date: date(7) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-003", project: "B社カバー部品の材料選定", reason: "SPCE採用による材料費増（+8円/kg×月産5000個）と、SPCC時の不良率3%→1%低減による廃棄コスト削減を比較し、月次で約12万円のコスト改善を試算", date: date(25) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "3工程案（型費1,800万円・サイクル12s）と4工程案（型費2,200万円・サイクル9s）のLCCを月産3000個・5年で比較し、4工程案が累計で約340万円有利と算出", date: date(7) },
     ],
     "process-seq": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "3工程vs4工程の判断を整理", reason: "工程数の選択がコスト・品質・納期に与える影響を構造的に整理できるようになった", date: date(7) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "3工程（絞り→再絞り→トリム）では2工程目の絞り比1.8が限界を超えるため、4工程（絞り→再絞り→再絞り→トリム）とし各工程の絞り比を1.4以下に設計", date: date(7) },
     ],
     "stainless": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "3工程vs4工程の判断を整理", reason: "SUS304の加工硬化を考慮した工程分割の判断基準を自分なりに整理できた", date: date(7) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "SUS304の加工硬化（HV180→HV280）を考慮し、2工程目と3工程目の間に中間焼鈍（1050℃×3min）を挿入する工程設計を選択", date: date(7) },
     ],
     "die-maint": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "3工程vs4工程の判断を整理", reason: "型摩耗速度とメンテナンス周期がLCCに与える影響を構造的に理解できるようになった", date: date(7) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "SUS304のカジリ対策としてダイスにTiCNコーティングを選定。型メンテ周期を5万ショット→8万ショットに延長し、年間メンテ費を約60万円削減する設計とした", date: date(7) },
     ],
     "qc-method": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "3工程vs4工程の判断を整理", reason: "試作検証フレームワーク（初期・中期・後期の3段階）の品質管理手法を整理できた", date: date(7) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "試作検証を3段階に分割。初期50個で板厚減少率を測定（許容15%以下）、中期200個でCpk確認（目標1.33以上）、後期で連続500個の工程能力検証を計画", date: date(7) },
     ],
   };
 
