@@ -15,15 +15,17 @@ type Props = {
 }
 
 export function QCDESRadar({ scores }: Props) {
+  const cov = scores.qcdesCoverage
   const data = [
-    { axis: "品質 (Q)", value: scores.qcdesCoverage.quality ? 100 : 0 },
-    { axis: "コスト (C)", value: scores.qcdesCoverage.cost ? 100 : 0 },
-    { axis: "納期 (D)", value: scores.qcdesCoverage.delivery ? 100 : 0 },
-    { axis: "環境 (E)", value: scores.qcdesCoverage.environment ? 100 : 0 },
-    { axis: "安全 (S)", value: scores.qcdesCoverage.safety ? 100 : 0 },
+    { axis: "品質 (Q)", value: cov.quality },
+    { axis: "コスト (C)", value: cov.cost },
+    { axis: "納期 (D)", value: cov.delivery },
+    { axis: "環境 (E)", value: cov.environment },
+    { axis: "安全 (S)", value: cov.safety },
   ]
 
-  const covered = Object.values(scores.qcdesCoverage).filter(Boolean).length
+  const vals = Object.values(cov) as number[]
+  const avg = Math.round(vals.reduce((a, b) => a + b, 0) / vals.length)
 
   return (
     <div className="h-full flex flex-col">
@@ -48,7 +50,7 @@ export function QCDESRadar({ scores }: Props) {
         </ResponsiveContainer>
       </div>
       <p className="text-center text-sm text-gray-500 mt-1 shrink-0">
-        カバー率: {covered} / 5 軸
+        QCDES 平均: {avg} / 100
       </p>
     </div>
   )

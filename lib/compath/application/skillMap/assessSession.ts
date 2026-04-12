@@ -51,12 +51,12 @@ const SYSTEM_PROMPT = `あなたは製造業における技能伝承の専門家
 
 ### A. 観点網羅度 (viewpointCoverage)
 ユーザーが自発的に言及した観点の幅を評価する。
-以下のQCDES各軸への言及有無も判定する:
-- Quality（品質）: 品質基準、検査、公差、Cpk、トレーサビリティ等
-- Cost（コスト）: 費用、予算、コスト最適化、材料コスト等
-- Delivery（納期）: リードタイム、スケジュール、生産量、納期等
-- Environment（環境）: 環境負荷、廃棄物、省エネ、環境規制等
-- Safety（安全）: 労働安全、設備安全、リスク、法令遵守等
+QCDES各軸の習熟度も0-100で採点する:
+- Quality（品質）: 品質基準、検査、公差、Cpk、トレーサビリティ等への理解度と言及の深さ
+- Cost（コスト）: 費用、予算、コスト最適化、材料コスト等への理解度と言及の深さ
+- Delivery（納期）: リードタイム、スケジュール、生産量、納期等への理解度と言及の深さ
+- Environment（環境）: 環境負荷、廃棄物、省エネ、環境規制等への理解度と言及の深さ
+- Safety（安全）: 労働安全、設備安全、リスク、法令遵守等への理解度と言及の深さ
 
 ### B. 構造的思考度 (structuralThinking)
 - 0-25: 単発の質問や感想のみ
@@ -82,11 +82,11 @@ AIが先に出した論点をなぞるだけなら低い。ユーザーが独自
 {
   "viewpointCoverage": <number 0-100>,
   "qcdesCoverage": {
-    "quality": <boolean>,
-    "cost": <boolean>,
-    "delivery": <boolean>,
-    "environment": <boolean>,
-    "safety": <boolean>
+    "quality": <number 0-100>,
+    "cost": <number 0-100>,
+    "delivery": <number 0-100>,
+    "environment": <number 0-100>,
+    "safety": <number 0-100>
   },
   "structuralThinking": <number 0-100>,
   "proactiveness": <number 0-100>,

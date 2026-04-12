@@ -53,13 +53,13 @@ export const SKILL_LEVEL_LABELS: Record<SkillLevel, string> = {
 // 思考品質スコア（層2: 4軸）
 // ============================================================
 
-/** QCDES各軸への言及 */
+/** QCDES各軸の習熟度 (0-100) */
 export type QCDESCoverage = {
-  quality: boolean;
-  cost: boolean;
-  delivery: boolean;
-  environment: boolean;
-  safety: boolean;
+  quality: number;
+  cost: number;
+  delivery: number;
+  environment: number;
+  safety: number;
 };
 
 /**

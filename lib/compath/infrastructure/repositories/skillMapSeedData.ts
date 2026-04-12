@@ -42,7 +42,7 @@ function date(daysAgo: number): string {
   return d.toISOString();
 }
 
-function qcdes(q: boolean, c: boolean, d: boolean, e: boolean, s: boolean): QCDESCoverage {
+function qcdes(q: number, c: number, d: number, e: number, s: number): QCDESCoverage {
   return { quality: q, cost: c, delivery: d, environment: e, safety: s };
 }
 
@@ -213,54 +213,54 @@ function makeAssessments(
 
 function murataAssessments(): SkillAssessment[] {
   return makeAssessments("murata-tetsuo", MURATA_SKILLS, [
-    { source: "brain_room_1shot", purpose: "SUS304 板厚1.2mm曲げ加工の工程検討", tq: tq(85, 80, 78, 90, qcdes(true, true, true, false, true)), skills: ["stainless", "springback", "process-seq", "press-forming"], daysAgo: 56 },
-    { source: "compath_decision_navigator", purpose: "金型摩耗による品質低下の原因切り分け", tq: tq(80, 85, 82, 88, qcdes(true, true, false, false, true)), skills: ["die-maint", "troubleshoot", "inspection", "measurement"], daysAgo: 49 },
-    { source: "compath_chat", purpose: "新規顧客の公差要求と既存設備の適合確認", tq: tq(78, 82, 75, 88, qcdes(true, true, true, false, false)), skills: ["tolerance", "equip-eval", "needs-analysis", "customer-negotiation"], daysAgo: 42 },
-    { source: "brain_room_1shot", purpose: "順送金型 vs タンデム構成の比較検討", tq: tq(90, 92, 85, 92, qcdes(true, true, true, false, true)), skills: ["process-seq", "die-structure", "cost-est", "equip-eval", "cycle-time"], daysAgo: 35 },
-    { source: "compath_decision_navigator", purpose: "若手への工程設計ノウハウ伝達方法の検討", tq: tq(72, 68, 65, 75, qcdes(true, false, false, false, false)), skills: ["work-standard", "prototyping", "process-seq", "tryout"], daysAgo: 28 },
-    { source: "brain_room_1shot", purpose: "スプリングバック補正量の妥当性検証", tq: tq(88, 90, 88, 95, qcdes(true, true, false, false, true)), skills: ["springback", "press-forming", "tolerance", "forming-sim"], daysAgo: 21 },
-    { source: "compath_chat", purpose: "後工程（溶接）との公差積み上げ確認", tq: tq(82, 85, 78, 88, qcdes(true, true, true, true, false)), skills: ["tolerance", "delivery-coord", "qc-method", "welding", "dfa-dfm"], daysAgo: 14 },
-    { source: "brain_room_1shot", purpose: "安全カバー部品の工程FMEAレビュー", tq: tq(92, 95, 90, 93, qcdes(true, true, true, true, true)), skills: ["process-fmea", "troubleshoot", "preventive-maint", "occupational-safety", "risk-assessment"], daysAgo: 7 },
+    { source: "brain_room_1shot", purpose: "SUS304 板厚1.2mm曲げ加工の工程検討", tq: tq(85, 80, 78, 90, qcdes(85, 80, 75, 15, 80)), skills: ["stainless", "springback", "process-seq", "press-forming"], daysAgo: 56 },
+    { source: "compath_decision_navigator", purpose: "金型摩耗による品質低下の原因切り分け", tq: tq(80, 85, 82, 88, qcdes(88, 78, 25, 10, 75)), skills: ["die-maint", "troubleshoot", "inspection", "measurement"], daysAgo: 49 },
+    { source: "compath_chat", purpose: "新規顧客の公差要求と既存設備の適合確認", tq: tq(78, 82, 75, 88, qcdes(82, 75, 80, 10, 20)), skills: ["tolerance", "equip-eval", "needs-analysis", "customer-negotiation"], daysAgo: 42 },
+    { source: "brain_room_1shot", purpose: "順送金型 vs タンデム構成の比較検討", tq: tq(90, 92, 85, 92, qcdes(90, 88, 82, 15, 78)), skills: ["process-seq", "die-structure", "cost-est", "equip-eval", "cycle-time"], daysAgo: 35 },
+    { source: "compath_decision_navigator", purpose: "若手への工程設計ノウハウ伝達方法の検討", tq: tq(72, 68, 65, 75, qcdes(70, 25, 20, 10, 15)), skills: ["work-standard", "prototyping", "process-seq", "tryout"], daysAgo: 28 },
+    { source: "brain_room_1shot", purpose: "スプリングバック補正量の妥当性検証", tq: tq(88, 90, 88, 95, qcdes(88, 82, 30, 10, 80)), skills: ["springback", "press-forming", "tolerance", "forming-sim"], daysAgo: 21 },
+    { source: "compath_chat", purpose: "後工程（溶接）との公差積み上げ確認", tq: tq(82, 85, 78, 88, qcdes(82, 80, 78, 55, 20)), skills: ["tolerance", "delivery-coord", "qc-method", "welding", "dfa-dfm"], daysAgo: 14 },
+    { source: "brain_room_1shot", purpose: "安全カバー部品の工程FMEAレビュー", tq: tq(92, 95, 90, 93, qcdes(95, 88, 85, 70, 92)), skills: ["process-fmea", "troubleshoot", "preventive-maint", "occupational-safety", "risk-assessment"], daysAgo: 7 },
   ]);
 }
 
 function nakajimaAssessments(): SkillAssessment[] {
   return makeAssessments("nakajima-kota", NAKAJIMA_SKILLS, [
-    { source: "compath_chat", purpose: "新ライン立ち上げの工程設計方針", tq: tq(55, 50, 45, 60, qcdes(true, true, true, false, false)), skills: ["production-plan", "productivity", "line-layout", "cost-control"], daysAgo: 42 },
-    { source: "brain_room_1shot", purpose: "材料変更に伴う曲げ条件の見直し", tq: tq(60, 55, 50, 55, qcdes(true, true, false, false, false)), skills: ["steel", "cost-est", "supplier-quality"], daysAgo: 35 },
-    { source: "compath_decision_navigator", purpose: "外注先選定の判断基準整理", tq: tq(65, 68, 55, 58, qcdes(false, true, true, false, false)), skills: ["outsource-mgmt", "cost-est", "customer-negotiation", "quotation"], daysAgo: 28 },
-    { source: "brain_room_1shot", purpose: "作業標準化と技能伝承計画の見直し", tq: tq(62, 60, 52, 55, qcdes(false, false, true, false, false)), skills: ["work-standard", "productivity", "process-control", "five-s"], daysAgo: 21 },
-    { source: "compath_chat", purpose: "品質クレーム対応の原因分析", tq: tq(70, 65, 60, 62, qcdes(true, true, false, false, true)), skills: ["troubleshoot", "customer-negotiation", "delivery-coord", "audit"], daysAgo: 14 },
-    { source: "compath_decision_navigator", purpose: "設備投資判断の費用対効果", tq: tq(72, 70, 62, 65, qcdes(true, true, true, false, false)), skills: ["equip-eval", "production-plan", "cost-control", "automation", "forming-sim"], daysAgo: 7 },
+    { source: "compath_chat", purpose: "新ライン立ち上げの工程設計方針", tq: tq(55, 50, 45, 60, qcdes(55, 60, 50, 5, 10)), skills: ["production-plan", "productivity", "line-layout", "cost-control"], daysAgo: 42 },
+    { source: "brain_room_1shot", purpose: "材料変更に伴う曲げ条件の見直し", tq: tq(60, 55, 50, 55, qcdes(58, 55, 15, 5, 10)), skills: ["steel", "cost-est", "supplier-quality"], daysAgo: 35 },
+    { source: "compath_decision_navigator", purpose: "外注先選定の判断基準整理", tq: tq(65, 68, 55, 58, qcdes(20, 68, 55, 5, 8)), skills: ["outsource-mgmt", "cost-est", "customer-negotiation", "quotation"], daysAgo: 28 },
+    { source: "brain_room_1shot", purpose: "作業標準化と技能伝承計画の見直し", tq: tq(62, 60, 52, 55, qcdes(15, 15, 50, 5, 10)), skills: ["work-standard", "productivity", "process-control", "five-s"], daysAgo: 21 },
+    { source: "compath_chat", purpose: "品質クレーム対応の原因分析", tq: tq(70, 65, 60, 62, qcdes(65, 55, 20, 5, 35)), skills: ["troubleshoot", "customer-negotiation", "delivery-coord", "audit"], daysAgo: 14 },
+    { source: "compath_decision_navigator", purpose: "設備投資判断の費用対効果", tq: tq(72, 70, 62, 65, qcdes(65, 72, 60, 10, 15)), skills: ["equip-eval", "production-plan", "cost-control", "automation", "forming-sim"], daysAgo: 7 },
   ]);
 }
 
 function fujiwaraAssessments(): SkillAssessment[] {
   return makeAssessments("fujiwara-shota", FUJIWARA_SKILLS, [
-    { source: "brain_room_conference", purpose: "成形シミュレーション結果の読み方を確認", tq: tq(20, 15, 10, 18, qcdes(false, false, false, false, false)), skills: ["forming-sim", "press-forming", "springback"], daysAgo: 70 },
-    { source: "brain_room_1shot", purpose: "板厚減少率の許容範囲を学ぶ", tq: tq(25, 20, 15, 22, qcdes(true, false, false, false, false)), skills: ["steel", "tolerance", "material-test"], daysAgo: 63 },
-    { source: "compath_chat", purpose: "スプリングバックの補正方法", tq: tq(30, 25, 18, 28, qcdes(true, false, false, false, false)), skills: ["springback", "press-forming", "forming-sim"], daysAgo: 56 },
-    { source: "brain_room_1shot", purpose: "初めての工程設計案の作成", tq: tq(32, 28, 20, 30, qcdes(true, true, false, false, false)), skills: ["process-seq", "steel", "drawing-read"], daysAgo: 49 },
-    { source: "compath_decision_navigator", purpose: "材料選定の基本的な考え方", tq: tq(38, 35, 25, 35, qcdes(true, true, false, false, false)), skills: ["aluminum", "cost-est", "spc"], daysAgo: 42 },
-    { source: "brain_room_1shot", purpose: "先輩の工程設計を分析して学ぶ", tq: tq(42, 38, 30, 40, qcdes(true, true, true, false, false)), skills: ["process-seq", "die-design", "work-standard", "forming-sim"], daysAgo: 35 },
-    { source: "compath_chat", purpose: "金型設計の基礎", tq: tq(45, 40, 32, 42, qcdes(true, true, true, false, false)), skills: ["die-design", "press-forming", "die-structure"], daysAgo: 28 },
-    { source: "brain_room_1shot", purpose: "品質検査の基本を学ぶ", tq: tq(48, 45, 35, 44, qcdes(true, true, true, false, true)), skills: ["qc-method", "inspection", "measurement"], daysAgo: 21 },
-    { source: "compath_decision_navigator", purpose: "自分で工程順序を提案してレビュー", tq: tq(55, 50, 42, 50, qcdes(true, true, true, false, true)), skills: ["process-seq", "cost-est", "tolerance", "prototyping"], daysAgo: 14 },
-    { source: "brain_room_1shot", purpose: "品質とコストのバランスを考える", tq: tq(60, 55, 48, 55, qcdes(true, true, true, false, true)), skills: ["cost-est", "qc-method", "needs-analysis", "spc"], daysAgo: 7 },
+    { source: "brain_room_conference", purpose: "成形シミュレーション結果の読み方を確認", tq: tq(20, 15, 10, 18, qcdes(5, 0, 0, 0, 0)), skills: ["forming-sim", "press-forming", "springback"], daysAgo: 70 },
+    { source: "brain_room_1shot", purpose: "板厚減少率の許容範囲を学ぶ", tq: tq(25, 20, 15, 22, qcdes(15, 5, 0, 0, 0)), skills: ["steel", "tolerance", "material-test"], daysAgo: 63 },
+    { source: "compath_chat", purpose: "スプリングバックの補正方法", tq: tq(30, 25, 18, 28, qcdes(20, 8, 0, 0, 0)), skills: ["springback", "press-forming", "forming-sim"], daysAgo: 56 },
+    { source: "brain_room_1shot", purpose: "初めての工程設計案の作成", tq: tq(32, 28, 20, 30, qcdes(25, 18, 8, 0, 0)), skills: ["process-seq", "steel", "drawing-read"], daysAgo: 49 },
+    { source: "compath_decision_navigator", purpose: "材料選定の基本的な考え方", tq: tq(38, 35, 25, 35, qcdes(30, 25, 8, 0, 0)), skills: ["aluminum", "cost-est", "spc"], daysAgo: 42 },
+    { source: "brain_room_1shot", purpose: "先輩の工程設計を分析して学ぶ", tq: tq(42, 38, 30, 40, qcdes(35, 28, 18, 0, 0)), skills: ["process-seq", "die-design", "work-standard", "forming-sim"], daysAgo: 35 },
+    { source: "compath_chat", purpose: "金型設計の基礎", tq: tq(45, 40, 32, 42, qcdes(40, 32, 22, 0, 5)), skills: ["die-design", "press-forming", "die-structure"], daysAgo: 28 },
+    { source: "brain_room_1shot", purpose: "品質検査の基本を学ぶ", tq: tq(48, 45, 35, 44, qcdes(45, 35, 25, 0, 18)), skills: ["qc-method", "inspection", "measurement"], daysAgo: 21 },
+    { source: "compath_decision_navigator", purpose: "自分で工程順序を提案してレビュー", tq: tq(55, 50, 42, 50, qcdes(50, 45, 35, 5, 22)), skills: ["process-seq", "cost-est", "tolerance", "prototyping"], daysAgo: 14 },
+    { source: "brain_room_1shot", purpose: "品質とコストのバランスを考える", tq: tq(60, 55, 48, 55, qcdes(55, 50, 40, 5, 28)), skills: ["cost-est", "qc-method", "needs-analysis", "spc"], daysAgo: 7 },
   ]);
 }
 
 function tanakaAssessments(): SkillAssessment[] {
   return makeAssessments("tanaka-daiki", TANAKA_SKILLS_AFTER, [
     // 入社直後：基礎研修でBRAIN-Roomを体験
-    { source: "brain_room_1shot", purpose: "プレス加工の基礎を学ぶ", tq: tq(15, 10, 8, 12, qcdes(false, false, false, false, false)), skills: ["press-forming", "steel", "drawing-read"], daysAgo: 60 },
-    { source: "compath_chat", purpose: "図面の読み方を先輩AIに質問", tq: tq(18, 12, 10, 15, qcdes(true, false, false, false, false)), skills: ["drawing-read", "tolerance", "req-spec"], daysAgo: 50 },
+    { source: "brain_room_1shot", purpose: "プレス加工の基礎を学ぶ", tq: tq(15, 10, 8, 12, qcdes(0, 0, 0, 0, 0)), skills: ["press-forming", "steel", "drawing-read"], daysAgo: 60 },
+    { source: "compath_chat", purpose: "図面の読み方を先輩AIに質問", tq: tq(18, 12, 10, 15, qcdes(12, 0, 0, 0, 0)), skills: ["drawing-read", "tolerance", "req-spec"], daysAgo: 50 },
     // SUS304深絞り案件：BRAIN-Roomの議論を閲覧
-    { source: "brain_room_conference", purpose: "SUS304 t1.5 深絞り形状の工程設計方針", tq: tq(25, 20, 15, 22, qcdes(true, true, false, false, false)), skills: ["press-forming", "stainless", "process-seq", "cost-est"], daysAgo: 14 },
+    { source: "brain_room_conference", purpose: "SUS304 t1.5 深絞り形状の工程設計方針", tq: tq(25, 20, 15, 22, qcdes(22, 18, 5, 0, 0)), skills: ["press-forming", "stainless", "process-seq", "cost-est"], daysAgo: 14 },
     // 議論を見た後にチャットで質問
-    { source: "compath_chat", purpose: "SUS304で中間焼鈍を入れるかどうかの判断基準を質問", tq: tq(32, 28, 22, 30, qcdes(true, true, true, false, false)), skills: ["stainless", "process-seq", "die-maint", "qc-method"], daysAgo: 12 },
+    { source: "compath_chat", purpose: "SUS304で中間焼鈍を入れるかどうかの判断基準を質問", tq: tq(32, 28, 22, 30, qcdes(28, 22, 12, 0, 0)), skills: ["stainless", "process-seq", "die-maint", "qc-method"], daysAgo: 12 },
     // 意思決定キャンバスで自分の判断を構造化
-    { source: "compath_decision_navigator", purpose: "3工程vs4工程の判断を整理", tq: tq(38, 35, 28, 35, qcdes(true, true, true, false, true)), skills: ["process-seq", "cost-est", "drawing-read", "press-forming", "qc-method", "die-maint", "stainless"], daysAgo: 7 },
+    { source: "compath_decision_navigator", purpose: "3工程vs4工程の判断を整理", tq: tq(38, 35, 28, 35, qcdes(35, 28, 18, 0, 10)), skills: ["process-seq", "cost-est", "drawing-read", "press-forming", "qc-method", "die-maint", "stainless"], daysAgo: 7 },
   ]);
 }
 
