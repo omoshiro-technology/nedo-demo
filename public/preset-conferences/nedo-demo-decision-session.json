@@ -50,6 +50,22 @@
       "description": "型費+25%、不良率 2%→0.3%。サイクルタイムも改善。",
       "status": "selected", "isRecommended": true, "confidence": 85,
       "riskLevel": "low", "riskStrategy": "avoid",
+      "riskCategories": ["quality", "cost"],
+      "riskDetail": {
+        "targetRisk": "加工硬化による割れ不良の発生（不良率2%→量産停止リスク）",
+        "howThisHelps": "4工程に分散することで各工程の成形量を抑え、加工硬化を段階的に進行させる。割れ発生の閾値を大幅に下回り、不良率を0.3%に低減。"
+      },
+      "structuredRationale": {
+        "summary": "型費増200万円を不良コスト年間削減300万円で1年以内に回収。品質安定とサイクルタイム改善を同時に実現する最もバランスの取れた選択。",
+        "primary": { "type": "business_value", "text": "投資対効果: 型費増200万円 vs 不良コスト年間削減300万円。1年以内の投資回収が見込める。" },
+        "secondary": [{ "type": "context_fit", "text": "SUS304は熱伝導率が低く、4工程の方が型内滞在時間短縮→サイクルタイム改善。" }],
+        "tradeoffs": [{ "give": "型費が約25%（200万円）増加", "get": "不良率2%→0.3%、サイクルタイム改善、量産安定性向上" }],
+        "qcdesImpact": {
+          "quality": { "impact": "positive", "description": "不良率2%→0.3%に改善。公差安定性も向上。" },
+          "cost": { "impact": "negative", "description": "型費+25%（約200万円増）。ただし不良コスト削減で1年以内回収。" },
+          "delivery": { "impact": "positive", "description": "サイクルタイム改善により生産能力向上。" }
+        }
+      },
       "position": { "x": 520, "y": 20 }, "parentId": "c1",
       "pathRole": "recommended", "lane": 0, "depth": 0,
       "hasPastCase": true, "pastCaseCount": 1,
@@ -60,6 +76,15 @@
       "label": "3工程（絞り→リストライク→トリム）",
       "description": "型費-25%だが不良率2%以上のリスク。",
       "status": "dimmed", "confidence": 50, "riskLevel": "high", "riskStrategy": "accept",
+      "riskCategories": ["quality"],
+      "riskDetail": {
+        "targetRisk": "2工程目での加工硬化集中により割れ不良率が2%以上に上昇するリスク",
+        "howThisHelps": "型費を25%削減できるがリスクを受容する判断。撤退基準：試作で不良率3%超なら4工程に切替。"
+      },
+      "structuredRationale": {
+        "summary": "型費削減の魅力はあるが、品質リスクとの天秤で劣る。過去事例L19-054321で3工程→不良率5%の実績あり。",
+        "primary": { "type": "past_case", "text": "L19-054321: SPCC t1.0で3工程採用→量産3ヶ月後に不良率5%上昇、対応コスト型費削減の3倍" }
+      },
       "position": { "x": 520, "y": 110 }, "parentId": "c1",
       "pathRole": "alternative", "lane": 1, "depth": 0,
       "hasPastCase": true, "pastCaseCount": 1,
@@ -80,6 +105,16 @@
       "description": "各工程の成形量を抑え割れリスクを分散。焼鈍コスト・納期を削減。",
       "status": "selected", "isRecommended": true, "confidence": 80,
       "riskLevel": "low", "riskStrategy": "mitigate",
+      "riskCategories": ["quality", "delivery"],
+      "riskDetail": {
+        "targetRisk": "焼鈍を入れた場合のスプリングバック変化と寸法不安定リスク",
+        "howThisHelps": "焼鈍を排除することで炉温度プロファイルへの依存を除去。4工程で成形量を分散すれば焼鈍なしでも加工硬化を許容範囲に収められる。"
+      },
+      "structuredRationale": {
+        "summary": "焼鈍なしの方が寸法精度が安定し、コストと納期も改善。焼鈍の撤退基準（型補正±0.2mm超）を設定した上での判断。",
+        "primary": { "type": "context_fit", "text": "SUS304の4工程分散なら加工硬化を許容範囲に収められる。焼鈍コスト（1工程あたり＋αと納期2日増）を回避。" },
+        "tradeoffs": [{ "give": "焼鈍による安全マージンを放棄", "get": "寸法精度安定、コスト削減、納期短縮" }]
+      },
       "position": { "x": 800, "y": -10 }, "parentId": "s1a",
       "pathRole": "recommended", "lane": 0, "depth": 1,
       "rationale": "焼鈍なしの方が寸法精度が安定。炉の温度プロファイルに依存するリスクを排除。",
@@ -113,6 +148,19 @@
       "description": "検証約3週間。摩耗量→メンテ周期→停止コスト→全体LCC確定。",
       "status": "selected", "isRecommended": true, "confidence": 88,
       "riskLevel": "low", "riskStrategy": "mitigate",
+      "riskCategories": ["cost"],
+      "riskDetail": {
+        "targetRisk": "メンテ周期の見積もり不足による量産中の計画外停止（1回あたり数十万円の損失）",
+        "howThisHelps": "摩耗量閾値を定量化し、「摩耗量○mmを超えたらメンテ必要」という判定基準を数値で確立。停止コストを含めた全体LCCが精度高く算出される。"
+      },
+      "structuredRationale": {
+        "summary": "検証費用（約3週間）は量産の計画外停止1回分と同程度。投資対効果が明確に上回る。",
+        "primary": { "type": "business_value", "text": "検証費用 ≒ 量産停止1回のコスト。精度の高いLCCで事業判断の根拠が数字で確定する。" },
+        "qcdesImpact": {
+          "cost": { "impact": "positive", "description": "全体LCCを精度高く見積もれる。想定外の停止コストを事前に排除。" },
+          "delivery": { "impact": "negative", "description": "検証に約3週間を要する。ただし量産後の計画外停止リスクを考慮すれば許容範囲。" }
+        }
+      },
       "position": { "x": 520, "y": 340 }, "parentId": "c2",
       "pathRole": "recommended", "lane": 0, "depth": 1,
       "rationale": "検証費用は量産停止1回分。精度の高い見積もりで想定外コスト防止。",
@@ -133,6 +181,16 @@
       "description": "割れ急増する摩耗量を現場・実測・シミュレーションの三方向から検証。",
       "status": "selected", "isRecommended": true, "confidence": 90,
       "riskLevel": "low", "riskStrategy": "mitigate",
+      "riskCategories": ["quality", "cost"],
+      "riskDetail": {
+        "targetRisk": "単一手法（CAEのみ or 実測のみ）による閾値設定の見落とし。材料ロット変動を反映できないリスク。",
+        "howThisHelps": "現場の感覚知（音・手応え）、型分解実測（段差データ）、CAE逆算（シミュレーション）の三方向から検証し、閾値の信頼性を大幅に向上させる。"
+      },
+      "structuredRationale": {
+        "summary": "単一手法では見落としが発生する。三方向検証で閾値の信頼性を担保し、データに基づく判断で属人化を防ぐ。",
+        "primary": { "type": "pmbok_risk", "text": "リスク軽減策: 複数の独立した検証手法を組み合わせることで、単一手法の盲点を補完。" },
+        "secondary": [{ "type": "business_value", "text": "データとして残すことで判断が人に依存しなくなり、再現性が担保される。" }]
+      },
       "position": { "x": 800, "y": 310 }, "parentId": "s2a",
       "pathRole": "recommended", "lane": 0, "depth": 2,
       "rationale": "単一の手法では見落としが出る。三方向検証で閾値の信頼性を担保。",
@@ -176,6 +234,20 @@
       "description": "型分解→段差実測→摩耗パターン記録。量産開始約4週間遅延。",
       "status": "selected", "isRecommended": true, "confidence": 90,
       "riskLevel": "low", "riskStrategy": "avoid",
+      "riskCategories": ["quality", "delivery"],
+      "riskDetail": {
+        "targetRisk": "試作条件が量産で再現できないリスク（速度・温度・送り精度・型摩耗の差異）",
+        "howThisHelps": "初期・中期・後期の3段階で型摩耗の進行パターンを定量的に把握し、量産条件との一致を事前に検証。試作→量産のギャップを可視化して対策。"
+      },
+      "structuredRationale": {
+        "summary": "検証不足による量産トラブルの対応コストは検証費用の10倍。4週間の遅延投資で量産リスクを大幅に低減。",
+        "primary": { "type": "past_case", "text": "L23-091876: 簡易検証で量産開始→型摩耗で品質劣化、対応コスト検証費用の8倍" },
+        "tradeoffs": [{ "give": "量産開始が約4週間遅延", "get": "量産トラブル発生率を大幅低減、メンテ計画の根拠確立" }],
+        "qcdesImpact": {
+          "quality": { "impact": "positive", "description": "試作→量産の再現性を3段階で検証。量産品質の安定性が担保される。" },
+          "delivery": { "impact": "negative", "description": "量産開始が約4週間遅延。ただしトラブル対応の遅延リスクと比較して合理的。" }
+        }
+      },
       "position": { "x": 520, "y": 660 }, "parentId": "c3",
       "pathRole": "recommended", "lane": 0, "depth": 2,
       "hasPastCase": true, "pastCaseCount": 1,
