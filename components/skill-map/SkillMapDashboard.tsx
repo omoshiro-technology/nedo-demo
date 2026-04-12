@@ -352,8 +352,14 @@ function SkillTooltip({ skillId, profile, position }: { skillId: string; profile
   // 画面上部にスペースが足りなければ下方向に表示
   const showBelow = position.y < 350
 
+  // 横方向のはみ出し防止
+  const tooltipWidth = hasEvidence ? 820 : 420
+  const halfW = tooltipWidth / 2
+  const vw = typeof window !== "undefined" ? window.innerWidth : 1920
+  const clampedX = Math.max(halfW + 8, Math.min(position.x, vw - halfW - 8))
+
   return (
-    <div className="fixed z-50 pointer-events-none" style={{ left: `${position.x}px`, top: `${position.y}px`, transform: showBelow ? "translate(-50%, 16px)" : "translate(-50%, -100%)" }}>
+    <div className="fixed z-50 pointer-events-none" style={{ left: `${clampedX}px`, top: `${position.y}px`, transform: showBelow ? "translate(-50%, 16px)" : "translate(-50%, -100%)" }}>
       {/* 下向き表示のとき矢印を上に */}
       {showBelow && (
         <div className="flex justify-center">

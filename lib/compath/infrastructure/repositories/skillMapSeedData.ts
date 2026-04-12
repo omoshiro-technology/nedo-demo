@@ -255,8 +255,12 @@ function tanakaAssessments(): SkillAssessment[] {
     // 入社直後：基礎研修でBRAIN-Roomを体験
     { source: "brain_room_1shot", purpose: "プレス加工の基礎を学ぶ", tq: tq(15, 10, 8, 12, qcdes(0, 0, 0, 0, 0)), skills: ["press-forming", "steel", "drawing-read"], daysAgo: 60 },
     { source: "compath_chat", purpose: "図面の読み方を先輩AIに質問", tq: tq(18, 12, 10, 15, qcdes(12, 0, 0, 0, 0)), skills: ["drawing-read", "tolerance", "req-spec"], daysAgo: 50 },
+    // 初めての意思決定キャンバス：図面読解の優先度を整理
+    { source: "compath_decision_navigator", purpose: "図面から読み取るべき品質要求の整理", tq: tq(20, 16, 12, 18, qcdes(18, 8, 5, 0, 0)), skills: ["drawing-read", "tolerance", "req-spec"], daysAgo: 38 },
+    // 材料と工程の関係を意思決定キャンバスで構造化
+    { source: "compath_decision_navigator", purpose: "材料選定がコスト・品質に与える影響の整理", tq: tq(25, 22, 18, 25, qcdes(25, 20, 10, 0, 5)), skills: ["steel", "press-forming", "cost-est"], daysAgo: 25 },
     // SUS304深絞り案件：BRAIN-Roomの議論を閲覧
-    { source: "brain_room_conference", purpose: "SUS304 t1.5 深絞り形状の工程設計方針", tq: tq(25, 20, 15, 22, qcdes(22, 18, 5, 0, 0)), skills: ["press-forming", "stainless", "process-seq", "cost-est"], daysAgo: 14 },
+    { source: "brain_room_conference", purpose: "SUS304 t1.5 深絞り形状の工程設計方針", tq: tq(28, 22, 15, 24, qcdes(22, 18, 5, 0, 0)), skills: ["press-forming", "stainless", "process-seq", "cost-est"], daysAgo: 14 },
     // 議論を見た後にチャットで質問
     { source: "compath_chat", purpose: "SUS304で中間焼鈍を入れるかどうかの判断基準を質問", tq: tq(32, 28, 22, 30, qcdes(28, 22, 12, 0, 0)), skills: ["stainless", "process-seq", "die-maint", "qc-method"], daysAgo: 12 },
     // 意思決定キャンバスで自分の判断を構造化
@@ -336,19 +340,33 @@ export function generateSeedData(): {
   // 田中大輝のレベルアップ根拠を注入（デモ用）
   const tanakaEvidence: Record<string, import("../../domain/skillMap/types").LevelUpEvidence[]> = {
     "drawing-read": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-004", project: "3工程vs4工程の判断を整理", reason: "顧客要求仕様から工程数を逆算する際、図面の暗黙の品質要求を読み取る力が向上", date: date(7) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-002", project: "図面から読み取るべき品質要求の整理", reason: "公差記号の優先順位と、図面に明記されていない暗黙の品質要求を整理する視点を獲得", date: date(38) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "3工程vs4工程の判断を整理", reason: "顧客要求仕様から工程数を逆算する際、図面の暗黙の品質要求を読み取る力が向上", date: date(7) },
     ],
-    "process-seq": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-004", project: "3工程vs4工程の判断を整理", reason: "工程数の選択がコスト・品質・納期に与える影響を構造的に整理できるようになった", date: date(7) },
+    "tolerance": [
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-002", project: "図面から読み取るべき品質要求の整理", reason: "公差の厳しさがコストに直結することを理解し、公差設計の基本的な考え方を整理", date: date(38) },
+    ],
+    "steel": [
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-003", project: "材料選定がコスト・品質に与える影響の整理", reason: "鋼材の種類ごとの特性差（SPCC vs SPCE）が工程設計に与える影響を整理", date: date(25) },
+    ],
+    "press-forming": [
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-003", project: "材料選定がコスト・品質に与える影響の整理", reason: "材料の加工性（引張強度・伸び）がプレス成形の条件設定に直結することを構造的に理解", date: date(25) },
     ],
     "cost-est": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-004", project: "3工程vs4工程の判断を整理", reason: "ライフサイクルコストの構成要素（型費・メンテ費・停止コスト）を自分で整理できるようになった", date: date(7) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-003", project: "材料選定がコスト・品質に与える影響の整理", reason: "材料費と加工費のトレードオフを初めて数値で比較する経験を積んだ", date: date(25) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "3工程vs4工程の判断を整理", reason: "ライフサイクルコストの構成要素（型費・メンテ費・停止コスト）を自分で整理できるようになった", date: date(7) },
+    ],
+    "process-seq": [
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "3工程vs4工程の判断を整理", reason: "工程数の選択がコスト・品質・納期に与える影響を構造的に整理できるようになった", date: date(7) },
+    ],
+    "stainless": [
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "3工程vs4工程の判断を整理", reason: "SUS304の加工硬化を考慮した工程分割の判断基準を自分なりに整理できた", date: date(7) },
     ],
     "die-maint": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-004", project: "3工程vs4工程の判断を整理", reason: "型摩耗速度とメンテナンス周期がLCCに与える影響を構造的に理解できるようになった", date: date(7) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "3工程vs4工程の判断を整理", reason: "型摩耗速度とメンテナンス周期がLCCに与える影響を構造的に理解できるようになった", date: date(7) },
     ],
     "qc-method": [
-      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-004", project: "3工程vs4工程の判断を整理", reason: "試作検証フレームワーク（初期・中期・後期の3段階）の品質管理手法を整理できた", date: date(7) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "3工程vs4工程の判断を整理", reason: "試作検証フレームワーク（初期・中期・後期の3段階）の品質管理手法を整理できた", date: date(7) },
     ],
   };
 
