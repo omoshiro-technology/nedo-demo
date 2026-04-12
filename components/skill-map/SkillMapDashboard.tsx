@@ -404,7 +404,7 @@ function SkillTooltip({ skillId, profile, position }: { skillId: string; profile
           </div>
           {hasEvidence && (
             <div className="w-[370px] shrink-0 border-l border-emerald-200 pl-4">
-              <div className="text-sm font-bold text-emerald-700 mb-2">履歴（意思決定キャンバス）</div>
+              <div className="text-sm font-bold text-emerald-700 mb-2">履歴</div>
               <div className="space-y-2 max-h-[350px] overflow-y-auto">
                 {evidence.map((ev, i) => (
                   <div key={i} className="bg-emerald-50 rounded-lg border border-emerald-100 p-2.5">
