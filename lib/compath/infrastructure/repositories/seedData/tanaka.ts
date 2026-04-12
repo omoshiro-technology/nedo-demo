@@ -76,20 +76,12 @@ export function tanakaAssessments(): SkillAssessment[] {
 
 export const TANAKA_EVIDENCE: Record<string, LevelUpEvidence[]> = {
   "drawing-read": [
-    { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-002", project: "A社ブラケットの品質要求整理", reason: "【Q】寸法公差だけで工程設計しかけたが、注記欄の幾何公差（平面度0.05）を見落としていた。これを満たすには加工基準面を変える必要があると判断し工程案を修正。品質要求の読み取り漏れが後工程の手戻りに直結するリスクを認識した", date: date(38) },
     { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "【Q×C】図面注記「バリなきこと」への対応として、トリム型の刃先管理頻度を上げる案とバレル研磨工程を追加する案を比較。刃先管理は品質ばらつきリスクが残るため、コスト増（+1.2円/個）を許容してバレル研磨追加を選択", date: date(7) },
   ],
-  "tolerance": [
-    { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-002", project: "A社ブラケットの品質要求整理", reason: "【Q×C】穴位置公差±0.1mmに対し、単発型（型費安い）vs 順送型（精度高い）を比較。単発型は工程間搬送で±0.15mmのズレリスクがあり品質保証できないと判断、型費増を許容して順送型を選択", date: date(38) },
-  ],
-  "steel": [
-    { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-003", project: "B社カバー部品の材料選定", reason: "【Q×C】SPCC-SD（伸び率28%）のまま絞り比2.1に挑むか、SPCE（伸び率41%）に変更するか比較。SPCCでは試作で底部コーナーに微小亀裂が出ており、品質リスク回避を優先。材料単価+8円/kgのコスト増を許容してSPCEに変更", date: date(25) },
-  ],
   "press-forming": [
-    { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-003", project: "B社カバー部品の材料選定", reason: "【Q】SPCE変更後のBHFを現行45kNで据え置くか下げるか検討。しわ押さえが強すぎると割れ、弱すぎるとフランジしわになるため、品質確認として試作で35kN/38kN/40kNの3条件を比較し最適値を決める計画とした", date: date(25) },
+    { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "【Q×S】SUS304の絞り比を各工程1.4以下に抑える条件設定とし、加工硬化による割れリスクを回避。1工程あたりの加工率を上げてサイクル短縮する案もあったが、成形安定性と作業者の安全面を優先して余裕のある条件を選択", date: date(7) },
   ],
   "cost-est": [
-    { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-003", project: "B社カバー部品の材料選定", reason: "【C×Q】SPCE変更の材料費増を許容するか、SPCCのまま金型改修で対応するかを比較。金型改修費120万円+不良率3%維持 vs 材料費増+不良率1%を試算。品質改善によるコスト回収が6ヶ月で逆転するため材料変更案を選択", date: date(25) },
     { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-006", project: "SUS304深絞り品の3工程vs4工程比較", reason: "【C×D】初期投資を抑える3工程案（型費1,800万円）vs ランニングで有利な4工程案（型費2,200万円・サイクル3s短縮）をLCCで比較。月産3000個×5年で4工程案が約340万円有利。納期面でもサイクル短縮が月次生産能力の余裕に繋がると判断", date: date(7) },
   ],
   "process-seq": [
