@@ -55,6 +55,7 @@ export function DiscussionInterface({
   const [chatInput, setChatInput] = useState("")
   const [isSending, setIsSending] = useState(false)
   const [selectedChatPersonas, setSelectedChatPersonas] = useState<number[]>([])
+  const [selectedConferenceMembers, setSelectedConferenceMembers] = useState<number[]>(() => characters.map(c => c.id))
   const [chatTurnCount, setChatTurnCount] = useState(0)
 
   // Archipelago View State
@@ -169,10 +170,20 @@ export function DiscussionInterface({
       return
     }
 
+    // 選択されたメンバーでフィルタ（未選択なら全員）
+    const conferenceCharacters = selectedConferenceMembers.length >= 2
+      ? characters.filter(c => selectedConferenceMembers.includes(c.id))
+      : characters
+
+    if (conferenceCharacters.length < 2) {
+      toast({ title: "エラー", description: "会議には2人以上の参加者が必要です。", variant: "destructive" })
+      return
+    }
+
     console.log("=== Starting Conference ===")
     console.log("Theme:", theme)
     console.log("Purpose:", purpose)
-    console.log("Characters:", characters.length)
+    console.log("Characters:", conferenceCharacters.length, conferenceCharacters.map(c => c.name))
 
     setStatus("running")
     setMessages([])
@@ -217,7 +228,7 @@ export function DiscussionInterface({
           body: JSON.stringify({
             theme,
             purpose,
-            characters,
+            characters: conferenceCharacters,
             knowledgeFiles,
             conversationHistory,
             turn,
@@ -260,7 +271,7 @@ export function DiscussionInterface({
               theme,
               purpose,
               conversationHistory,
-              characters,
+              characters: conferenceCharacters,
               currentWhiteboardHtml,
             }),
           }).then(async (wbRes) => {
@@ -652,31 +663,64 @@ export function DiscussionInterface({
             </div>
           )}
 
-          {status === "idle" && appMode === "chat" && (
+          {status === "idle" && (
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">会話する相手</label>
+              <label className="text-sm font-medium text-gray-700">
+                {appMode === "conference" ? "参加メンバー" : "会話する相手"}
+              </label>
               <div className="flex flex-wrap gap-2">
-                {characters.map((c) => (
+                {appMode === "conference" && (
                   <Button
-                    key={c.id}
-                    variant={selectedChatPersonas.includes(c.id) ? "default" : "outline"}
+                    variant="ghost"
                     size="sm"
+                    className="text-xs"
                     onClick={() => {
-                      setSelectedChatPersonas((prev) =>
-                        prev.includes(c.id) ? prev.filter((id) => id !== c.id) : [...prev, c.id]
-                      )
+                      if (selectedConferenceMembers.length === characters.length) {
+                        setSelectedConferenceMembers([])
+                      } else {
+                        setSelectedConferenceMembers(characters.map(c => c.id))
+                      }
                     }}
                   >
-                    {c.name}
+                    {selectedConferenceMembers.length === characters.length ? "全解除" : "全選択"}
                   </Button>
-                ))}
+                )}
+                {characters.map((c) => {
+                  const isSelected = appMode === "conference"
+                    ? selectedConferenceMembers.includes(c.id)
+                    : selectedChatPersonas.includes(c.id)
+                  return (
+                    <Button
+                      key={c.id}
+                      variant={isSelected ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => {
+                        if (appMode === "conference") {
+                          setSelectedConferenceMembers((prev) =>
+                            prev.includes(c.id) ? prev.filter((id) => id !== c.id) : [...prev, c.id]
+                          )
+                        } else {
+                          setSelectedChatPersonas((prev) =>
+                            prev.includes(c.id) ? prev.filter((id) => id !== c.id) : [...prev, c.id]
+                          )
+                        }
+                      }}
+                    >
+                      {c.name}
+                    </Button>
+                  )
+                })}
               </div>
               <p className="text-xs text-gray-500">
-                {selectedChatPersonas.length === 0
-                  ? "1人以上選択してください"
-                  : selectedChatPersonas.length === 1
-                    ? `${characters.find(c => c.id === selectedChatPersonas[0])?.name}と1対1で会話`
-                    : `${selectedChatPersonas.length}人のグループチャット`}
+                {appMode === "conference"
+                  ? selectedConferenceMembers.length < 2
+                    ? "2人以上選択してください"
+                    : `${selectedConferenceMembers.length}人で会議`
+                  : selectedChatPersonas.length === 0
+                    ? "1人以上選択してください"
+                    : selectedChatPersonas.length === 1
+                      ? `${characters.find(c => c.id === selectedChatPersonas[0])?.name}と1対1で会話`
+                      : `${selectedChatPersonas.length}人のグループチャット`}
               </p>
             </div>
           )}
