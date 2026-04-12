@@ -207,7 +207,8 @@ export function DiscussionInterface({
 
         console.log(`=== Turn ${turn + 1}/${maxTurns} ===`)
 
-        const shouldUpdateWhiteboard = turn > 0 && turn % 3 === 2
+        const isLastTurn = turn === maxTurns - 1
+        const shouldUpdateWhiteboard = (turn > 0 && turn % 3 === 2) || isLastTurn
 
         const response = await fetch("/api/conference-network/turn", {
           method: "POST",
@@ -227,12 +228,14 @@ export function DiscussionInterface({
         })
 
         if (!response.ok) {
-          console.error(`Turn ${turn + 1} failed:`, response.status)
+          const errorText = await response.text().catch(() => "")
+          console.error(`Turn ${turn + 1} failed:`, response.status, errorText)
           consecutiveErrors++
           if (consecutiveErrors >= 3) {
-            toast({ title: "会議エラー", description: "連続エラーのため会議を終了しました。", variant: "destructive" })
+            toast({ title: "会議エラー", description: `連続エラーのため会議を終了しました (${response.status})`, variant: "destructive" })
             break
           }
+          await new Promise(r => setTimeout(r, 2000))
           continue
         }
 
