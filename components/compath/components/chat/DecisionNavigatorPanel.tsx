@@ -132,6 +132,8 @@ export function DecisionNavigatorPanel({
   useEffect(() => {
     if (presetSession && !session) {
       setSession(presetSession);
+      setIsLoading(false);
+      setError(null);
     }
   }, [presetSession]);
 
