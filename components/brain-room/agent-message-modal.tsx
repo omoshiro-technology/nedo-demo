@@ -61,15 +61,15 @@ export function AgentMessageModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[80vh] overflow-hidden">
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
             <div className="p-2 rounded-full bg-gray-200">
               <Bot className="h-5 w-5 text-gray-600" />
             </div>
             <div>
-              <div className="text-base font-bold">{character.name}</div>
-              <div className="text-xs font-normal text-gray-500">{subtitle}</div>
+              <div className="text-lg font-bold">{character.name}</div>
+              <div className="text-sm font-normal text-gray-500">{subtitle}</div>
             </div>
             {message.tag && (
               <div className="ml-auto">
@@ -83,8 +83,8 @@ export function AgentMessageModal({
           <div className="space-y-4 pr-2">
             {/* 発言内容 */}
             <div>
-              <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">発言内容</h4>
-              <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+              <h4 className="text-sm font-semibold text-gray-500 uppercase mb-2">発言内容</h4>
+              <p className="text-base text-gray-800 whitespace-pre-wrap leading-relaxed">
                 {cleanText}
               </p>
             </div>
@@ -92,7 +92,7 @@ export function AgentMessageModal({
             {/* 参照ナレッジ */}
             {referencedKnowledge.length > 0 && (
               <div>
-                <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">
+                <h4 className="text-sm font-semibold text-gray-500 uppercase mb-2">
                   参照ナレッジ ({referencedKnowledge.length})
                 </h4>
                 <div className="space-y-2">
@@ -101,17 +101,17 @@ export function AgentMessageModal({
                       <div className="flex items-start gap-2 mb-1">
                         <FileText className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
                         <div className="min-w-0">
-                          <p className="text-sm font-medium text-gray-800 truncate">{item.title}</p>
-                          <p className="text-xs text-gray-500">{fileName}</p>
+                          <p className="text-base font-medium text-gray-800 truncate">{item.title}</p>
+                          <p className="text-sm text-gray-500">{fileName}</p>
                         </div>
                       </div>
                       {item.summary && (
-                        <p className="text-xs text-gray-600 mt-1 line-clamp-2">{item.summary}</p>
+                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">{item.summary}</p>
                       )}
                       {item.keywords && item.keywords.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-2">
                           {item.keywords.slice(0, 5).map((kw, i) => (
-                            <span key={i} className="text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">
+                            <span key={i} className="text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">
                               {kw}
                             </span>
                           ))}
