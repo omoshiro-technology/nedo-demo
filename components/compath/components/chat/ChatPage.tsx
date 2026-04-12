@@ -232,7 +232,9 @@ export default function ChatPage({
 
   // セッション（messages）が変わった時にパネルをリセット
   // 新しいチャットセッションを選択した場合、パネルは閉じる
+  // ただしプリセットセッション読込中はリセットしない
   useEffect(() => {
+    if (dnSidePanel?.presetSession) return;
     setDnSidePanel(null);
     setDocumentPanel(null);
   }, [messages.length === 0 ? 'empty' : messages[0]?.id]);
