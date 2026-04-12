@@ -2,7 +2,7 @@ import { selectNextSpeaker, generateCharacterTurn, getConferencePhase, type Conf
 import { updateWhiteboard } from "@/lib/brain-room/conference-agents"
 import type { Character, KnowledgeFile } from "@/lib/brain-room/types"
 
-export const maxDuration = 60
+export const maxDuration = 120
 
 interface TurnRequest {
   theme: string
