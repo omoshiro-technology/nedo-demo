@@ -8,7 +8,7 @@ import { evaluateImportance, generateMindmapNodes, findRelatedNode } from "@/lib
 import { updateWhiteboard } from "@/lib/brain-room/conference-agents"
 import type { Character, KnowledgeFile } from "@/lib/brain-room/types"
 
-export const maxDuration = 300
+export const maxDuration = 600
 
 export async function POST(req: Request) {
   const encoder = new TextEncoder()

@@ -267,18 +267,27 @@ LAYOUT:
 - Do NOT use generic card/box UI. Use the wb-* classes defined above for a handwritten whiteboard feel.
 
 Return ONLY the HTML snippet. No markdown, no code fences, no explanation.`,
-    model: anthropic("claude-haiku-4-5-20251001"),
+    model: anthropic("claude-sonnet-4-6"),
   })
+
+  // 差分更新: 初回は全履歴、2回目以降は前回更新以降の新しい発言のみ渡す
+  const isFirstUpdate = !currentWhiteboard
+  // 前回のホワイトボード更新は3ターンごとなので、直近3ターン分が新しい発言
+  const recentTurns = isFirstUpdate
+    ? conversationHistory
+    : conversationHistory.slice(-3)
 
   const prompt = `テーマ: ${theme}
 ${purpose ? `目的: ${purpose}` : ""}
 
-${currentWhiteboard ? `現在のホワイトボード（更新してください）:\n${currentWhiteboard}` : "ホワイトボードは空です。議論の構造を整理してください。"}
+${isFirstUpdate
+    ? `ホワイトボードは空です。以下の議論内容から構造を整理してください。`
+    : `現在のホワイトボード:\n${currentWhiteboard}\n\n上記を維持しつつ、以下の新しい発言を反映して更新してください。新しいセクションの追加、既存セクションへの情報追記、決定事項や未解決の問いの更新を行ってください。`}
 
-議論の全履歴 (${conversationHistory.length}ターン):
-${conversationHistory.map((h) => `${characters[h.speakerIndex]?.name}: ${h.utterance}`).join("\n")}
+${isFirstUpdate ? "議論の履歴" : "新しい発言"} (${recentTurns.length}ターン):
+${recentTurns.map((h) => `${characters[h.speakerIndex]?.name}: ${h.utterance}`).join("\n")}
 
-議論の全体像が一目で分かるホワイトボードを生成してください。話題の構造、決定事項、未解決の問い、アクション項目を整理してください。`
+議論の全体像が一目で分かるホワイトボードを${isFirstUpdate ? "生成" : "更新"}してください。話題の構造、決定事項、未解決の問い、アクション項目を整理してください。`
 
   try {
     const result = await agent.generate(prompt, { temperature: 0.3, maxTokens: 2000 })
