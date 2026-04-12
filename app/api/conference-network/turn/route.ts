@@ -102,8 +102,9 @@ export async function POST(req: Request) {
       message,
       nextSpeakerIndex: newNextSpeakerIndex,
       whiteboardHtml: newWhiteboardHtml,
-      isFinished: result.isFinished || false,
-      finishReason: result.finishReason,
+      // AIが早期にisFinishedを返しても、ターン18未満では無視する
+      isFinished: turn >= 18 && (result.isFinished || false),
+      finishReason: turn >= 18 ? result.finishReason : undefined,
       phase,
     })
   } catch (error) {
