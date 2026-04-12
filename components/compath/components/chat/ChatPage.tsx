@@ -784,6 +784,38 @@ ${decision.content}${ambiguityText}${guidanceText}`;
                       isProcessing={isProcessing}
                       onSampleSelect={handleSampleData}
                     />
+                    <div style={{ marginTop: "16px" }}>
+                      <button
+                        onClick={async () => {
+                          try {
+                            const res = await fetch("/preset-conferences/nedo-demo-decision-session.json");
+                            if (!res.ok) return;
+                            const presetData = await res.json();
+                            setDnSidePanel({
+                              isOpen: true,
+                              initialData: { purpose: presetData.purpose, currentSituation: "" },
+                              skipPreconditionModal: true,
+                              skipPastCasePanel: true,
+                              presetSession: presetData,
+                            });
+                          } catch (e) {
+                            console.error("Failed to load preset:", e);
+                          }
+                        }}
+                        style={{
+                          padding: "8px 20px",
+                          borderRadius: "8px",
+                          border: "1px solid #1f7a6d",
+                          backgroundColor: "#e8f1f0",
+                          color: "#1f7a6d",
+                          fontSize: "14px",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                        }}
+                      >
+                        📋 NEDOデモ（意思決定キャンバス）
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <ChatMessageCallbacksProvider callbacks={chatMessageCallbacks}>
