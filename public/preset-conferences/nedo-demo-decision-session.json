@@ -11,7 +11,7 @@
   "currentNodeId": "outcome-1",
   "conclusion": "品質起点で4工程を選択し、型費増は不良コスト削減で回収。LCC検証で採算を確認し、3段階検証で量産移行。",
   "stats": {
-    "totalNodes": 26,
+    "totalNodes": 25,
     "selectedNodes": 13,
     "pastCasesUsed": 3
   },
@@ -652,7 +652,7 @@
       "isRecommended": true,
       "riskStrategy": "mitigate",
       "position": {
-        "x": 1959,
+        "x": 1960,
         "y": 572
       },
       "parentId": "c3",
@@ -660,6 +660,125 @@
       "rationale": "3つの必要条件を全て満たしゴール到達。",
       "createdAt": "2026-04-10T10:00:00Z",
       "selectedAt": "2026-04-10T10:00:00Z"
+    },
+    {
+      "id": "a1a1",
+      "type": "action",
+      "level": "action",
+      "label": "各工程の成形油塗布量・温度を固定条件として記録",
+      "description": "潤滑条件の変動を排除し、割れの原因切り分けを可能にする。",
+      "status": "selected",
+      "isRecommended": true,
+      "confidence": 78,
+      "riskLevel": "low",
+      "riskStrategy": "mitigate",
+      "position": {
+        "x": 1120,
+        "y": -13
+      },
+      "parentId": "t1a1",
+      "pathRole": "recommended",
+      "lane": 0,
+      "depth": 2,
+      "rationale": "潤滑変数が入ると摩耗原因の切り分けが困難になる。固定条件で因果関係を明確化。",
+      "createdAt": "2026-04-10T09:15:00Z",
+      "selectedAt": "2026-04-10T09:16:00Z"
+    },
+    {
+      "id": "sub2a1",
+      "type": "action",
+      "level": "sub-action",
+      "label": "��耗量○mmを超えたらメンテ必要の判定基準を策定",
+      "description": "黒田の型分解実測＋藤原のCAE逆算で割れ急増の閾値を特定。中島がLCC入力値として採用。",
+      "status": "selected",
+      "isRecommended": true,
+      "confidence": 88,
+      "riskLevel": "low",
+      "riskStrategy": "mitigate",
+      "riskDetail": {
+        "targetRisk": "メンテ判定基準が曖昧なまま量産に入り、型交換タイミングの判断が属人化するリスク",
+        "howThisHelps": "摩耗量の閾値を数値で定義し、誰が見ても同じ判断ができる基準を確立する。"
+      },
+      "position": {
+        "x": 1512,
+        "y": 403
+      },
+      "parentId": "a2a1",
+      "pathRole": "recommended",
+      "lane": 0,
+      "depth": 4,
+      "rationale": "段差何mmでメンテが必要かが確定すれば月間停止時間と交換費用が計算でき、LCC比較が成立する。",
+      "createdAt": "2026-04-10T09:34:00Z",
+      "selectedAt": "2026-04-10T09:35:00Z"
+    },
+    {
+      "id": "sub2a2",
+      "type": "action",
+      "level": "sub-action",
+      "label": "経験値ベースで目安を設定（定量基準なし）",
+      "description": "ベテランの勘に依存。担当者不在時に基準が消失するリスク。",
+      "status": "available",
+      "confidence": 35,
+      "riskLevel": "high",
+      "riskStrategy": "accept",
+      "position": {
+        "x": 1512,
+        "y": 520
+      },
+      "parentId": "a2a1",
+      "pathRole": "alternative",
+      "lane": 1,
+      "depth": 4,
+      "rationale": "量産で『あのときの感覚ってどうだったっけ』と判断が人に依存してしまう。",
+      "createdAt": "2026-04-10T09:34:00Z"
+    },
+    {
+      "id": "sub3a1",
+      "type": "action",
+      "level": "sub-action",
+      "label": "摩耗パターン（写真+段差数値）で『このパターンが出たらメンテ』判定基準を確立",
+      "description": "黒田が接触面の状態を正確記録。摩耗量だけでなく「どこがどう削れているか」のパターン判定。",
+      "status": "selected",
+      "isRecommended": true,
+      "confidence": 90,
+      "riskLevel": "low",
+      "riskStrategy": "avoid",
+      "riskDetail": {
+        "targetRisk": "摩耗量の数値だけでは型内部の微細な劣化を見落とすリスク",
+        "howThisHelps": "摩耗パターン（面の削れ方、傷の進行方向）まで記録することで、数値だけでは捉えられない型劣化の兆候を早期発見できる。"
+      },
+      "position": {
+        "x": 1512,
+        "y": 819
+      },
+      "parentId": "a3a1",
+      "pathRole": "recommended",
+      "lane": 0,
+      "depth": 5,
+      "rationale": "量産で「このパターンが出たらメンテのタイミング」という判断が型設計の根拠を持つようになる。",
+      "createdAt": "2026-04-10T09:47:00Z",
+      "selectedAt": "2026-04-10T09:48:00Z"
+    },
+    {
+      "id": "sub3a2",
+      "type": "action",
+      "level": "sub-action",
+      "label": "段差数値のみで判定（パターン記録なし）",
+      "description": "記録工数は少ないが、型内部の微細摩耗を見逃すリスク。",
+      "status": "available",
+      "confidence": 50,
+      "riskLevel": "medium",
+      "riskStrategy": "accept",
+      "position": {
+        "x": 1512,
+        "y": 936
+      },
+      "parentId": "a3a1",
+      "pathRole": "alternative",
+      "lane": 1,
+      "depth": 5,
+      "rationale": "抜き面や絞り面の微細な摩耗がどこまで進んでるかが見えない。",
+      "createdAt": "2026-04-10T09:47:00Z"
     }
   ],
   "edges": [
@@ -793,22 +912,57 @@
       "sourceHandle": "right"
     },
     {
-      "id": "e-t1a1-out",
+      "id": "e-a1a1-out",
+      "source": "a1a1",
+      "target": "outcome-1",
+      "type": "selected"
+    },
+    {
+      "id": "e-sub2a1-out",
+      "source": "sub2a1",
+      "target": "outcome-1",
+      "type": "selected"
+    },
+    {
+      "id": "e-sub3a1-out",
+      "source": "sub3a1",
+      "target": "outcome-1",
+      "type": "selected"
+    },
+    {
+      "id": "e-t1a1-a1a1",
       "source": "t1a1",
-      "target": "outcome-1",
-      "type": "selected"
+      "target": "a1a1",
+      "type": "selected",
+      "sourceHandle": "right"
     },
     {
-      "id": "e-a2a1-out",
+      "id": "e-a2a1-sub2a1",
       "source": "a2a1",
-      "target": "outcome-1",
-      "type": "selected"
+      "target": "sub2a1",
+      "type": "selected",
+      "sourceHandle": "right"
     },
     {
-      "id": "e-a3a1-out",
+      "id": "e-a2a1-sub2a2",
+      "source": "a2a1",
+      "target": "sub2a2",
+      "type": "available",
+      "sourceHandle": "right"
+    },
+    {
+      "id": "e-a3a1-sub3a1",
       "source": "a3a1",
-      "target": "outcome-1",
-      "type": "selected"
+      "target": "sub3a1",
+      "type": "selected",
+      "sourceHandle": "right"
+    },
+    {
+      "id": "e-a3a1-sub3a2",
+      "source": "a3a1",
+      "target": "sub3a2",
+      "type": "available",
+      "sourceHandle": "right"
     }
   ],
   "selectionHistory": [
@@ -883,6 +1037,33 @@
       "selectedAt": "2026-04-10T09:46:00Z",
       "rationale": "データ連続性確認で量産移行根拠が成立。",
       "summary": "ゲート判定で量産移行"
+    },
+    {
+      "id": "sh-a1",
+      "nodeId": "a1a1",
+      "nodeLabel": "潤滑条件固定記録",
+      "level": "action",
+      "selectedAt": "2026-04-10T09:16:00Z",
+      "rationale": "因果関係の明確化のために潤���変数を排除",
+      "summary": "潤滑条件固定"
+    },
+    {
+      "id": "sh-s2a1",
+      "nodeId": "sub2a1",
+      "nodeLabel": "メンテ判定基準策定",
+      "level": "sub-action",
+      "selectedAt": "2026-04-10T09:35:00Z",
+      "rationale": "段差○mmでメンテ→月間停止コスト→LCC確定",
+      "summary": "摩耗閾値の数値化"
+    },
+    {
+      "id": "sh-s3a1",
+      "nodeId": "sub3a1",
+      "nodeLabel": "摩耗パターン判定基準",
+      "level": "sub-action",
+      "selectedAt": "2026-04-10T09:48:00Z",
+      "rationale": "パターン判定で型内部の微細劣化も早期発見",
+      "summary": "パターン+数値の複合基準"
     }
   ],
   "pastCases": [
