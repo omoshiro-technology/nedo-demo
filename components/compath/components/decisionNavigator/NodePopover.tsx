@@ -277,6 +277,11 @@ export function NodePopover({
           </div>
         )}
 
+        {/* 2.5. QCDES・顧客影響（structuredRationaleがある場合） */}
+        {node.structuredRationale && (
+          <RationaleDisplay rationale={node.structuredRationale} />
+        )}
+
         {/* 3. 選択した理由は？ */}
         <div className="dn-popover__section dn-popover__section--rationale">
           <h5 className="dn-popover__rationale-question">
