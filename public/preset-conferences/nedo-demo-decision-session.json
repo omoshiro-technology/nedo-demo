@@ -110,10 +110,6 @@
       "confidence": 85,
       "riskLevel": "low",
       "riskStrategy": "avoid",
-      "riskCategories": [
-        "quality",
-        "cost"
-      ],
       "riskDetail": {
         "targetRisk": "加工硬化による割れ不良の発生（不良率2%→量産停止リスク）",
         "howThisHelps": "4工程に分散することで各工程の成形量を抑え、加工硬化を段階的に進行させる。割れ発生の閾値を大幅に下回り、不良率を0.3%に低減。"
@@ -175,9 +171,6 @@
       "confidence": 50,
       "riskLevel": "high",
       "riskStrategy": "accept",
-      "riskCategories": [
-        "quality"
-      ],
       "riskDetail": {
         "targetRisk": "2工程目での加工硬化集中により割れ不良率が2%以上に上昇するリスク",
         "howThisHelps": "型費を25%削減できるがリスクを受容する判断。撤退基準：試作で不良率3%超なら4工程に切替。"
@@ -264,10 +257,6 @@
       "confidence": 80,
       "riskLevel": "low",
       "riskStrategy": "mitigate",
-      "riskCategories": [
-        "quality",
-        "delivery"
-      ],
       "riskDetail": {
         "targetRisk": "焼鈍を入れた場合のスプリングバック変化と寸法不安定リスク",
         "howThisHelps": "焼鈍を排除することで炉温度プロファイルへの依存を除去。4工程で成形量を分散すれば焼鈍なしでも加工硬化を許容範囲に収められる。"
@@ -384,9 +373,6 @@
       "confidence": 88,
       "riskLevel": "low",
       "riskStrategy": "mitigate",
-      "riskCategories": [
-        "cost"
-      ],
       "riskDetail": {
         "targetRisk": "メンテ周期の見積もり不足による量産中の計画外停止（1回あたり数十万円の損失）",
         "howThisHelps": "摩耗量閾値を定量化し、「摩耗量○mmを超えたらメンテ必要」という判定基準を数値で確立。停止コストを含めた全体LCCが精度高く算出される。"
@@ -470,10 +456,6 @@
       "confidence": 90,
       "riskLevel": "low",
       "riskStrategy": "mitigate",
-      "riskCategories": [
-        "quality",
-        "cost"
-      ],
       "riskDetail": {
         "targetRisk": "単一手法（CAEのみ or 実測のみ）による閾値設定の見落とし。材料ロット変動を反映できないリスク。",
         "howThisHelps": "現場の感覚知（音・手応え）、型分解実測（段差データ）、CAE逆算（シミュレーション）の三方向から検証し、閾値の信頼性を大幅に向上させる。"
@@ -629,10 +611,6 @@
       "confidence": 90,
       "riskLevel": "low",
       "riskStrategy": "avoid",
-      "riskCategories": [
-        "quality",
-        "delivery"
-      ],
       "riskDetail": {
         "targetRisk": "試作条件が量産で再現できないリスク（速度・温度・送り精度・型摩耗の差異）",
         "howThisHelps": "初期・中期・後期の3段階で型摩耗の進行パターンを定量的に把握し、量産条件との一致を事前に検証。試作→量産のギャップを可視化して対策。"
