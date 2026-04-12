@@ -10,12 +10,12 @@
   "completedAt": "2026-04-10T10:30:00Z",
   "currentNodeId": "outcome-1",
   "conclusion": "品質起点で4工程を選択し、型費増は不良コスト削減で回収。LCC検証で採算を確認し、3段階検証で量産移行。",
-  "stats": { "totalNodes": 14, "selectedNodes": 7, "pastCasesUsed": 3 },
+  "stats": { "totalNodes": 26, "selectedNodes": 13, "pastCasesUsed": 3 },
 
   "criteriaLabels": [
-    { "id": "c1", "columnIndex": 0, "question": "顧客品質要求を満たす工程数が確定しているか？", "description": "品質基準から逆算した最低工程数の定義。全ての前提。", "order": 1, "orderReason": "ゴール達成に最も根本的な条件。品質を満たせない工程では量産不能", "thinkingPattern": "backcast-required-condition", "pathName": "必要条件1: 工程数の確定" },
-    { "id": "c2", "columnIndex": 1, "question": "量産全体のライフサイクルコストが採算に合うか？", "description": "型費+メンテ費+停止コスト+不良コストの全体最適。", "order": 2, "orderReason": "工程数が決まっても採算不成立なら事業化不可", "thinkingPattern": "backcast-required-condition", "pathName": "必要条件2: LCC採算性" },
-    { "id": "c3", "columnIndex": 2, "question": "試作→量産の再現性が確保できるか？", "description": "試作と量産の条件差を埋める検証体制の確立。", "order": 3, "orderReason": "品質・コストが確定しても量産再現不可ならゴール未達", "thinkingPattern": "backcast-required-condition", "pathName": "必要条件3: 量産再現性" }
+    { "id": "c1", "columnIndex": 0, "question": "顧客品質要求を満たす工程数が確定しているか？", "description": "品質基準から逆算した最低工程数の定義。全ての前提。", "order": 1, "orderReason": "ゴール達成に最も根本的な条件", "thinkingPattern": "backcast-required-condition", "pathName": "必要条件1: 工程数の確定" },
+    { "id": "c2", "columnIndex": 1, "question": "量産全体のライフサイクルコストが採算に合うか？", "description": "型費+メンテ費+停止コスト+不良コストの全体最適。", "order": 2, "orderReason": "採算不成立なら事業化不可", "thinkingPattern": "backcast-required-condition", "pathName": "必要条件2: LCC採算性" },
+    { "id": "c3", "columnIndex": 2, "question": "試作→量産の再現性が確保できるか？", "description": "試作と量産の条件差を埋める検証体制の確立。", "order": 3, "orderReason": "量産再現不可ならゴール未達", "thinkingPattern": "backcast-required-condition", "pathName": "必要条件3: 量産再現性" }
   ],
   "columnStates": ["completed", "completed", "completed"],
   "currentColumnIndex": 2,
@@ -25,149 +25,210 @@
     {
       "id": "start-node", "type": "start", "level": "strategy",
       "label": "スタート",
-      "description": "SUS304 t1.5深絞り部品の量産工程確立。品質・コスト・納期の3条件を全て満たす工程設計方針を策定する。",
+      "description": "SUS304 t1.5深絞り部品の量産工程確立",
       "status": "selected", "pathRole": "recommended", "isRecommended": true,
       "isSelectable": false, "lane": 0, "depth": -1,
-      "position": { "x": -60, "y": 360 },
+      "position": { "x": -60, "y": 440 },
       "createdAt": "2026-04-10T09:00:00Z"
     },
 
-    {
-      "id": "c1", "type": "decision", "level": "criteria",
+    { "id": "c1", "type": "decision", "level": "criteria",
       "label": "顧客品質要求を満たす工程数が確定しているか？",
-      "description": "品質基準から逆算した最低工程数の定義",
+      "description": "品質基準から逆算した最低工程数",
       "status": "selected", "isRecommended": true,
       "position": { "x": 240, "y": 80 },
       "parentId": null, "childIds": ["s1a", "s1b", "s1c"],
       "goalConnection": "品質基準の確定のために",
-      "veteranInsight": "ゴールから逆算すると、まず顧客が求める品質レベルを確定させないと何工程必要かすら決められない。仕様未確認で進めた案件で検収時に全面やり直しになった経験がある。",
+      "veteranInsight": "ゴールから逆算すると、顧客が求める品質レベルを確定させないと何工程必要かすら決められない。",
       "questionReason": "ゴール達成の最も根本的な前提条件",
       "pathName": "必要条件1: 工程数の確定",
       "lane": 0, "depth": 0,
       "createdAt": "2026-04-10T09:05:00Z"
     },
-    {
-      "id": "s1a", "type": "decision", "level": "strategy",
+    { "id": "s1a", "type": "decision", "level": "strategy",
       "label": "4工程（絞り→絞り→リストライク→トリム）",
-      "description": "型費+25%、不良率 2%→0.3%。加工硬化を段階的に分散。サイクルタイムも改善。",
+      "description": "型費+25%、不良率 2%→0.3%。サイクルタイムも改善。",
       "status": "selected", "isRecommended": true, "confidence": 85,
       "riskLevel": "low", "riskStrategy": "avoid",
-      "position": { "x": 520, "y": 35 }, "parentId": "c1",
+      "position": { "x": 520, "y": 20 }, "parentId": "c1",
       "pathRole": "recommended", "lane": 0, "depth": 0,
       "hasPastCase": true, "pastCaseCount": 1,
-      "rationale": "型費増200万円 vs 不良コスト年間削減300万円で1年以内回収。SUS304の低熱伝導率により4工程の方がサイクルタイム改善。",
-      "createdAt": "2026-04-10T09:10:00Z", "selectedAt": "2026-04-10T09:15:00Z"
+      "rationale": "型費増200万円 vs 不良コスト年間削減300万円で1年以内回収。",
+      "createdAt": "2026-04-10T09:10:00Z", "selectedAt": "2026-04-10T09:12:00Z"
     },
-    {
-      "id": "s1b", "type": "decision", "level": "strategy",
+    { "id": "s1b", "type": "decision", "level": "strategy",
       "label": "3工程（絞り→リストライク→トリム）",
-      "description": "型費-25%だが不良率2%以上のリスク。加工硬化による割れが量産で顕在化する可能性。",
-      "status": "dimmed", "confidence": 50,
-      "riskLevel": "high", "riskStrategy": "accept",
-      "position": { "x": 520, "y": 125 }, "parentId": "c1",
+      "description": "型費-25%だが不良率2%以上のリスク。",
+      "status": "dimmed", "confidence": 50, "riskLevel": "high", "riskStrategy": "accept",
+      "position": { "x": 520, "y": 110 }, "parentId": "c1",
       "pathRole": "alternative", "lane": 1, "depth": 0,
       "hasPastCase": true, "pastCaseCount": 1,
-      "rationale": "型費25%削減の魅力はあるが不良率上昇リスクが品質要求と両立しない可能性が高い。",
+      "rationale": "不良率上昇リスクが品質要求と両立しない可能性。",
       "createdAt": "2026-04-10T09:10:00Z"
     },
-    {
-      "id": "s1c", "type": "decision", "level": "strategy",
+    { "id": "s1c", "type": "decision", "level": "strategy",
       "label": "3工程＋中間焼鈍",
-      "description": "型費抑制＋焼鈍で品質確保。ただし焼鈍コスト増・納期2日増・スプリングバック変化リスク。",
-      "status": "dimmed", "confidence": 50,
-      "riskLevel": "medium", "riskStrategy": "mitigate",
-      "position": { "x": 520, "y": 215 }, "parentId": "c1",
+      "description": "焼鈍コスト増・納期2日増・スプリングバック変化リスク。",
+      "status": "dimmed", "confidence": 50, "riskLevel": "medium", "riskStrategy": "mitigate",
+      "position": { "x": 520, "y": 200 }, "parentId": "c1",
       "pathRole": "alternative", "lane": 2, "depth": 0,
-      "rationale": "焼鈍後の寸法変化が型調整範囲を超える可能性。4工程焼鈍なしの方がトータル有利。",
+      "rationale": "4工程焼鈍なしの方がトータル有利。",
       "createdAt": "2026-04-10T09:10:00Z"
+    },
+    { "id": "t1a1", "type": "decision", "level": "tactic",
+      "label": "焼鈍なしで加工硬化を4工程に分散",
+      "description": "各工程の成形量を抑え割れリスクを分散。焼鈍コスト・納期を削減。",
+      "status": "selected", "isRecommended": true, "confidence": 80,
+      "riskLevel": "low", "riskStrategy": "mitigate",
+      "position": { "x": 800, "y": -10 }, "parentId": "s1a",
+      "pathRole": "recommended", "lane": 0, "depth": 1,
+      "rationale": "焼鈍なしの方が寸法精度が安定。炉の温度プロファイルに依存するリスクを排除。",
+      "createdAt": "2026-04-10T09:13:00Z", "selectedAt": "2026-04-10T09:14:00Z"
+    },
+    { "id": "t1a2", "type": "decision", "level": "tactic",
+      "label": "2工程目後に中間焼鈍を挿入",
+      "description": "加工硬化リセットで後工程を安全に。ただしコスト・納期増。",
+      "status": "dimmed", "confidence": 65, "riskLevel": "low", "riskStrategy": "avoid",
+      "position": { "x": 800, "y": 70 }, "parentId": "s1a",
+      "pathRole": "alternative", "lane": 1, "depth": 1,
+      "rationale": "撤退基準：型補正±0.2mm超で焼鈍に切替。安全だがコスト増。",
+      "createdAt": "2026-04-10T09:13:00Z"
     },
 
-    {
-      "id": "c2", "type": "decision", "level": "criteria",
+    { "id": "c2", "type": "decision", "level": "criteria",
       "label": "量産全体のライフサイクルコストが採算に合うか？",
       "description": "型費+メンテ費+停止コスト+不良コストの全体最適",
       "status": "selected", "isRecommended": true,
-      "position": { "x": 240, "y": 360 },
+      "position": { "x": 240, "y": 400 },
       "parentId": null, "childIds": ["s2a", "s2b"],
       "goalConnection": "投資判断の根拠確立のために",
-      "veteranInsight": "���ールから逆算すると、技術的に正しいだけでは不十分。商売として成り立つかを数字で示せないと顧客も社内も納得しない。",
-      "questionReason": "工程数が決まっても採算が合わなければ事業不成立",
+      "veteranInsight": "ゴールから逆算すると、技術的に正しいだけでは不十分。商売として成り立つかを数字で示さないと判断できない。",
+      "questionReason": "採算が合わなければ事業不成立",
       "pathName": "必要条件2: LCC採算性",
       "lane": 0, "depth": 0,
       "createdAt": "2026-04-10T09:20:00Z"
     },
-    {
-      "id": "s2a", "type": "decision", "level": "strategy",
-      "label": "型摩耗閾値を実測＋CAEで数値化し、精度の高いLCC計算で採算確認",
-      "description": "検証費用約3週間。摩耗量○mmでメンテ必要を定量化。停止コスト含めた全体LCCが確定。",
+    { "id": "s2a", "type": "decision", "level": "strategy",
+      "label": "型摩耗閾値を実測＋CAEで数値化してLCC算出",
+      "description": "検証約3週間。摩耗量→メンテ周期→停止コスト→全体LCC確定。",
       "status": "selected", "isRecommended": true, "confidence": 88,
       "riskLevel": "low", "riskStrategy": "mitigate",
-      "position": { "x": 520, "y": 315 }, "parentId": "c2",
+      "position": { "x": 520, "y": 340 }, "parentId": "c2",
       "pathRole": "recommended", "lane": 0, "depth": 1,
-      "rationale": "検証費用は量産の計画外停止1回分と同程度。摩耗量閾値が確定すればメンテ周期→全体採算が数字で見える。",
-      "createdAt": "2026-04-10T09:25:00Z", "selectedAt": "2026-04-10T09:30:00Z"
+      "rationale": "検証費用は量産停止1回分。精度の高い見積もりで想定外コスト防止。",
+      "createdAt": "2026-04-10T09:25:00Z", "selectedAt": "2026-04-10T09:27:00Z"
     },
-    {
-      "id": "s2b", "type": "decision", "level": "strategy",
-      "label": "過去実績ベースでメンテ周期を推定し早期量産",
-      "description": "検証期間短縮だがメンテ精度低い。SUS304深絞りの類似実績は少ない���",
-      "status": "dimmed", "confidence": 45,
-      "riskLevel": "medium", "riskStrategy": "accept",
-      "position": { "x": 520, "y": 405 }, "parentId": "c2",
+    { "id": "s2b", "type": "decision", "level": "strategy",
+      "label": "過去実績ベースでメンテ周期を推定",
+      "description": "検証短縮だが精度低い。SUS304深絞り類似実績少ない。",
+      "status": "dimmed", "confidence": 45, "riskLevel": "medium", "riskStrategy": "accept",
+      "position": { "x": 520, "y": 430 }, "parentId": "c2",
       "pathRole": "alternative", "lane": 1, "depth": 1,
       "hasPastCase": true, "pastCaseCount": 1,
-      "rationale": "SUS304深絞りの類似実績が少なく流用するとズレが大きい。計画外停止リスク。",
+      "rationale": "類似実績少なく流用するとズレが大きい。計画外停止リスク。",
       "createdAt": "2026-04-10T09:25:00Z"
     },
+    { "id": "t2a1", "type": "decision", "level": "tactic",
+      "label": "三点検証（現場感覚×実測×CAE）で閾値確定",
+      "description": "割れ急増する摩耗量を現場・実測・シミュレーションの三方向から検証。",
+      "status": "selected", "isRecommended": true, "confidence": 90,
+      "riskLevel": "low", "riskStrategy": "mitigate",
+      "position": { "x": 800, "y": 310 }, "parentId": "s2a",
+      "pathRole": "recommended", "lane": 0, "depth": 2,
+      "rationale": "単一の手法では見落としが出る。三方向検証で閾値の信頼性を担保。",
+      "createdAt": "2026-04-10T09:28:00Z", "selectedAt": "2026-04-10T09:30:00Z"
+    },
+    { "id": "t2a2", "type": "decision", "level": "tactic",
+      "label": "CAE単独で摩耗速度を予測",
+      "description": "コスト最小だが材料ロット変動を反映できない。精度に不安。",
+      "status": "dimmed", "confidence": 45, "riskLevel": "medium", "riskStrategy": "accept",
+      "position": { "x": 800, "y": 400 }, "parentId": "s2a",
+      "pathRole": "alternative", "lane": 1, "depth": 2,
+      "rationale": "CAE単独ではSUS304の材料ロット変動を反映不可。過去に予測と実測が乖離した事例あり。",
+      "createdAt": "2026-04-10T09:28:00Z"
+    },
+    { "id": "a2a1", "type": "action", "level": "action",
+      "label": "月産数量あたりのメンテ必要日数を算出→停止コスト確定→LCC比較表を作成",
+      "description": "型費＋メンテ費＋停止コスト＋不良コストの総合比較表。経営判断の根拠。",
+      "status": "selected", "isRecommended": true, "confidence": 92,
+      "riskLevel": "low", "riskStrategy": "avoid",
+      "position": { "x": 1080, "y": 310 }, "parentId": "t2a1",
+      "pathRole": "recommended", "lane": 0, "depth": 3,
+      "rationale": "全コスト要素を定量化した比較表があれば、工程方針の最終判断が数字で下せる。",
+      "createdAt": "2026-04-10T09:31:00Z", "selectedAt": "2026-04-10T09:33:00Z"
+    },
 
-    {
-      "id": "c3", "type": "decision", "level": "criteria",
+    { "id": "c3", "type": "decision", "level": "criteria",
       "label": "試作→量産の再現性が確保できるか？",
-      "description": "試作と量産の条件差を埋める検証体制の確立",
+      "description": "試作と量産の条件差を埋める検証体制",
       "status": "selected", "isRecommended": true,
-      "position": { "x": 240, "y": 640 },
+      "position": { "x": 240, "y": 720 },
       "parentId": null, "childIds": ["s3a", "s3b"],
       "goalConnection": "量産品質の担保のために",
-      "veteranInsight": "ゴールから逆算すると、試作で上手くいっても量産で再現できなければ意味がない。試作は手作業・低速だが量産は高速・自動送り。この差を埋める検証体制が不可欠。",
-      "questionReason": "品質とコストが確定しても量産再現できなければゴール未達",
+      "veteranInsight": "ゴールから逆算すると、試作で上手くいっても量産で再現できなければ意味がない。この差を埋める検証体制が不可欠。",
+      "questionReason": "量産再現できなければゴール未達",
       "pathName": "必要条件3: 量産再現性",
       "lane": 0, "depth": 0,
       "createdAt": "2026-04-10T09:35:00Z"
     },
-    {
-      "id": "s3a", "type": "decision", "level": "strategy",
-      "label": "3段階検証＋標準フォーマット＋初期ロット50個で移行判定",
-      "description": "型分解→摩耗パターン記録→データ連続性確保。量産開始は約4週間遅延。",
+    { "id": "s3a", "type": "decision", "level": "strategy",
+      "label": "3段階検証（初期・中期・後期）で型摩耗パターンを把握",
+      "description": "型分解→段差実測→摩耗パターン記録。量産開始約4週間遅延。",
       "status": "selected", "isRecommended": true, "confidence": 90,
       "riskLevel": "low", "riskStrategy": "avoid",
-      "position": { "x": 520, "y": 595 }, "parentId": "c3",
+      "position": { "x": 520, "y": 660 }, "parentId": "c3",
       "pathRole": "recommended", "lane": 0, "depth": 2,
       "hasPastCase": true, "pastCaseCount": 1,
-      "rationale": "過去事例で検証不足→量産トラブル対応コストが検証費用の10倍。4週間遅延は投資として十分リターンあ���。",
-      "createdAt": "2026-04-10T09:40:00Z", "selectedAt": "2026-04-10T09:45:00Z"
+      "rationale": "過去事例で検証不足→対応コスト検証費用の10倍。4週間遅延は十分にリターンあり。",
+      "createdAt": "2026-04-10T09:40:00Z", "selectedAt": "2026-04-10T09:42:00Z"
     },
-    {
-      "id": "s3b", "type": "decision", "level": "strategy",
+    { "id": "s3b", "type": "decision", "level": "strategy",
       "label": "簡易トライ後に即量産開始",
-      "description": "納期4週間短縮だが量産トラブル対応コストが検証費用の5〜10倍になるリスク。",
-      "status": "dimmed", "confidence": 30,
-      "riskLevel": "high", "riskStrategy": "accept",
-      "position": { "x": 520, "y": 685 }, "parentId": "c3",
+      "description": "納期4週間短縮だがトラブル対応コスト5〜10倍リスク。",
+      "status": "dimmed", "confidence": 30, "riskLevel": "high", "riskStrategy": "accept",
+      "position": { "x": 520, "y": 760 }, "parentId": "c3",
       "pathRole": "alternative", "lane": 1, "depth": 2,
       "hasPastCase": true, "pastCaseCount": 1,
-      "rationale": "過去事例L23-091876で簡易検証→量産トラブル、対応コスト検証費用の8倍。",
+      "rationale": "L23-091876で簡易検証→対応コスト検証費用8倍の実績。",
       "createdAt": "2026-04-10T09:40:00Z"
     },
+    { "id": "t3a1", "type": "decision", "level": "tactic",
+      "label": "標準フォーマットで記録を統一し、試作↔量産のデータ連続性を確保",
+      "description": "写真の撮り方・測定位置・硬さ測定箇所を全部統一。属人化防止。",
+      "status": "selected", "isRecommended": true, "confidence": 88,
+      "riskLevel": "low", "riskStrategy": "avoid",
+      "position": { "x": 800, "y": 630 }, "parentId": "s3a",
+      "pathRole": "recommended", "lane": 0, "depth": 3,
+      "rationale": "記録が標準化されていないと試作データと量産データが繋がらず、移行判定の根拠が成立しない。",
+      "createdAt": "2026-04-10T09:43:00Z", "selectedAt": "2026-04-10T09:44:00Z"
+    },
+    { "id": "t3a2", "type": "decision", "level": "tactic",
+      "label": "担当者の判断に委ねる（記録フォーマットなし）",
+      "description": "手軽だが属人化。担当者不在時に判断基準が失われる。",
+      "status": "dimmed", "confidence": 35, "riskLevel": "high", "riskStrategy": "accept",
+      "position": { "x": 800, "y": 720 }, "parentId": "s3a",
+      "pathRole": "alternative", "lane": 1, "depth": 3,
+      "rationale": "量産で「あのときの感覚ってどうだったっけ」と判断が人に依存してしまう。",
+      "createdAt": "2026-04-10T09:43:00Z"
+    },
+    { "id": "a3a1", "type": "action", "level": "action",
+      "label": "初期ロット50個で量産条件との一致を確認し、移行可否を判定",
+      "description": "試作3段階データと初期ロットの摩耗パターンを比較。一致なら量産移行、不一致なら条件再検討。",
+      "status": "selected", "isRecommended": true, "confidence": 92,
+      "riskLevel": "low", "riskStrategy": "avoid",
+      "position": { "x": 1080, "y": 630 }, "parentId": "t3a1",
+      "pathRole": "recommended", "lane": 0, "depth": 4,
+      "rationale": "データの連続性が確認できて初めて量産移行の根拠が成立。ゲート判定のないまま量産に入るリスクを排除。",
+      "createdAt": "2026-04-10T09:45:00Z", "selectedAt": "2026-04-10T09:46:00Z"
+    },
 
-    {
-      "id": "outcome-1", "type": "outcome", "level": "outcome",
+    { "id": "outcome-1", "type": "outcome", "level": "outcome",
       "label": "ゴール達成: 品質・採算・再現性の3条件を全て満たす量産体制の確立",
-      "description": "4工程で品質確保、LCC検証で採算確認、3段階検証で量産再現性を担保。全条件成立でゴール到達。",
-      "status": "selected", "isRecommended": true,
-      "riskStrategy": "mitigate",
-      "position": { "x": 900, "y": 360 },
-      "parentId": "c3", "depth": 3,
-      "rationale": "3つの必要条件を全て満たすことでゴールに到達する逆算パス。",
+      "description": "4工程で品質確保、LCC検証で採算確認、3段階検証＋標準フォーマットで量産再現性を担保。",
+      "status": "selected", "isRecommended": true, "riskStrategy": "mitigate",
+      "position": { "x": 1400, "y": 440 },
+      "parentId": "c3", "depth": 5,
+      "rationale": "3つの必要条件を全て満たしゴール到達。",
       "createdAt": "2026-04-10T10:00:00Z", "selectedAt": "2026-04-10T10:00:00Z"
     }
   ],
@@ -180,86 +241,75 @@
     { "id": "e-c1-s1a", "source": "c1", "target": "s1a", "type": "selected", "sourceHandle": "right" },
     { "id": "e-c1-s1b", "source": "c1", "target": "s1b", "type": "dimmed", "sourceHandle": "right" },
     { "id": "e-c1-s1c", "source": "c1", "target": "s1c", "type": "dimmed", "sourceHandle": "right" },
+    { "id": "e-s1a-t1a1", "source": "s1a", "target": "t1a1", "type": "selected", "sourceHandle": "right" },
+    { "id": "e-s1a-t1a2", "source": "s1a", "target": "t1a2", "type": "dimmed", "sourceHandle": "right" },
 
     { "id": "e-c2-s2a", "source": "c2", "target": "s2a", "type": "selected", "sourceHandle": "right" },
     { "id": "e-c2-s2b", "source": "c2", "target": "s2b", "type": "dimmed", "sourceHandle": "right" },
+    { "id": "e-s2a-t2a1", "source": "s2a", "target": "t2a1", "type": "selected", "sourceHandle": "right" },
+    { "id": "e-s2a-t2a2", "source": "s2a", "target": "t2a2", "type": "dimmed", "sourceHandle": "right" },
+    { "id": "e-t2a1-a2a1", "source": "t2a1", "target": "a2a1", "type": "selected", "sourceHandle": "right" },
 
     { "id": "e-c3-s3a", "source": "c3", "target": "s3a", "type": "selected", "sourceHandle": "right" },
     { "id": "e-c3-s3b", "source": "c3", "target": "s3b", "type": "dimmed", "sourceHandle": "right" },
+    { "id": "e-s3a-t3a1", "source": "s3a", "target": "t3a1", "type": "selected", "sourceHandle": "right" },
+    { "id": "e-s3a-t3a2", "source": "s3a", "target": "t3a2", "type": "dimmed", "sourceHandle": "right" },
+    { "id": "e-t3a1-a3a1", "source": "t3a1", "target": "a3a1", "type": "selected", "sourceHandle": "right" },
 
-    { "id": "e-s1a-out", "source": "s1a", "target": "outcome-1", "type": "selected" },
-    { "id": "e-s2a-out", "source": "s2a", "target": "outcome-1", "type": "selected" },
-    { "id": "e-s3a-out", "source": "s3a", "target": "outcome-1", "type": "selected" }
+    { "id": "e-t1a1-out", "source": "t1a1", "target": "outcome-1", "type": "selected" },
+    { "id": "e-a2a1-out", "source": "a2a1", "target": "outcome-1", "type": "selected" },
+    { "id": "e-a3a1-out", "source": "a3a1", "target": "outcome-1", "type": "selected" }
   ],
 
   "selectionHistory": [
-    { "id": "sh-1", "nodeId": "s1a", "nodeLabel": "4工程", "level": "strategy", "selectedAt": "2026-04-10T09:15:00Z", "rationale": "型費増200万円 vs 不良コスト年間削減300万円。SUS304の特性上4工程が安定。", "summary": "品質起点で4工程を採用" },
-    { "id": "sh-2", "nodeId": "s2a", "nodeLabel": "実測＋CAEでLCC検証", "level": "strategy", "selectedAt": "2026-04-10T09:30:00Z", "rationale": "検証費用は量産停止1回分。全体採算が数字で確定する。", "summary": "検証投資でLCC精度を���保" },
-    { "id": "sh-3", "nodeId": "s3a", "nodeLabel": "3段階検証＋標準フォーマッ���", "level": "strategy", "selectedAt": "2026-04-10T09:45:00Z", "rationale": "過去事例で検証不足の対応コストが10倍。4週間遅延は許容範囲。", "summary": "4週間遅延 vs トラブル10倍コスト" }
+    { "id": "sh-1", "nodeId": "s1a", "nodeLabel": "4工程", "level": "strategy", "selectedAt": "2026-04-10T09:12:00Z", "rationale": "型費増200万円 vs 不良コスト年間削減300万円", "summary": "品質起点で4工程" },
+    { "id": "sh-2", "nodeId": "t1a1", "nodeLabel": "焼鈍なしで分散", "level": "tactic", "selectedAt": "2026-04-10T09:14:00Z", "rationale": "焼鈍なしの方が寸法精度安定。炉依存リスク排除。", "summary": "焼鈍なし方針" },
+    { "id": "sh-3", "nodeId": "s2a", "nodeLabel": "実測＋CAEでLCC", "level": "strategy", "selectedAt": "2026-04-10T09:27:00Z", "rationale": "検証費用は量産停止1回分。採算が数字で確定。", "summary": "検証投資でLCC精度確保" },
+    { "id": "sh-4", "nodeId": "t2a1", "nodeLabel": "三点検証で閾値確定", "level": "tactic", "selectedAt": "2026-04-10T09:30:00Z", "rationale": "単一手法では見落とし。三方向で閾値の信頼性担保。", "summary": "三点検証モデル" },
+    { "id": "sh-5", "nodeId": "a2a1", "nodeLabel": "LCC比較表作成", "level": "action", "selectedAt": "2026-04-10T09:33:00Z", "rationale": "全コスト要素を定量化。経営判断の根拠。", "summary": "全体コスト比較表" },
+    { "id": "sh-6", "nodeId": "s3a", "nodeLabel": "3段階検証", "level": "strategy", "selectedAt": "2026-04-10T09:42:00Z", "rationale": "検証不足の対応コストが10倍。4週間遅延は許容範囲。", "summary": "段階的検証" },
+    { "id": "sh-7", "nodeId": "t3a1", "nodeLabel": "標準フォーマット", "level": "tactic", "selectedAt": "2026-04-10T09:44:00Z", "rationale": "記録統一なしではデータが繋がらず移行判定不成立。", "summary": "記録統一で属人化防止" },
+    { "id": "sh-8", "nodeId": "a3a1", "nodeLabel": "初期ロット50個で移行判定", "level": "action", "selectedAt": "2026-04-10T09:46:00Z", "rationale": "データ連続性確認で量産移行根拠が成立。", "summary": "ゲート判定で量産移行" }
   ],
 
   "pastCases": [
-    {
-      "id": "pc-1", "caseNumber": "L21-078432", "date": "2024-08-15",
-      "summary": "SUS316 t1.2 深絞り — 品質起点で4工程採用、不良率0.2%で安定稼働",
-      "purpose": "SUS316 t1.2 深絞り形状の量産工程確立", "similarity": 82,
+    { "id": "pc-1", "caseNumber": "L21-078432", "date": "2024-08-15", "summary": "SUS316 t1.2 深絞り — 4工程で安定稼働、型費回収8ヶ月", "purpose": "SUS316 t1.2 深絞り量産", "similarity": 82,
       "decisions": [
-        { "criteriaId": "c1", "criteriaLabel": "工程数の確定", "selectedOption": "4工程", "rationale": "自動車安全部品で公差±0.05mm。3工程で割れ発生→4工程変更" },
-        { "criteriaId": "c2", "criteriaLabel": "LCC採算性", "selectedOption": "実測検証", "rationale": "型摩耗速度を実測、メンテ周期8000ショット設定。停止コスト年間120万円削減" }
-      ],
-      "outcome": "4工程で量産立ち上げ成功。不良率0.2%安定稼働。型費回収8ヶ月。"
-    },
-    {
-      "id": "pc-2", "caseNumber": "L19-054321", "date": "2022-03-10",
-      "summary": "SPCC t1.0 絞り — コスト優先3工程で量産不良多発、対応コスト型費削減の3倍",
-      "purpose": "SPCC t1.0 絞り部品のコスト最適化", "similarity": 58,
-      "decisions": [
-        { "criteriaId": "c1", "criteriaLabel": "工程数の確定", "selectedOption": "3工程", "rationale": "顧客価格要求が厳しく3工程で見積通過" }
-      ],
-      "outcome": "量産3ヶ月後に不良率5%上昇。型修正+クレーム対応で型費削減額の3倍コスト発生。"
-    },
-    {
-      "id": "pc-3", "caseNumber": "L23-091876", "date": "2025-11-20",
-      "summary": "SUS304 t2.0 浅絞り — 簡易検証で量産開始、型摩耗で品質劣化。対応コスト検証費用8倍",
-      "purpose": "SUS304 t2.0 量産短期立ち上げ", "similarity": 71,
-      "decisions": [
-        { "criteriaId": "c3", "criteriaLabel": "量産再現性", "selectedOption": "簡易トライ後に即量産", "rationale": "納期最優先で検証最小化" }
-      ],
-      "outcome": "量産2ヶ月後に型摩耗で寸法精度悪化。計画外停止3回、対応コスト検証費用の8倍。"
-    }
+        { "criteriaId": "c1", "criteriaLabel": "工程数", "selectedOption": "4工程", "rationale": "3工程で割れ発生→4工程変更" },
+        { "criteriaId": "c2", "criteriaLabel": "LCC", "selectedOption": "実測検証", "rationale": "メンテ周期8000ショット設定" }
+      ], "outcome": "不良率0.2%安定。型費回収8ヶ月。" },
+    { "id": "pc-2", "caseNumber": "L19-054321", "date": "2022-03-10", "summary": "SPCC t1.0 — コスト優先3工程で不良多発、対応コスト3倍", "purpose": "SPCC t1.0 コスト最適化", "similarity": 58,
+      "decisions": [ { "criteriaId": "c1", "criteriaLabel": "工程数", "selectedOption": "3工程", "rationale": "価格要求厳しく3工程で見積通過" } ],
+      "outcome": "不良率5%上昇。対応コスト型費削減の3倍。" },
+    { "id": "pc-3", "caseNumber": "L23-091876", "date": "2025-11-20", "summary": "SUS304 t2.0 — 簡易検証で量産、対応コスト8倍", "purpose": "SUS304 t2.0 短期立ち上げ", "similarity": 71,
+      "decisions": [ { "criteriaId": "c3", "criteriaLabel": "再現性", "selectedOption": "簡易トライ", "rationale": "納期最優先で検証最小化" } ],
+      "outcome": "型摩耗で品質劣化。対応コスト検証費用8倍。" }
   ],
 
   "simulationConditions": [
     { "id": "cond-1", "label": "材質", "value": "SUS304 t1.5mm", "options": ["SUS304", "SUS316", "SPCC"], "isPreSelected": true },
-    { "id": "cond-2", "label": "形状", "value": "深絞り形状", "options": ["深絞���", "浅絞り", "曲げ主体"], "isPreSelected": true },
+    { "id": "cond-2", "label": "形状", "value": "深絞り形状", "options": ["深絞り", "浅絞り", "曲げ主体"], "isPreSelected": true },
     { "id": "cond-3", "label": "年間生産量", "value": "5万個以上", "options": ["1万個未満", "1-5万個", "5万個以上"] },
     { "id": "cond-4", "label": "品質要求", "value": "高精度（公差±0.1mm）", "options": ["標準", "高精度", "超高精度"] },
     { "id": "cond-5", "label": "納期", "value": "3ヶ月以内", "options": ["1ヶ月", "3ヶ月", "6ヶ月以上"] }
   ],
 
   "chatHistory": [
-    { "id": "chat-1", "role": "assistant", "content": "ゴールから逆算して、SUS304 t1.5 深絞りの量産工程確立に必要な**3つの必要条件**を特定しました。\n\n1. **顧客品質要求を満たす工程数が確定しているか？**\n2. **量産全体のライフサイクルコストが採算に合���か？**\n3. **試作→量産の再現性が確保できるか？**\n\nこの3条件が**全て**満たされた時に、ゴールに到達します。どの条件から検討を始めますか？", "timestamp": "2026-04-10T09:05:00Z", "type": "text" },
-    { "id": "chat-2", "role": "user", "content": "まず工程数から。品質起点で4工程を選びます。", "timestamp": "2026-04-10T09:14:00Z", "type": "text" },
-    { "id": "chat-3", "role": "assistant", "content": "必要条件1を「4工程」で確定します。✅\n\n> 💡 **過去事例 L21-078432**: SUS316 t1.2で品質起点→4工程、不良率0.2%で安定稼働。回収8ヶ月。\n> ⚠️ **失敗事例 L19-054321**: SPCC t1.0でコスト優先→3工程、不良率5%に。対応コスト型費削減の3倍。\n\n次にどの条件に進みますか？", "timestamp": "2026-04-10T09:20:00Z", "type": "suggestion" },
-    { "id": "chat-4", "role": "user", "content": "LCC採算性。検証に投資してLCC精度を確保したいです。", "timestamp": "2026-04-10T09:29:00Z", "type": "text" },
-    { "id": "chat-5", "role": "assistant", "content": "必要条件2を「実測＋CAEでLCC検証」で確定します。✅\n\n最後の条件「試作→量産の再現性」に進みましょう。\n\n> ⚠️ **失敗事例 L23-091876**: SUS304 t2.0で簡易検証→即量産。型摩耗で品質劣化、対応コスト検証費用の**8倍**。\n\n3段階検証と簡易トライのどちらを選びますか��", "timestamp": "2026-04-10T09:35:00Z", "type": "suggestion" },
-    { "id": "chat-6", "role": "user", "content": "3段階検証で。4週間の遅延は許容します。", "timestamp": "2026-04-10T09:44:00Z", "type": "text" },
-    { "id": "chat-7", "role": "assistant", "content": "**全3条件が確定しました。ゴールに到達します。** 🎯\n\n- ✅ 条件1: 4工程で品質確保（型費+25%は不良コスト削減で1年以内回収）\n- ✅ 条件2: 実測＋CAEでLCC採算を確認（検証費用 < 量産停止コスト）\n- ✅ 条件3: 3段階検証で量産再現性を担保（4週間遅延 < トラブル10倍コスト）\n\n**結論: 品質起点 → 4工程 → LCC検証済み → 段階的量産移行**", "timestamp": "2026-04-10T09:50:00Z", "type": "confirmation" }
+    { "id": "chat-1", "role": "assistant", "content": "ゴールから逆算して**3つの必要条件**を特定しました。\n\n1. **工程数が確定しているか？**\n2. **LCCが採算に合うか？**\n3. **試作→量産の再現性が確保できるか？**\n\n3条件全てが満たされた時にゴール到達です。", "timestamp": "2026-04-10T09:05:00Z", "type": "text" },
+    { "id": "chat-2", "role": "user", "content": "4工程・焼鈍なしで。", "timestamp": "2026-04-10T09:14:00Z", "type": "text" },
+    { "id": "chat-3", "role": "assistant", "content": "✅ 条件1確定: 4工程・焼鈍なし\n\n> 💡 L21-078432: SUS316で4工程→不良率0.2%\n> ⚠️ L19-054321: 3工程→不良率5%、対応コスト3倍\n\n条件2に進みます。LCCの検証方法はどうしますか？", "timestamp": "2026-04-10T09:20:00Z", "type": "suggestion" },
+    { "id": "chat-4", "role": "user", "content": "三点検証でLCCを確定させたい。", "timestamp": "2026-04-10T09:30:00Z", "type": "text" },
+    { "id": "chat-5", "role": "assistant", "content": "✅ 条件2確定: 三点検証→LCC比較表作成\n\n> ⚠️ L23-091876: 簡易検証→対応コスト8倍\n\n最後の条件3: 量産再現性の確保方法は？", "timestamp": "2026-04-10T09:35:00Z", "type": "suggestion" },
+    { "id": "chat-6", "role": "user", "content": "3段階検証＋標準フォーマット＋初期ロット50個で判定。", "timestamp": "2026-04-10T09:46:00Z", "type": "text" },
+    { "id": "chat-7", "role": "assistant", "content": "**全3条件確定。ゴール到達。** 🎯\n\n- ✅ 4工程・焼鈍なし（型費+25%→不良コスト削減で1年回収）\n- ✅ 三点検証→LCC比較表（検証費用<量産停止コスト）\n- ✅ 3段階検証＋標準フォーマット（4週間遅延<トラブル10倍コスト）", "timestamp": "2026-04-10T09:50:00Z", "type": "confirmation" }
   ],
 
-  "goalDefinition": {
-    "type": "process_plan",
-    "description": "SUS304 t1.5 深絞り部品の量産工程方針を確定し、量産体制を確立する"
-  },
-  "goalState": {
-    "isAchieved": true,
-    "achievedAt": "2026-04-10T10:00:00Z",
-    "summary": "3つの必要条件（工程数確定・LCC採算・量産再現性）が全て満たされゴール到達。"
-  },
+  "goalDefinition": { "type": "process_plan", "description": "SUS304 t1.5 深絞り部品の量産工程方針を確定し量産体制を確立する" },
+  "goalState": { "isAchieved": true, "achievedAt": "2026-04-10T10:00:00Z", "summary": "3条件全て充足しゴール到達。" },
 
   "recommendedPath": {
     "nodeIds": ["c1", "c2", "c3", "outcome-1"],
-    "edgeIds": ["e-start-c1", "e-start-c2", "e-start-c3", "e-c1-s1a", "e-c2-s2a", "e-c3-s3a", "e-s1a-out", "e-s2a-out", "e-s3a-out"],
+    "edgeIds": ["e-start-c1", "e-start-c2", "e-start-c3"],
     "score": 88,
     "rationaleTags": ["品質確保", "投資回収可能", "再現性担保"]
   }
