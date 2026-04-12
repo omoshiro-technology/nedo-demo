@@ -426,25 +426,25 @@ export function DiscussionInterface({
         overallSummary = data.summary
       }
 
-      // UUID参照をMarkdown形式に変換する関数
+      // ナレッジ参照をMarkdown脚注形式に変換する関数
       const convertUUIDReferencesToMarkdown = (text: string): { convertedText: string; referencedKnowledge: string[] } => {
-        const uuidPattern = /\[UUID:([a-f0-9-]{36})\]/gi
+        const uuidPattern = /\[UUID:([^\]]+)\]/g
         const referencedKnowledge: Set<string> = new Set()
 
-        // UUIDを収集
+        // IDを収集
         let match
         const tempPattern = new RegExp(uuidPattern.source, uuidPattern.flags)
         while ((match = tempPattern.exec(text)) !== null) {
           referencedKnowledge.add(match[1])
         }
 
-        // 参照番号でUUIDを置き換え
+        // 参照番号でIDを置き換え
         const knowledgeArray = Array.from(referencedKnowledge)
         let convertedText = text
-        knowledgeArray.forEach((uuid, index) => {
+        knowledgeArray.forEach((id, index) => {
           const refNumber = index + 1
           convertedText = convertedText.replace(
-            new RegExp(`\\[UUID:${uuid}\\]`, 'g'),
+            new RegExp(`\\[UUID:${id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\]`, 'g'),
             `[^${refNumber}]`
           )
         })
@@ -485,8 +485,14 @@ export function DiscussionInterface({
       })
 
       markdownContent += "## 会話履歴\n\n"
-      convertedMessages.forEach((msg) => {
-        markdownContent += `**${msg.characterName}**: ${msg.text}\n\n---\n\n`
+      convertedMessages.forEach((msg, i) => {
+        markdownContent += `**${msg.characterName}**: ${msg.text}\n`
+        // 参照されたナレッジIDを表示
+        const originalMsg = messages[i]
+        if (originalMsg?.usedKnowledgeIds && originalMsg.usedKnowledgeIds.length > 0) {
+          markdownContent += `> 参照ナレッジ: ${originalMsg.usedKnowledgeIds.join(", ")}\n`
+        }
+        markdownContent += `\n---\n\n`
       })
 
       if (Object.keys(summaryNodes).length > 1) {
