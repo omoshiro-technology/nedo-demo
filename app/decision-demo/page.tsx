@@ -4,13 +4,13 @@ import { useState, useEffect } from "react"
 import dynamic from "next/dynamic"
 import type { DecisionNavigatorSession } from "@/components/compath/types/decisionNavigator"
 
-// ReactFlowはSSR不可なのでdynamic import
+// ReactFlowはSSR不可なのでdynamic import（named export）
 const FlowChart = dynamic(
-  () => import("@/components/compath/components/decisionNavigator/FlowChart").then(m => m.default),
+  () => import("@/components/compath/components/decisionNavigator/FlowChart").then(m => ({ default: m.FlowChart })),
   { ssr: false }
 )
 const DecisionJourneyView = dynamic(
-  () => import("@/components/compath/components/decisionNavigator/DecisionJourneyView").then(m => m.default ?? m.DecisionJourneyView),
+  () => import("@/components/compath/components/decisionNavigator/DecisionJourneyView").then(m => ({ default: m.DecisionJourneyView })),
   { ssr: false }
 )
 
