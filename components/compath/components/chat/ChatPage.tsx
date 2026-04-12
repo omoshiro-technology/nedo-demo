@@ -714,8 +714,49 @@ ${decision.content}${ambiguityText}${guidanceText}`;
       content: m.content,
     }));
 
+  // プリセット意思決定キャンバスを開く
+  const handleLoadPresetDecision = useCallback(async () => {
+    try {
+      const res = await fetch("/preset-conferences/nedo-demo-decision-session.json");
+      if (!res.ok) { alert("読込失敗: " + res.status); return; }
+      const presetData = await res.json();
+      setDnSidePanel({
+        isOpen: true,
+        initialData: { purpose: presetData.purpose || "", currentSituation: "" },
+        skipPreconditionModal: true,
+        skipPastCasePanel: true,
+        presetSession: presetData,
+      });
+    } catch (e) {
+      alert("読込エラー: " + (e as Error).message);
+    }
+  }, []);
+
   return (
     <>
+      {/* 固定位置のプリセットボタン */}
+      {!dnSidePanel?.isOpen && (
+        <button
+          onClick={handleLoadPresetDecision}
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            right: "20px",
+            zIndex: 9999,
+            padding: "10px 20px",
+            borderRadius: "10px",
+            border: "2px solid #1f7a6d",
+            backgroundColor: "#e8f1f0",
+            color: "#1f7a6d",
+            fontSize: "14px",
+            fontWeight: 700,
+            cursor: "pointer",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+          }}
+        >
+          📋 NEDOデモ（意思決定キャンバス）
+        </button>
+      )}
       {!selectedAgent ? (
         // ホーム画面: エージェント選択 + シナリオ切替
         <div className="chat-page chat-page--home">
@@ -786,49 +827,6 @@ ${decision.content}${ambiguityText}${guidanceText}`;
                       isProcessing={isProcessing}
                       onSampleSelect={handleSampleData}
                     />
-                    <div style={{ marginTop: "16px" }}>
-                      <button
-                        onClick={async () => {
-                          console.log("[Preset] Button clicked");
-                          try {
-                            const res = await fetch("/preset-conferences/nedo-demo-decision-session.json");
-                            console.log("[Preset] Fetch response:", res.status);
-                            if (!res.ok) {
-                              console.error("[Preset] Fetch failed:", res.status);
-                              alert("プリセット読込失敗: " + res.status);
-                              return;
-                            }
-                            const presetData = await res.json();
-                            console.log("[Preset] Data loaded, nodes:", presetData.nodes?.length);
-                            const panelState = {
-                              isOpen: true,
-                              initialData: { purpose: presetData.purpose || "", currentSituation: "" },
-                              skipPreconditionModal: true,
-                              skipPastCasePanel: true,
-                              presetSession: presetData,
-                            };
-                            console.log("[Preset] Setting dnSidePanel:", panelState.isOpen);
-                            setDnSidePanel(panelState);
-                            console.log("[Preset] setDnSidePanel called");
-                          } catch (e) {
-                            console.error("[Preset] Error:", e);
-                            alert("プリセット読込エラー: " + (e as Error).message);
-                          }
-                        }}
-                        style={{
-                          padding: "8px 20px",
-                          borderRadius: "8px",
-                          border: "1px solid #1f7a6d",
-                          backgroundColor: "#e8f1f0",
-                          color: "#1f7a6d",
-                          fontSize: "14px",
-                          fontWeight: 600,
-                          cursor: "pointer",
-                        }}
-                      >
-                        📋 NEDOデモ（意思決定キャンバス）
-                      </button>
-                    </div>
                   </div>
                 ) : (
                   <ChatMessageCallbacksProvider callbacks={chatMessageCallbacks}>
