@@ -1,0 +1,389 @@
+<div
+    style="font-family: 'Noto Sans JP', sans-serif; background: #f5f0e8; padding: 24px; border-radius: 8px; min-height: 600px;">
+
+    <!-- タイトルエリア -->
+    <div style="text-align:center; margin-bottom: 24px;">
+        <div
+            style="display:inline-block; background:#2c3e50; color:#fff; padding:10px 32px; border-radius:4px; font-size:1.3em; font-weight:bold; letter-spacing:2px;">
+            🏭 SUS304 t1.5 深絞り形状 — 量産工程設計方針
+        </div>
+        <div style="margin-top:6px; color:#666; font-size:0.85em;">目的：加工硬化による割れリスク対策 ＋ 品質・コスト・納期の両立</div>
+    </div>
+
+    <!-- 上段：5名の論点カード -->
+    <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:10px; margin-bottom:20px;">
+
+        <!-- 村田 -->
+        <div class="wb-card wb-card-blue">
+            <div style="font-size:0.75em; color:#555; margin-bottom:4px;">🗣 村田 鉄男（加工経験）</div>
+            <strong>材質から工程数を逆算する</strong>
+            <ul style="margin:8px 0 0 0; padding-left:16px; font-size:0.88em;">
+                <li>SUS304は加工硬化の進み方が普通鋼板と<em>全く異なる</em></li>
+                <li>「1工程でどこまで絞れるか」を先に見極める</li>
+                <li>これが全体設計の起点になる</li>
+                <li>初期ロット確認時に<strong>摩耗パターン判定</strong>を担当</li>
+            </ul>
+            <div style="margin-top:8px; font-size:0.8em; color:#336;">
+                📎 材質→工程数の逆算アプローチ [UUID:mt-001]
+            </div>
+        </div>
+
+        <!-- 安藤 -->
+        <div class="wb-card wb-card-yellow">
+            <div style="font-size:0.75em; color:#555; margin-bottom:4px;">🗣 安藤 美咲（品質・仕様）</div>
+            <strong>試作→量産の再現性が本質的課題</strong>
+            <ul style="margin:8px 0 0 0; padding-left:16px; font-size:0.88em;">
+                <li>顧客仕様の確定が大前提</li>
+                <li>試作は手作業・調整が入りやすい</li>
+                <li>量産は速度・温度・送り精度が<em>固定</em></li>
+                <li>型摩耗が進むと条件が変化する</li>
+                <li>「何回繰り返せるか」「型寿命内で安定するか」を試作時に同時検証すべき</li>
+                <li><strong>データとして残さないと量産で判断が人に依存する</strong></li>
+            </ul>
+            <div style="margin-top:8px; font-size:0.8em; color:#664;">
+                📎 試作→量産再現性 [UUID:pd-005]
+            </div>
+        </div>
+
+        <!-- 黒田 -->
+        <div class="wb-card wb-card-purple">
+            <div style="font-size:0.75em; color:#555; margin-bottom:4px;">🗣 黒田 浩一（金型）</div>
+            <strong>型摩耗量＋摩耗パターンの記録が鍵</strong>
+            <ul style="margin:8px 0 0 0; padding-left:16px; font-size:0.88em;">
+                <li>割れ急増時点の<strong>接触面の状態を正確に記録</strong></li>
+                <li>摩耗量だけでなく<em>どこの面がどう削れているか</em>・傷の進行パターンを写真＋数値で残す</li>
+                <li>→「このパターンが出たらメンテ」という型設計根拠になる</li>
+                <li>中島のLCC計算の精度はここのデータにかかっている</li>
+            </ul>
+            <div style="margin-top:8px; font-size:0.8em; color:#436;">
+                📎 型設計と工程数の関係 [UUID:ec-001]
+            </div>
+        </div>
+
+        <!-- 中島 -->
+        <div class="wb-card wb-card-red">
+            <div style="font-size:0.75em; color:#555; margin-bottom:4px;">🗣 中島 康太（コスト）</div>
+            <strong>三点検証でLCC入力値を確定する</strong>
+            <ul style="margin:8px 0 0 0; padding-left:16px; font-size:0.88em;">
+                <li><em>「摩耗量○ミリ超えたらメンテ必要」</em>の判定基準を<strong>現場感覚×実測×CAEの三つで検証</strong>してからLCC計算に入力</li>
+                <li>試作で割れ急増摩耗量を実測 → CAEで再現 → 逆算で「月産○個なら何日でメンテ」が確定</li>
+                <li>→ 停止コストが確定し<strong>3工程 vs 4工程のLCC比較が成立</strong> [UUID:co-001]</li>
+                <li>試作検証フレームワークに<strong>「摩耗量の閾値検証」を明記</strong>することを提案</li>
+            </ul>
+            <div style="margin-top:8px; font-size:0.8em; color:#600;">
+                📎 LCCによる工程選択 [UUID:pd-005]
+            </div>
+        </div>
+
+        <!-- 藤原 -->
+        <div class="wb-card wb-card-green">
+            <div style="font-size:0.75em; color:#555; margin-bottom:4px;">🗣 藤原 翔太（CAE解析）</div>
+            <strong>記録標準化でデータを繋げる</strong>
+            <ul style="margin:8px 0 0 0; padding-left:16px; font-size:0.88em;">
+                <li>写真の撮り方・測定位置・硬さ測定箇所を<strong>全部統一</strong>しないとデータが繋がらない</li>
+                <li><strong>型摩耗パターン記録の標準フォーマット＋写真撮影基準</strong>を藤原が作成</li>
+                <li>→ 村田・安藤が初期ロット確認時に「このパターンが出たらメンテ」と根拠を持って判断できる</li>
+                <li>AutoFormで閾値逆算 [UUID:mt-001]</li>
+            </ul>
+            <div style="margin-top:8px; font-size:0.8em; color:#2d6a2d;">
+                📎 CAE成形解析 × 実測データ連携
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 中段：論点の構造フロー -->
+    <div class="wb-section" style="margin-bottom:20px;">
+        <div style="font-weight:bold; font-size:1em; margin-bottom:10px; color:#333;">🔗 論点の構造・依存関係</div>
+        <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:0.88em;">
+            <div class="wb-card wb-card-yellow" style="padding:8px 12px; margin:0; font-size:0.85em;">
+                ① 顧客仕様の確定<br><small>公差・割れ許容度</small>
+            </div>
+            <div class="wb-arrow">⇒</div>
+            <div class="wb-card wb-card-blue" style="padding:8px 12px; margin:0; font-size:0.85em;">
+                ② 必要品質レベルの定義<br><small>中間焼鈍の要否判断</small>
+            </div>
+            <div class="wb-arrow">⇒</div>
+            <div class="wb-card wb-card-blue" style="padding:8px 12px; margin:0; font-size:0.85em;">
+                ③ 材質から工程数を逆算<br><small>加工硬化限界の把握</small>
+            </div>
+            <div class="wb-arrow">⇒</div>
+            <div class="wb-card wb-card-purple" style="padding:8px 12px; margin:0; font-size:0.85em;">
+                ④ 金型設計への落とし込み<br><small>冷却・抜き勾配・サイクル</small>
+            </div>
+            <div class="wb-arrow">⇒</div>
+            <div class="wb-card wb-card-purple"
+                style="padding:8px 12px; margin:0; font-size:0.85em; border:2px solid #5a2d82;">
+                ⑤ 試作検証（3段階）<br><small>型分解＋段差実測<br>＋<strong>摩耗パターン記録</strong></small>
+            </div>
+            <div class="wb-arrow">⇒</div>
+            <div class="wb-card wb-card-green"
+                style="padding:8px 12px; margin:0; font-size:0.85em; border:2px solid #27ae60;">
+                ⑥ 実測＋CAEで閾値逆算<br><small>割れ急増の摩耗量を特定<br>＋<strong>標準フォーマットで記録</strong></small>
+            </div>
+            <div class="wb-arrow">⇒</div>
+            <div class="wb-card wb-card-red"
+                style="padding:8px 12px; margin:0; font-size:0.85em; border:2px solid #c0392b;">
+                ⑦ 三点検証でLCC入力値確定<br><small>現場感覚×実測×CAE<br>→ 工程案を選択</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- 型摩耗数値化フロー（更新） -->
+    <div class="wb-section"
+        style="margin-bottom:20px; border: 2px dashed #27ae60; background:#f0fff4; padding:14px; border-radius:6px;">
+        <div style="font-weight:bold; font-size:1em; margin-bottom:10px; color:#1a6b3a;">🔩 型摩耗数値化 → メンテ判定 →
+            LCC連携フロー（三点検証モデル）</div>
+        <div style="display:flex; align-items:stretch; gap:10px; font-size:0.88em; flex-wrap:wrap;">
+
+            <div
+                style="flex:1; min-width:150px; background:#fff; border:2px solid #5a2d82; border-radius:6px; padding:10px;">
+                <div style="font-weight:bold; color:#5a2d82; margin-bottom:6px;">🔧 黒田：実測＋パターン記録</div>
+                <ul style="margin:0; padding-left:14px; font-size:0.9em;">
+                    <li>試作3段階で型を分解</li>
+                    <li>抜き面段差を<strong>簡易ゲージで計測</strong></li>
+                    <li><strong>どこの面がどう削れているか</strong>・傷の進行パターンを写真＋数値で記録</li>
+                    <li>割れ急増時点の接触面状態を正確に保存</li>
+                </ul>
+            </div>
+
+            <div class="wb-arrow" style="align-self:center; font-size:1.4em;">⇒</div>
+
+            <div
+                style="flex:1; min-width:150px; background:#fff; border:2px solid #27ae60; border-radius:6px; padding:10px;">
+                <div style="font-weight:bold; color:#1a6b3a; margin-bottom:6px;">💻 藤原：CAE逆算＋標準フォーマット作成 <span
+                        class="wb-tag" style="background:#27ae60; color:#fff; font-size:0.8em;">UPDATE</span></div>
+                <ul style="margin:0; padding-left:14px; font-size:0.9em;">
+                    <li>実測摩耗数値をAutoFormに入力</li>
+                    <li><strong>割れ急増の閾値摩耗量</strong>を数値で特定 [UUID:mt-001]</li>
+                    <li><strong>型摩耗パターン記録の標準フォーマット＋写真撮影基準を作成</strong></li>
+                    <li>写真の撮り方・測定位置・硬さ測定箇所を統一 → データが繋がる</li>
+                </ul>
+            </div>
+
+            <div class="wb-arrow" style="align-self:center; font-size:1.4em;">⇒</div>
+
+            <div
+                style="flex:1; min-width:150px; background:#fff; border:2px solid #e6a817; border-radius:6px; padding:10px;">
+                <div style="font-weight:bold; color:#7a5000; margin-bottom:6px;">🔍 村田：現場感覚で検証 <span class="wb-tag"
+                        style="background:#e6a817; color:#fff; font-size:0.8em;">UPDATE</span></div>
+                <ul style="margin:0; padding-left:14px; font-size:0.9em;">
+                    <li>加工経験から摩耗閾値の妥当性を確認</li>
+                    <li>初期ロット50個確認時に<strong>標準フォーマットで摩耗パターン判定</strong></li>
+                    <li>「このパターンが出たらメンテ」を現場で判断できる状態に</li>
+                </ul>
+            </div>
+
+            <div class="wb-arrow" style="align-self:center; font-size:1.4em;">⇒</div>
+
+            <div
+                style="flex:1; min-width:150px; background:#fff; border:2px solid #c0392b; border-radius:6px; padding:10px;">
+                <div style="font-weight:bold; color:#c0392b; margin-bottom:6px;">💴 中島：三点検証後にLCC計算 <span class="wb-tag"
+                        style="background:#c0392b; color:#fff; font-size:0.8em;">UPDATE</span></div>
+                <ul style="margin:0; padding-left:14px; font-size:0.9em;">
+                    <li><strong>現場感覚×実測×CAEの三つで検証</strong>してから入力</li>
+                    <li>「月産○個なら何日でメンテ必要」を確定</li>
+                    <li><strong>3工程 vs 4工程のLCC比較が成立</strong> [UUID:co-001]</li>
+                    <li>型メンテ周期の過小評価リスクを排除</li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 試作検証フレームワーク（更新） -->
+    <div class="wb-section"
+        style="margin-bottom:20px; border: 2px dashed #8e44ad; background:#fdf6ff; padding:14px; border-radius:6px;">
+        <div style="font-weight:bold; font-size:1em; margin-bottom:10px; color:#5a2d82;">🔬 試作検証フレームワーク（摩耗量閾値検証を明記）<span
+                class="wb-tag" style="background:#8e44ad; color:#fff; margin-left:8px;">UPDATE</span></div>
+        <table class="wb-table" style="width:100%; font-size:0.85em;">
+            <thead>
+                <tr>
+                    <th>検証フェーズ</th>
+                    <th>確認項目</th>
+                    <th>黒田：実測＋パターン記録</th>
+                    <th>藤原：CAE逆算＋標準フォーマット</th>
+                    <th>品質観点</th>
+                    <th>コスト観点（中島）</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>初期（型新品）</strong></td>
+                    <td>割れ位置・素材硬さ</td>
+                    <td>抜き面段差の初期値計測・接触面状態の写真記録（標準フォーマット適用）</td>
+                    <td>基準状態の成形性シミュレーション。フォーマット・撮影基準を確定</td>
+                    <td>基準値の設定</td>
+                    <td>初期サイクルタイム計測</td>
+                </tr>
+                <tr>
+                    <td><strong>中期（摩耗進行）</strong></td>
+                    <td>硬さ変化・割れ位置変化</td>
+                    <td>段差進行量を計測＋<strong>傷の進行パターンを写真＋数値で記録</strong></td>
+                    <td>段差0.1mm進行時の成形性変化を解析。パターン変化をCAEと照合</td>
+                    <td>品質変動の把握</td>
+                    <td>摩耗速度の定量化</td>
+                </tr>
+                <tr>
+                    <td><strong>後期（メンテ直前）</strong></td>
+                    <td>限界割れ発生条件</td>
+                    <td><strong>割れ急増時点の接触面状態を正確に記録</strong>（摩耗量＋パターン）</td>
+                    <td><strong>割れ急増の閾値摩耗量をCAEで逆算</strong>。実測パターンと照合 [UUID:mt-001]</td>
+                    <td>メンテ周期の決定</td>
+                    <td>停止コスト・交換費用の試算</td>
+                </tr>
+                <tr style="background:#fff9e6;">
+                    <td colspan="2"><strong>⇒ 摩耗量閾値の三点検証（中島提案）</strong></td>
+                    <td colspan="2"><strong>現場感覚（村田）× 実測（黒田）× CAE（藤原）</strong>で閾値を検証。標準フォーマットで記録を統一 → データが繋がる
+                        [UUID:mt-001]</td>
+                    <td>型寿命内の品質安定性</td>
+                    <td>ライフサイクルコスト総計 [UUID:co-001]</td>
+                </tr>
+                <tr style="background:#e8f5e9;">
+                    <td colspan="2"><strong>⇒ 初期ロット50個確認</strong></td>
+                    <td colspan="2">標準フォーマットで試作データと比較。「このパターンが出たらメンテ」の判断が根拠を持つ [UUID:pd-005]</td>
+                    <td>量産再現性の確認</td>
+                    <td>月産○個あたりのメンテ周期確定</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 下段：決定事項 / 未解決の問い / アクション -->
+    <div class="wb-grid-3">
+
+        <!-- 決定事項 -->
+        <div class="wb-section">
+            <div style="font-weight:bold; margin-bottom:8px; color:#2d6a2d;">✅ 合意・方針</div>
+            <div class="wb-decision" style="margin-bottom:8px;">
+                <strong>材質起点の逆算アプローチ</strong>を採用<br>
+                <small>SUS304の加工硬化特性を起点に工程数を設計する</small>
+            </div>
+            <div class="wb-decision" style="margin-bottom:8px;">
+                <strong>顧客仕様の先行確認</strong>が必須<br>
+                <small>設計図面と仕様書の突き合わせを最初のステップとする</small>
+            </div>
+            <div class="wb-decision" style="margin-bottom:8px;">
+                <strong>試作段階で冷却×成形性を実測</strong><br>
+                <small>型内滞在時間・サイクルタイムを実データで判断</small>
+            </div>
+            <div class="wb-decision" style="margin-bottom:8px; border-color:#8e44ad;">
+                <strong>試作検証は初期・中期・後期の3段階</strong>で実施<br>
+                <small>型を分解し抜き面段差を簡易ゲージで実測。摩耗量を数値化する [UUID:pd-005]</small>
+            </div>
+            <div class="wb-decision" style="margin-bottom:8px; border-color:#27ae60;">
+                <strong>実測摩耗数値＋CAEで閾値を逆算</strong><br>
+                <small>AutoFormで段差進行→成形性変化を解析し、割れ急増の摩耗量閾値を特定 [UUID:mt-001]</small>
+            </div>
+            <div class="wb-decision" style="margin-bottom:8px; border-color:#5a2d82;">
+                <strong>摩耗量だけでなく摩耗パターンも記録する</strong> <span class="wb-tag"
+                    style="background:#5a2d82; color:#fff;">NEW</span><br>
+                <small>どこの面がどう削れているか・傷の進行パターンを写真＋数値で残す。量産での「このパターンが出たらメンテ」判断の根拠になる</small>
+            </div>
+            <div class="wb-decision" style="margin-bottom:8px; border-color:#e6a817;">
+                <strong>摩耗量閾値は三点検証で確定する</strong> <span class="wb-tag"
+                    style="background:#e6a817; color:#fff;">NEW</span><br>
+                <small>現場感覚（村田）× 実測（黒田）× CAE（藤原）の三つで検証してからLCC計算に入力（中島提案）</small>
+            </div>
+            <div class="wb-decision" style="margin-bottom:8px; border-color:#27ae60;">
+                <strong>型摩耗パターン記録の標準フォーマット＋写真撮影基準を作成</strong> <span class="wb-tag"
+                    style="background:#27ae60; color:#fff;">NEW</span><br>
+                <small>写真の撮り方・測定位置・硬さ測定箇所を統一。試作データと初期ロット確認データが繋がる（藤原担当）</small>
+            </div>
+            <div class="wb-decision" style="border-color:#c0392b;">
+                <strong>工程案の最終判断はLCCで行う</strong><br>
+                <small>型寿命・停止時間・交換費用を含めたライフサイクルコストで比較。三点検証済みのメンテ判定基準が前提 [UUID:co-001]</small>
+            </div>
+        </div>
+
+        <!-- 未解決の問い -->
+        <div class="wb-section">
+            <div style="font-weight:bold; margin-bottom:8px; color:#a00;">❓ 未解決の問い</div>
+            <div class="wb-question" style="margin-bottom:8px;">
+                顧客の<strong>深さ公差・表面割れ許容基準</strong>は何か？<br>
+                <small>仕様書未確認。工程数・焼鈍有無に直結</small>
+            </div>
+            <div class="wb-question" style="margin-bottom:8px;">
+                <strong>中間焼鈍は必要か？</strong><br>
+                <small>加工硬化の進行度・工程数によって判断が変わる</small>
+            </div>
+            <div class="wb-question" style="margin-bottom:8px;">
+                <strong>最適工程数は3か4か？</strong><br>
+                <small>冷却時間・サイクルタイム・コストのトレードオフ未評価。LCC比較待ち</small>
+            </div>
+            <div class="wb-question" style="margin-bottom:8px;">
+                試作条件は<strong>量産で再現可能か？</strong><br>
+                <small>ロット安定性・型寿命の検証が未実施 [UUID:pd-005]</small>
+            </div>
+            <div class="wb-question" style="margin-bottom:8px;">
+                <strong>割れ急増の摩耗量閾値は何ミリか？</strong><br>
+                <small>CAE逆算と実測の両方で確認が必要。藤原のAutoForm解析待ち [UUID:mt-001]</small>
+            </div>
+            <div class="wb-question" style="margin-bottom:8px;">
+                <strong>3工程 vs 4工程で摩耗速度・摩耗パターンに差はあるか？</strong> <span class="wb-tag"
+                    style="background:#c0392b; color:#fff; font-size:0.8em;">UPDATE</span><br>
+                <small>摩耗量だけでなくパターンの違いも試作実測で確認が必要</small>
+            </div>
+            <div class="wb-question" style="margin-bottom:8px; border-color:#5a2d82;">
+                <span class="wb-tag" style="background:#5a2d82; color:#fff;">NEW</span>
+                <strong>標準フォーマットで記録した摩耗パターンは、量産での判断に十分な精度を持つか？</strong><br>
+                <small>フォーマット作成後に村田・安藤が実際に使って検証する必要がある</small>
+            </div>
+            <div class="wb-question" style="border-color:#c0392b;">
+                <strong>メンテ判定基準（段差何ミリ）と停止コストの試算は？</strong><br>
+                <small>LCC比較の前提となる数値がまだ存在しない。三点検証完了後に中島が試算 [UUID:co-001]</small>
+            </div>
+        </div>
+
+        <!-- アクション項目 -->
+        <div class="wb-section">
+            <div style="font-weight:bold; margin-bottom:8px; color:#555;">📋 アクション項目</div>
+            <div class="wb-card wb-card-green" style="margin-bottom:8px; padding:10px;">
+                <div class="wb-tag" style="background:#2d6a2d; color:#fff; margin-bottom:4px;">安藤</div>
+                <strong>顧客仕様書・設計図面の入手と確認</strong><br>
+                <small>公差・割れ検査基準・表面品質要求を整理</small>
+            </div>
+            <div class="wb-card wb-card-blue" style="margin-bottom:8px; padding:10px;">
+                <div class="wb-tag" style="background:#1a4a8a; color:#fff; margin-bottom:4px;">村田</div>
+                <strong>SUS304 t1.5の加工硬化限界を試算</strong><br>
+                <small>1工程あたりの絞り率上限・必要工程数の初期見積もり。初期ロット確認時の摩耗パターン判定も担当</small>
+            </div>
+            <div class="wb-card wb-card-purple" style="margin-bottom:8px; padding:10px;">
+                <div class="wb-tag" style="background:#5a2d82; color:#fff; margin-bottom:4px;">黒田</div>
+                <strong>初期・中期・後期の段階的検証計画を立案</strong><br>
+                <small>各段階で型を分解し、抜き面段差を簡易ゲージで実測。<strong>割れ急増時点の接触面状態（摩耗量＋パターン）を写真＋数値で記録</strong>する計画を策定</small>
+            </div>
+            <div class="wb-card wb-card-green" style="margin-bottom:8px; padding:10px; border:2px solid #27ae60;">
+                <div class="wb-tag" style="background:#27ae60; color:#fff; margin-bottom:4px;">藤原 UPDATE</div>
+                <strong>①AutoFormで摩耗段差→成形性変化のCAE解析を実施</strong><br>
+                <small>黒田の実測摩耗数値を入力し、割れ急増の閾値摩耗量を逆算 [UUID:mt-001]</small>
+                <hr style="border:none; border-top:1px dashed #aaa; margin:6px 0;">
+                <strong>②型摩耗パターン記録の標準フォーマット＋写真撮影基準を作成</strong> <span class="wb-tag"
+                    style="background:#27ae60; color:#fff; font-size:0.8em;">NEW</span><br>
+                <small>写真の撮り方・測定位置・硬さ測定箇所を統一。試作データと初期ロット確認データが繋がるようにする</small>
+            </div>
+            <div class="wb-card wb-card-red" style="padding:10px; border:2px solid #c0392b;">
+                <div class="wb-tag" style="background:#c0392b; color:#fff; margin-bottom:4px;">中島 UPDATE</div>
+                <strong>3工程 vs 4工程のLCC試算モデルを作成</strong><br>
+                <small>前提：<strong>現場感覚（村田）× 実測（黒田）× CAE（藤原）の三点検証で摩耗量閾値を確定してから入力</strong>。月間停止時間・交換費用を試算 [UUID:co-001]
+                    [UUID:pd-005]</small>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- フッター：キーリスク（更新） -->
+    <div
+        style="margin-top:20px; background:#fff3cd; border-left:5px solid #e6a817; padding:10px 16px; border-radius:4px; font-size:0.88em;">
+        ⚠️ <strong>主要リスク：</strong>
+        加工硬化による割れ（特に深絞り後半工程）／
+        <strong>試作→量産の条件再現性不足（型摩耗による条件変化）</strong> ／
+        熱伝導率の低さによるサイクルタイム超過 ／
+        仕様未確認のまま工程設計を進めることによる手戻り ／
+        <strong style="color:#c0392b;">型メンテ周期の過小評価によるLCC悪化</strong> ／
+        <strong style="color:#5a2d82;">摩耗量の数値だけ記録しパターンを残さないと量産での判断が人に依存する【新規】</strong> ／
+        <strong style="color:#27ae60;">写真・測定位置・硬さ測定箇所が統一されていないとデータが繋がらず試作→量産の比較が成立しない【新規】</strong> ／
+        実測のみでは内部摩耗が見えない → 型分解＋ゲージ実測＋CAE逆算＋<strong>標準フォーマットによる記録統一</strong>の四位一体が必要
+    </div>
+
+</div>

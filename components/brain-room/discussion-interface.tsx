@@ -731,6 +731,48 @@ export function DiscussionInterface({
               <div className="flex flex-wrap gap-2">
                 {appMode === "conference" ? (
                   <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs border-green-500 text-green-700 hover:bg-green-50"
+                      onClick={async () => {
+                        try {
+                          const [dataRes, wbRes] = await Promise.all([
+                            fetch("/preset-conferences/nedo-demo-sus304.json"),
+                            fetch("/preset-conferences/nedo-demo-sus304-whiteboard.html"),
+                          ])
+                          if (!dataRes.ok) throw new Error("Failed to load preset")
+                          const preset = await dataRes.json()
+                          const wbHtml = wbRes.ok ? await wbRes.text() : ""
+
+                          setTheme(preset.theme)
+                          setPurpose(preset.purpose)
+                          setMessages([])
+                          setWhiteboardHtml("")
+                          setStatus("running")
+
+                          // メッセージを一定間隔で1つずつ表示（アニメーション再生）
+                          const allMessages = preset.messages as any[]
+                          for (let i = 0; i < allMessages.length; i++) {
+                            await new Promise(r => setTimeout(r, 1500))
+                            setMessages(prev => [...prev, allMessages[i]])
+
+                            // 3ターンごと + 最終ターンでホワイトボードを表示
+                            if ((i > 0 && i % 3 === 2) || i === allMessages.length - 1) {
+                              setWhiteboardHtml(wbHtml)
+                            }
+                          }
+
+                          setStatus("finished")
+                          toast({ title: "再生完了", description: `${allMessages.length}ターンの会議を再生しました` })
+                        } catch (e) {
+                          toast({ title: "読込エラー", description: "プリセットの読み込みに失敗しました", variant: "destructive" })
+                          setStatus("idle")
+                        }
+                      }}
+                    >
+                      📋 NEDOデモ（再生）
+                    </Button>
                     {[
                       { label: "🎯 NEDOデモ", theme: "SUS304 t1.5 深絞り形状の工程設計方針", purpose: "新規受注案件（SUS304 t1.5 深絞り形状）の量産工程を確立するにあたり、加工硬化による割れリスクへの対策と、品質・コスト・納期を両立する工程設計方針を策定する。確認すべき論点と判断基準を洗い出したい。" },
                       { label: "工程構想", theme: "新規受注品（自動車ブラケット、590MPaハイテン t1.2mm、月産8,000個）の工程設計を構想する", purpose: "製品形状・材質・生産量から最適な工程順序・型方式・加工条件の方向性を決定する。品質・コスト・納期のバランスを考慮し、工程設計の骨格を固める。" },
