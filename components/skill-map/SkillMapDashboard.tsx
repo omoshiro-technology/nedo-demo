@@ -391,6 +391,33 @@ function SkillTooltip({ skillId, profile, position }: { skillId: string; profile
         {proficiency && proficiency.touchCount > 0 && (
           <div className="mt-2 text-sm text-slate-400 text-right">{proficiency.touchCount} 回のセッションで接触</div>
         )}
+        {proficiency?.levelUpEvidence && proficiency.levelUpEvidence.length > 0 && (
+          <div className="mt-3 pt-3 border-t border-emerald-200">
+            <div className="text-sm font-bold text-emerald-700 mb-2">レベルアップの根拠</div>
+            <div className="space-y-2">
+              {proficiency.levelUpEvidence.map((ev, i) => {
+                const sourceLabel: Record<string, string> = {
+                  brain_room_1shot: "BRAIN-Room",
+                  brain_room_conference: "BRAIN-Room 会議",
+                  compath_chat: "チャット",
+                  compath_decision_navigator: "意思決定キャンバス",
+                }
+                return (
+                  <div key={i} className="bg-emerald-50 rounded-lg border border-emerald-100 p-2.5">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-emerald-200 text-emerald-800">
+                        {sourceLabel[ev.source] ?? ev.source}
+                      </span>
+                      <span className="text-xs text-slate-400">{ev.sessionId}</span>
+                    </div>
+                    <div className="text-sm font-medium text-slate-700 mb-0.5">{ev.project}</div>
+                    <p className="text-xs text-slate-500 leading-relaxed">{ev.reason}</p>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
       </div>
       {!showBelow && (
         <div className="flex justify-center">

@@ -331,8 +331,48 @@ export function generateSeedData(): {
     ...fujiwaraAssessments(),
   ];
 
+  const tanakaProfile = buildProfile("tanaka-daiki", TANAKA_SKILLS_AFTER, allAssessments);
+
+  // 田中大輝のレベルアップ根拠を注入（デモ用）
+  const tanakaEvidence: Record<string, import("../../domain/skillMap/types").LevelUpEvidence[]> = {
+    "drawing-read": [
+      { source: "compath_chat", sessionId: "sess-tanaka-daiki-001", project: "図面の読み方を先輩AIに質問", reason: "顧客仕様書と設計図面の突き合わせの重要性を理解。安藤AIから「公差の意味を問い直す」観点を学んだ", date: date(50) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-004", project: "3工程vs4工程の判断を整理", reason: "顧客要求仕様から工程数を逆算する際、図面の暗黙の品質要求を読み取る力が向上", date: date(7) },
+    ],
+    "process-seq": [
+      { source: "brain_room_conference", sessionId: "sess-tanaka-daiki-002", project: "SUS304 t1.5 深絞り形状の工程設計方針", reason: "村田AIの「材質から工程数を逆算する」アプローチを学び、工程順序の設計思考を理解", date: date(14) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-004", project: "3工程vs4工程の判断を整理", reason: "工程数の選択がコスト・品質・納期に与える影響を構造的に整理できるようになった", date: date(7) },
+    ],
+    "cost-est": [
+      { source: "brain_room_conference", sessionId: "sess-tanaka-daiki-002", project: "SUS304 t1.5 深絞り形状の工程設計方針", reason: "中島AIの「3工程vs4工程のLCC比較」の考え方を学び、型費と加工費の全体最適を理解", date: date(14) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-004", project: "3工程vs4工程の判断を整理", reason: "ライフサイクルコストの構成要素（型費・メンテ費・停止コスト）を自分で整理できるようになった", date: date(7) },
+    ],
+    "press-forming": [
+      { source: "brain_room_1shot", sessionId: "sess-tanaka-daiki-000", project: "プレス加工の基礎を学ぶ", reason: "プレス成形の基本原理（絞り比、加工限界）を理解", date: date(60) },
+      { source: "brain_room_conference", sessionId: "sess-tanaka-daiki-002", project: "SUS304 t1.5 深絞り形状の工程設計方針", reason: "SUS304の加工硬化メカニズムと割れリスクの実務的な判断基準を学んだ", date: date(14) },
+    ],
+    "stainless": [
+      { source: "brain_room_conference", sessionId: "sess-tanaka-daiki-002", project: "SUS304 t1.5 深絞り形状の工程設計方針", reason: "SUS304の加工特性（加工硬化、熱伝導率の低さ、型のカジリリスク）を議論から吸収", date: date(14) },
+      { source: "compath_chat", sessionId: "sess-tanaka-daiki-003", project: "SUS304で中間焼鈍を入れるかどうかの判断基準を質問", reason: "中間焼鈍の要否判断基準（加工硬化率、工程間の板厚減少率）を具体的に学んだ", date: date(12) },
+    ],
+    "die-maint": [
+      { source: "compath_chat", sessionId: "sess-tanaka-daiki-003", project: "SUS304で中間焼鈍を入れるかどうかの判断基準を質問", reason: "黒田AIの「型摩耗の3段階検証」の考え方から、型メンテナンスの基本を理解", date: date(12) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-004", project: "3工程vs4工程の判断を整理", reason: "型摩耗速度とメンテナンス周期がLCCに与える影響を構造的に理解できるようになった", date: date(7) },
+    ],
+    "qc-method": [
+      { source: "compath_chat", sessionId: "sess-tanaka-daiki-003", project: "SUS304で中間焼鈍を入れるかどうかの判断基準を質問", reason: "安藤AIから「試作→量産の再現性」という品質管理の本質的な課題を学んだ", date: date(12) },
+      { source: "compath_decision_navigator", sessionId: "sess-tanaka-daiki-004", project: "3工程vs4工程の判断を整理", reason: "試作検証フレームワーク（初期・中期・後期の3段階）の品質管理手法を整理できた", date: date(7) },
+    ],
+  };
+
+  for (const [skillId, evidence] of Object.entries(tanakaEvidence)) {
+    if (tanakaProfile.proficiencies[skillId]) {
+      tanakaProfile.proficiencies[skillId].levelUpEvidence = evidence;
+    }
+  }
+
   const profiles = [
-    buildProfile("tanaka-daiki", TANAKA_SKILLS_AFTER, allAssessments),
+    tanakaProfile,
     buildProfile("murata-tetsuo", MURATA_SKILLS, allAssessments),
     buildProfile("nakajima-kota", NAKAJIMA_SKILLS, allAssessments),
     buildProfile("fujiwara-shota", FUJIWARA_SKILLS, allAssessments),

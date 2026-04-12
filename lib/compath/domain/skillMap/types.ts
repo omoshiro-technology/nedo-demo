@@ -136,6 +136,20 @@ export type SkillAssessment = {
 // スキルプロファイル（ユーザー単位の集約）
 // ============================================================
 
+/** レベルアップの根拠 */
+export type LevelUpEvidence = {
+  /** セッションソース (brain_room_conference, compath_decision_navigator, etc.) */
+  source: string;
+  /** セッションID */
+  sessionId: string;
+  /** プロジェクト名 / セッション目的 */
+  project: string;
+  /** レベルアップの理由 */
+  reason: string;
+  /** 日時 */
+  date: string;
+};
+
 /** スキル項目ごとの習熟状態 */
 export type SkillProficiency = {
   skillId: string;
@@ -147,6 +161,8 @@ export type SkillProficiency = {
   latestScores: ThoughtQualityScore | null;
   /** 最終アセスメント日時 */
   lastAssessedAt: string;
+  /** レベルアップの根拠（任意） */
+  levelUpEvidence?: LevelUpEvidence[];
 };
 
 /** ユーザーのスキルプロファイル */
