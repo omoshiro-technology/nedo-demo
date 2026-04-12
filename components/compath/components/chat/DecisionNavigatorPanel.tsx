@@ -65,6 +65,8 @@ type DecisionNavigatorPanelProps = {
   skipPastCasePanel?: boolean;
   /** 事前収集した条件（KnowledgeTransferQuestionCardで収集した条件） */
   preCollectedConditions?: KnowledgeTransferConditions;
+  /** プリセットセッション（LLM呼び出しをスキップし、このデータで直接表示） */
+  presetSession?: DecisionNavigatorSession | null;
 };
 
 export function DecisionNavigatorPanel({
@@ -76,6 +78,7 @@ export function DecisionNavigatorPanel({
   skipPreconditionModal = false, // 技術伝承デモ等で既に確認済みの場合はスキップ
   skipPastCasePanel = false, // 過去事例を参照せずに進む場合はパネルを非表示
   preCollectedConditions, // 事前収集した条件
+  presetSession,         // プリセットセッション
 }: DecisionNavigatorPanelProps) {
   // === セッション管理（カスタムフックに委譲） ===
   const {
@@ -124,6 +127,13 @@ export function DecisionNavigatorPanel({
     skipPreconditionModal,
     preCollectedConditions,
   });
+
+  // === プリセットセッション注入 ===
+  useEffect(() => {
+    if (presetSession && !session) {
+      setSession(presetSession);
+    }
+  }, [presetSession]);
 
   // === 従来UI状態（Phase 5が無効な場合のフォールバック用） ===
   const [pendingNodeForRationale, setPendingNodeForRationale] =

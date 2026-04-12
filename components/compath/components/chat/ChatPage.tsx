@@ -79,7 +79,8 @@ export default function ChatPage({
     isOpen: boolean;
     initialData?: { purpose: string; currentSituation: string };
     skipPreconditionModal?: boolean;
-    skipPastCasePanel?: boolean;  // 過去事例パネルをスキップ（過去事例を参照せずに進む場合）
+    skipPastCasePanel?: boolean;
+    presetSession?: any;
   } | null>(null);
 
   // ドキュメントビューアーパネルの状態
@@ -720,6 +721,38 @@ ${decision.content}${ambiguityText}${guidanceText}`;
             onSelectAgent={handleAgentSelect}
             onSubmit={handleAgentSubmit}
           />
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "16px" }}>
+            <button
+              onClick={async () => {
+                try {
+                  const res = await fetch("/preset-conferences/nedo-demo-decision-session.json");
+                  if (!res.ok) return;
+                  const presetData = await res.json();
+                  setDnSidePanel({
+                    isOpen: true,
+                    initialData: { purpose: presetData.purpose, currentSituation: "" },
+                    skipPreconditionModal: true,
+                    skipPastCasePanel: true,
+                    presetSession: presetData,
+                  });
+                } catch (e) {
+                  console.error("Failed to load preset:", e);
+                }
+              }}
+              style={{
+                padding: "8px 20px",
+                borderRadius: "8px",
+                border: "1px solid #1f7a6d",
+                backgroundColor: "#e8f1f0",
+                color: "#1f7a6d",
+                fontSize: "14px",
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
+            >
+              📋 NEDOデモ（意思決定キャンバス）
+            </button>
+          </div>
         </div>
       ) : dnSidePanel?.isOpen ? (
         // 意思決定ナビゲーター全画面
@@ -731,6 +764,7 @@ ${decision.content}${ambiguityText}${guidanceText}`;
           skipPreconditionModal={dnSidePanel.skipPreconditionModal}
           skipPastCasePanel={dnSidePanel.skipPastCasePanel}
           preCollectedConditions={ktConditions}
+          presetSession={dnSidePanel.presetSession}
         />
       ) : (
         // 通常のチャット画面
