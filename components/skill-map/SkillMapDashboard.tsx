@@ -346,7 +346,8 @@ function SkillTooltip({ skillId, profile, position }: { skillId: string; profile
   const categoryName = SKILL_CATEGORIES.find((c) => c.id === skill.categoryId)?.name ?? ""
 
   const TT_BG: Record<SkillLevel, string> = { 1: "bg-slate-50 border-slate-200", 2: "bg-sky-50 border-sky-200", 3: "bg-sky-50 border-sky-300", 4: "bg-indigo-50 border-indigo-200" }
-  const hasEvidence = (proficiency?.levelUpEvidence?.length ?? 0) > 0
+  const evidence = proficiency?.levelUpEvidence?.filter(ev => ev.source === "compath_decision_navigator") ?? []
+  const hasEvidence = evidence.length > 0
 
   // 画面上部にスペースが足りなければ下方向に表示
   const showBelow = position.y < 350
@@ -359,7 +360,7 @@ function SkillTooltip({ skillId, profile, position }: { skillId: string; profile
           <div className="w-2.5 h-2.5 bg-white border-t border-l border-slate-200 rotate-45 mb-[-6px]" />
         </div>
       )}
-      <div className={`bg-white rounded-xl shadow-lg border border-slate-200 p-5 ${hasEvidence ? "w-[720px]" : "w-[420px]"}`}>
+      <div className={`bg-white rounded-xl shadow-lg border border-slate-200 p-5 ${hasEvidence ? "w-[820px]" : "w-[420px]"}`}>
         <div className="flex items-center justify-between gap-3 mb-3">
           <div>
             <div className="text-sm text-slate-400">{categoryName}</div>
@@ -396,29 +397,15 @@ function SkillTooltip({ skillId, profile, position }: { skillId: string; profile
             )}
           </div>
           {hasEvidence && (
-            <div className="w-[270px] shrink-0 border-l border-emerald-200 pl-4">
-              <div className="text-sm font-bold text-emerald-700 mb-2">履歴</div>
+            <div className="w-[370px] shrink-0 border-l border-emerald-200 pl-4">
+              <div className="text-sm font-bold text-emerald-700 mb-2">履歴（意思決定キャンバス）</div>
               <div className="space-y-2 max-h-[350px] overflow-y-auto">
-                {proficiency!.levelUpEvidence!.map((ev, i) => {
-                  const sourceLabel: Record<string, string> = {
-                    brain_room_1shot: "BRAIN-Room",
-                    brain_room_conference: "BRAIN-Room 会議",
-                    compath_chat: "チャット",
-                    compath_decision_navigator: "意思決定キャンバス",
-                  }
-                  return (
-                    <div key={i} className="bg-emerald-50 rounded-lg border border-emerald-100 p-2.5">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-emerald-200 text-emerald-800">
-                          {sourceLabel[ev.source] ?? ev.source}
-                        </span>
-                        <span className="text-xs text-slate-400">{ev.sessionId}</span>
-                      </div>
-                      <div className="text-sm font-medium text-slate-700 mb-0.5">{ev.project}</div>
-                      <p className="text-xs text-slate-500 leading-relaxed">{ev.reason}</p>
-                    </div>
-                  )
-                })}
+                {evidence.map((ev, i) => (
+                  <div key={i} className="bg-emerald-50 rounded-lg border border-emerald-100 p-2.5">
+                    <div className="text-sm font-medium text-slate-700 mb-0.5">{ev.project}</div>
+                    <p className="text-xs text-slate-500 leading-relaxed">{ev.reason}</p>
+                  </div>
+                ))}
               </div>
             </div>
           )}
