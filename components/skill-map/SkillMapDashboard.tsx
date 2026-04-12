@@ -347,8 +347,17 @@ function SkillTooltip({ skillId, profile, position }: { skillId: string; profile
 
   const TT_BG: Record<SkillLevel, string> = { 1: "bg-slate-50 border-slate-200", 2: "bg-sky-50 border-sky-200", 3: "bg-sky-50 border-sky-300", 4: "bg-indigo-50 border-indigo-200" }
 
+  // 画面上部にスペースが足りなければ下方向に表示
+  const showBelow = position.y < 350
+
   return (
-    <div className="fixed z-50 pointer-events-none" style={{ left: `${position.x}px`, top: `${position.y}px`, transform: "translate(-50%, -100%)" }}>
+    <div className="fixed z-50 pointer-events-none" style={{ left: `${position.x}px`, top: `${position.y}px`, transform: showBelow ? "translate(-50%, 16px)" : "translate(-50%, -100%)" }}>
+      {/* 下向き表示のとき矢印を上に */}
+      {showBelow && (
+        <div className="flex justify-center">
+          <div className="w-2.5 h-2.5 bg-white border-t border-l border-slate-200 rotate-45 mb-[-6px]" />
+        </div>
+      )}
       <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-5 w-[420px]">
         <div className="flex items-center justify-between gap-3 mb-3">
           <div>
@@ -383,9 +392,11 @@ function SkillTooltip({ skillId, profile, position }: { skillId: string; profile
           <div className="mt-2 text-sm text-slate-400 text-right">{proficiency.touchCount} 回のセッションで接触</div>
         )}
       </div>
-      <div className="flex justify-center">
-        <div className="w-2.5 h-2.5 bg-white border-b border-r border-slate-200 rotate-45 -mt-[6px]" />
-      </div>
+      {!showBelow && (
+        <div className="flex justify-center">
+          <div className="w-2.5 h-2.5 bg-white border-b border-r border-slate-200 rotate-45 -mt-[6px]" />
+        </div>
+      )}
     </div>
   )
 }
