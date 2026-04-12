@@ -1,12 +1,13 @@
 /**
  * スキルマップ サンプルデータ
  *
- * デモ用に3名分のスキルプロファイルを生成する。
+ * デモ用に4名分のスキルプロファイルを生成する。
  * 新スキルカタログ（9カテゴリ x 8項目 = 72項目）に対応。
  *
- * 村田 鉄男 — ベテラン（38年）: 加工・工程設計・金型は高い、顧客要求・生産管理は中程度
+ * 村田 鉄男 — ベテラン（38年）: 加工・工程設計・金型は高い、顧客要求・生産管理は中程度（ハイパ��ォーマー）
  * 中島 康太 — 中堅（12年）: 生産管理・顧客要求寄り、加工技術は中程度
  * 藤原 翔太 — 若手（3年）: シミュレーション・加工中心、他は成長途上
+ * 田中 大輝 — 新人（2年目）: BRAIN-Roomを使って学習中。デモの主人公（ビフォーアフター対象）
  */
 
 import type {
@@ -25,6 +26,7 @@ import { SKILL_DEFINITIONS } from "../../domain/skillMap/skillCatalog";
 // ============================================================
 
 export const SAMPLE_USERS = [
+  { id: "tanaka-daiki", name: "田中 大輝", role: "工程設計見習い（2年目）" },
   { id: "murata-tetsuo", name: "村田 鉄男", role: "ベテラン工程設計者（38年）" },
   { id: "nakajima-kota", name: "中島 康太", role: "生産技術マネージャー（12年）" },
   { id: "fujiwara-shota", name: "藤原 翔太", role: "若手CAEエンジニア（3年）" },
@@ -138,6 +140,47 @@ const FUJIWARA_SKILLS: SkillLevelMap = {
 };
 
 // ============================================================
+// 田中 大輝 — 新人（2年目・デモ主人公）
+//
+// BRAIN-Roomを使って学習中。ほぼ全てLv.1からスタート。
+// SUS304深絞りの議論を経て、工程設計・素材・金型の基礎がLv.1→Lv.2に成長。
+// ============================================================
+
+const TANAKA_SKILLS_BEFORE: SkillLevelMap = {
+  // 顧客要求・仕様把握
+  "req-spec": 1, "part-usage": 1, "drawing-read": 1, "customer-negotiation": 1, "industry-standard": 1, "quotation": 1, "delivery-coord": 1, "needs-analysis": 1,
+  // 生産管理
+  "production-plan": 1, "process-control": 1, "inventory-mgmt": 1, "cost-control": 1, "delivery-mgmt": 1, "outsource-mgmt": 1, "productivity": 1, "work-standard": 1,
+  // 工程設計
+  "process-seq": 1, "tolerance": 1, "cost-est": 1, "process-fmea": 1, "jig-fixture": 1, "line-layout": 1, "cycle-time": 1, "dfa-dfm": 1,
+  // 加工技術
+  "press-forming": 1, "springback": 1, "welding": 1, "machining": 1, "surface-treat": 1, "assembly": 1, "grinding": 1, "bending": 1,
+  // 金型・工法開発
+  "die-design": 1, "die-structure": 1, "process-dev": 1, "tryout": 1, "forming-sim": 1, "method-eval": 1, "prototyping": 1, "die-material": 1,
+  // 品質管理
+  "qc-method": 1, "inspection": 1, "troubleshoot": 1, "measurement": 1, "supplier-quality": 1, "reliability": 1, "audit": 1, "spc": 1,
+  // 保守・保全
+  "preventive-maint": 1, "equip-diag": 1, "die-maint": 1, "automation": 1, "plc-control": 1, "daily-inspect": 1, "equip-eval": 1, "energy-mgmt": 1,
+  // 素材・材料
+  "steel": 1, "aluminum": 1, "stainless": 1, "copper": 1, "polymer": 1, "heat-treat": 1, "corrosion": 1, "material-test": 1,
+  // 安全・環境
+  "occupational-safety": 1, "env-regulation": 1, "waste-mgmt": 1, "chemical-mgmt": 1, "ergonomics": 1, "risk-assessment": 1, "emergency": 1, "five-s": 1,
+};
+
+// BRAIN-Room議論後にスキルアップした結果（ビフォーアフターの「After」）
+const TANAKA_SKILLS_AFTER: SkillLevelMap = {
+  ...TANAKA_SKILLS_BEFORE,
+  // SUS304深絞り議論で成長した領域
+  "drawing-read": 2,     // 顧客仕様確認の重要性を学んだ
+  "process-seq": 2,      // 工程数の逆算アプローチを理解
+  "cost-est": 2,         // 3工程vs4工程のコスト比較の考え方
+  "press-forming": 2,    // 加工硬化と割れリスクの基礎
+  "stainless": 2,        // SUS304の特性を学んだ
+  "die-maint": 2,        // 型摩耗管理の基本を知った
+  "qc-method": 2,        // 試作→量産の品質再現性の考え方
+};
+
+// ============================================================
 // アセスメント生成
 // ============================================================
 
@@ -207,6 +250,20 @@ function fujiwaraAssessments(): SkillAssessment[] {
   ]);
 }
 
+function tanakaAssessments(): SkillAssessment[] {
+  return makeAssessments("tanaka-daiki", TANAKA_SKILLS_AFTER, [
+    // 入社直後：基礎研修でBRAIN-Roomを体験
+    { source: "brain_room_1shot", purpose: "プレス加工の基礎を学ぶ", tq: tq(15, 10, 8, 12, qcdes(false, false, false, false, false)), skills: ["press-forming", "steel", "drawing-read"], daysAgo: 60 },
+    { source: "compath_chat", purpose: "図面の読み方を先輩AIに質問", tq: tq(18, 12, 10, 15, qcdes(true, false, false, false, false)), skills: ["drawing-read", "tolerance", "req-spec"], daysAgo: 50 },
+    // SUS304深絞り案件：BRAIN-Roomの議論を閲覧
+    { source: "brain_room_conference", purpose: "SUS304 t1.5 深絞り形状の工程設計方針", tq: tq(25, 20, 15, 22, qcdes(true, true, false, false, false)), skills: ["press-forming", "stainless", "process-seq", "cost-est"], daysAgo: 14 },
+    // 議論を見た後にチャットで質問
+    { source: "compath_chat", purpose: "SUS304で中間焼鈍を入れるかどうかの判断基準を質問", tq: tq(32, 28, 22, 30, qcdes(true, true, true, false, false)), skills: ["stainless", "process-seq", "die-maint", "qc-method"], daysAgo: 12 },
+    // 意思決定キャンバスで自分の判断を構造化
+    { source: "compath_decision_navigator", purpose: "3工程vs4工程の判断を整理", tq: tq(38, 35, 28, 35, qcdes(true, true, true, false, true)), skills: ["process-seq", "cost-est", "drawing-read", "press-forming", "qc-method", "die-maint", "stainless"], daysAgo: 7 },
+  ]);
+}
+
 // ============================================================
 // プロファイル構築
 // ============================================================
@@ -268,12 +325,14 @@ export function generateSeedData(): {
   profiles: SkillProfile[];
 } {
   const allAssessments = [
+    ...tanakaAssessments(),
     ...murataAssessments(),
     ...nakajimaAssessments(),
     ...fujiwaraAssessments(),
   ];
 
   const profiles = [
+    buildProfile("tanaka-daiki", TANAKA_SKILLS_AFTER, allAssessments),
     buildProfile("murata-tetsuo", MURATA_SKILLS, allAssessments),
     buildProfile("nakajima-kota", NAKAJIMA_SKILLS, allAssessments),
     buildProfile("fujiwara-shota", FUJIWARA_SKILLS, allAssessments),

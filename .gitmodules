@@ -1,0 +1,3 @@
+[submodule "yokogushi-ai"]
+	path = yokogushi-ai
+	url = https://github.com/omoshiro-technology/yokogushi-ai.git
