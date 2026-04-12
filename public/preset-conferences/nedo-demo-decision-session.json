@@ -187,6 +187,20 @@
         "primary": {
           "type": "past_case",
           "text": "L19-054321: SPCC t1.0で3工程採用→量産3ヶ月後に不良率5%上昇、対応コスト型費削減の3倍"
+        },
+        "qcdesImpact": {
+          "quality": {
+            "impact": "negative",
+            "description": "加工硬化集中で不良率2%以上のリスク"
+          },
+          "cost": {
+            "impact": "positive",
+            "description": "型費25%削減（約200万円）"
+          },
+          "delivery": {
+            "impact": "neutral",
+            "description": "工程数減だがサイクルタイムは悪化の可能性"
+          }
         }
       },
       "position": {
@@ -221,7 +235,23 @@
       "lane": 2,
       "depth": 0,
       "rationale": "4工程焼鈍なしの方がトータル有利。",
-      "createdAt": "2026-04-10T09:10:00Z"
+      "createdAt": "2026-04-10T09:10:00Z",
+      "structuredRationale": {
+        "qcdesImpact": {
+          "quality": {
+            "impact": "neutral",
+            "description": "焼鈍で加工硬化リセットするが寸法変動リスク"
+          },
+          "cost": {
+            "impact": "negative",
+            "description": "焼鈍コスト増＋型補正費用"
+          },
+          "delivery": {
+            "impact": "negative",
+            "description": "焼鈍工程で納期2日増"
+          }
+        }
+      }
     },
     {
       "id": "t1a1",
@@ -253,7 +283,21 @@
             "give": "焼鈍による安全マージンを放棄",
             "get": "寸法精度安定、コスト削減、納期短縮"
           }
-        ]
+        ],
+        "qcdesImpact": {
+          "quality": {
+            "impact": "positive",
+            "description": "焼鈍の寸法変動リスクを排除し寸法精度が安定"
+          },
+          "cost": {
+            "impact": "positive",
+            "description": "焼鈍コスト（1工程+α）と納期2日分を削減"
+          },
+          "delivery": {
+            "impact": "positive",
+            "description": "焼鈍工程分の納期2日短縮"
+          }
+        }
       },
       "position": {
         "x": 2070,
@@ -286,7 +330,23 @@
       "lane": 1,
       "depth": 1,
       "rationale": "撤退基準：型補正±0.2mm超で焼鈍に切替。安全だがコスト増。",
-      "createdAt": "2026-04-10T09:13:00Z"
+      "createdAt": "2026-04-10T09:13:00Z",
+      "structuredRationale": {
+        "qcdesImpact": {
+          "quality": {
+            "impact": "positive",
+            "description": "加工硬化を完全リセットし後工程の安全性向上"
+          },
+          "cost": {
+            "impact": "negative",
+            "description": "焼鈍コスト＋寸法補正の型調整費"
+          },
+          "delivery": {
+            "impact": "negative",
+            "description": "納期2日増"
+          }
+        }
+      }
     },
     {
       "id": "c2",
@@ -381,7 +441,23 @@
       "hasPastCase": true,
       "pastCaseCount": 1,
       "rationale": "類似実績少なく流用するとズレが大きい。計画外停止リスク。",
-      "createdAt": "2026-04-10T09:25:00Z"
+      "createdAt": "2026-04-10T09:25:00Z",
+      "structuredRationale": {
+        "qcdesImpact": {
+          "quality": {
+            "impact": "negative",
+            "description": "メンテ周期の精度が低く計画外停止リスク"
+          },
+          "cost": {
+            "impact": "positive",
+            "description": "検証費用を削減"
+          },
+          "delivery": {
+            "impact": "positive",
+            "description": "検証期間を短縮し早期量産"
+          }
+        }
+      }
     },
     {
       "id": "t2a1",
@@ -413,7 +489,21 @@
             "type": "business_value",
             "text": "データとして残すことで判断が人に依存しなくなり、再現性が担保される。"
           }
-        ]
+        ],
+        "qcdesImpact": {
+          "quality": {
+            "impact": "positive",
+            "description": "三方向検証で閾値の信頼性向上。見落としリスク低減"
+          },
+          "cost": {
+            "impact": "negative",
+            "description": "三方向の検証工数がCAE単独より増加"
+          },
+          "delivery": {
+            "impact": "negative",
+            "description": "検証期間が1〜2週間延長"
+          }
+        }
       },
       "position": {
         "x": 1550,
@@ -446,7 +536,23 @@
       "lane": 1,
       "depth": 2,
       "rationale": "CAE単独ではSUS304の材料ロット変動を反映不可。過去に予測と実測が乖離した事例あり。",
-      "createdAt": "2026-04-10T09:28:00Z"
+      "createdAt": "2026-04-10T09:28:00Z",
+      "structuredRationale": {
+        "qcdesImpact": {
+          "quality": {
+            "impact": "negative",
+            "description": "材料ロット変動を反映できず閾値精度に不安"
+          },
+          "cost": {
+            "impact": "positive",
+            "description": "検証コスト最小"
+          },
+          "delivery": {
+            "impact": "positive",
+            "description": "最短で閾値設定可能"
+          }
+        }
+      }
     },
     {
       "id": "a2a1",
@@ -469,7 +575,23 @@
       "depth": 3,
       "rationale": "経験値ベースの目安設定（定量基準なし）では担当者不在時に基準が消失する。全コスト要素を定量化した比較表があれば、工程方針の最終判断が数字で下せ、属人化を排除できる。",
       "createdAt": "2026-04-10T09:31:00Z",
-      "selectedAt": "2026-04-10T09:33:00Z"
+      "selectedAt": "2026-04-10T09:33:00Z",
+      "structuredRationale": {
+        "qcdesImpact": {
+          "quality": {
+            "impact": "neutral",
+            "description": "直接の品質影響なし（検証精度は上流で担保）"
+          },
+          "cost": {
+            "impact": "positive",
+            "description": "全コスト要素を可視化し無駄な支出を抑制"
+          },
+          "delivery": {
+            "impact": "neutral",
+            "description": "比較表作成自体は1〜2日で完了"
+          }
+        }
+      }
     },
     {
       "id": "c3",
@@ -573,7 +695,23 @@
       "hasPastCase": true,
       "pastCaseCount": 1,
       "rationale": "L23-091876で簡易検証→対応コスト検証費用8倍の実績。",
-      "createdAt": "2026-04-10T09:40:00Z"
+      "createdAt": "2026-04-10T09:40:00Z",
+      "structuredRationale": {
+        "qcdesImpact": {
+          "quality": {
+            "impact": "negative",
+            "description": "中期の摩耗進行を見逃し品質劣化リスク"
+          },
+          "cost": {
+            "impact": "positive",
+            "description": "検証費用を大幅削減"
+          },
+          "delivery": {
+            "impact": "positive",
+            "description": "量産開始を4週間前倒し"
+          }
+        }
+      }
     },
     {
       "id": "t3a1",
@@ -598,7 +736,21 @@
       "createdAt": "2026-04-10T09:43:00Z",
       "selectedAt": "2026-04-10T09:44:00Z",
       "structuredRationale": {
-        "summary": "担当者判断は属人化リスク。標準フォーマットなら記録が統一され、誰が見ても同じ判断ができる。データの連続性も確保。"
+        "summary": "担当者判断は属人化リスク。標準フォーマットなら記録が統一され、誰が見ても同じ判断ができる。データの連続性も確保。",
+        "qcdesImpact": {
+          "quality": {
+            "impact": "positive",
+            "description": "記録統一で試作→量産のデータ連続性確保。品質判断の再現性向上"
+          },
+          "cost": {
+            "impact": "negative",
+            "description": "フォーマット作成・教育の初期コスト"
+          },
+          "delivery": {
+            "impact": "negative",
+            "description": "フォーマット策定に1週間程度"
+          }
+        }
       }
     },
     {
@@ -620,7 +772,23 @@
       "lane": 1,
       "depth": 3,
       "rationale": "量産で「あのときの感覚ってどうだったっけ」と判断が人に依存してしまう。",
-      "createdAt": "2026-04-10T09:43:00Z"
+      "createdAt": "2026-04-10T09:43:00Z",
+      "structuredRationale": {
+        "qcdesImpact": {
+          "quality": {
+            "impact": "negative",
+            "description": "属人化で担当者不在時に判断基準消失"
+          },
+          "cost": {
+            "impact": "positive",
+            "description": "フォーマット作成・教育コスト不要"
+          },
+          "delivery": {
+            "impact": "positive",
+            "description": "即座に運用開始可能"
+          }
+        }
+      }
     },
     {
       "id": "a3a1",
@@ -643,7 +811,23 @@
       "depth": 4,
       "rationale": "データの連続性が確認できて初めて量産移行の根拠が成立。ゲート判定のないまま量産に入るリスクを排除。",
       "createdAt": "2026-04-10T09:45:00Z",
-      "selectedAt": "2026-04-10T09:46:00Z"
+      "selectedAt": "2026-04-10T09:46:00Z",
+      "structuredRationale": {
+        "qcdesImpact": {
+          "quality": {
+            "impact": "positive",
+            "description": "ゲート判定で品質未達のまま量産移行するリスクを排除"
+          },
+          "cost": {
+            "impact": "negative",
+            "description": "初期ロット50個分の試作費用"
+          },
+          "delivery": {
+            "impact": "negative",
+            "description": "初期ロット検証に1〜2週間"
+          }
+        }
+      }
     },
     {
       "id": "outcome-1",
@@ -685,7 +869,23 @@
       "depth": 2,
       "rationale": "潤滑条件を固定しないと、割れが型摩耗由来か潤滑不良由来か切り分けられない。固定条件での試作データがあれば、量産での異常原因を即座に特定できる。条件を固定しない場合との差は原因切り分けの速度。",
       "createdAt": "2026-04-10T09:15:00Z",
-      "selectedAt": "2026-04-10T09:16:00Z"
+      "selectedAt": "2026-04-10T09:16:00Z",
+      "structuredRationale": {
+        "qcdesImpact": {
+          "quality": {
+            "impact": "positive",
+            "description": "潤滑変数を排除し割れ原因の因果関係を明確化"
+          },
+          "cost": {
+            "impact": "neutral",
+            "description": "追加コストは潤滑条件の記録管理のみ"
+          },
+          "delivery": {
+            "impact": "neutral",
+            "description": "試作工程内で実施、追加日数なし"
+          }
+        }
+      }
     },
     {
       "id": "sub2a1",
@@ -712,7 +912,23 @@
       "depth": 4,
       "rationale": "経験値ベースの目安（定量基準なし）では担当者交代時に基準が消失し、量産でメンテ判断が揺らぐ。摩耗量○mmという数値基準があれば誰でも同じ判断ができ、LCC計算の入力値も確定する。",
       "createdAt": "2026-04-10T09:34:00Z",
-      "selectedAt": "2026-04-10T09:35:00Z"
+      "selectedAt": "2026-04-10T09:35:00Z",
+      "structuredRationale": {
+        "qcdesImpact": {
+          "quality": {
+            "impact": "positive",
+            "description": "メンテ判定が数値化され、型交換タイミングの精度向上"
+          },
+          "cost": {
+            "impact": "positive",
+            "description": "最適なメンテ周期で過剰交換・遅延交換を防止"
+          },
+          "delivery": {
+            "impact": "neutral",
+            "description": "基準策定自体の日数影響は軽微"
+          }
+        }
+      }
     },
     {
       "id": "sub2a2",
@@ -733,7 +949,23 @@
       "lane": 1,
       "depth": 4,
       "rationale": "量産で『あのときの感覚ってどうだったっけ』と判断が人に依存してしまう。",
-      "createdAt": "2026-04-10T09:34:00Z"
+      "createdAt": "2026-04-10T09:34:00Z",
+      "structuredRationale": {
+        "qcdesImpact": {
+          "quality": {
+            "impact": "negative",
+            "description": "担当者交代で基準消失し判断が揺らぐ"
+          },
+          "cost": {
+            "impact": "positive",
+            "description": "基準策定の工数不要"
+          },
+          "delivery": {
+            "impact": "positive",
+            "description": "即座に設定可能"
+          }
+        }
+      }
     },
     {
       "id": "sub3a1",
@@ -760,7 +992,23 @@
       "depth": 5,
       "rationale": "段差数値のみの判定では型内部の微細な摩耗パターン（面の削れ方、傷の進行方向）を見落とす。写真+数値のパター��判定なら数値だけでは捉えられない劣化兆候を早期発見でき、計画外停止を防げる。",
       "createdAt": "2026-04-10T09:47:00Z",
-      "selectedAt": "2026-04-10T09:48:00Z"
+      "selectedAt": "2026-04-10T09:48:00Z",
+      "structuredRationale": {
+        "qcdesImpact": {
+          "quality": {
+            "impact": "positive",
+            "description": "パターン判定で数値だけでは捉えられない微細劣化を早期発見"
+          },
+          "cost": {
+            "impact": "negative",
+            "description": "写真撮影・パターン分析の工数増"
+          },
+          "delivery": {
+            "impact": "neutral",
+            "description": "検証工程内で同時実施"
+          }
+        }
+      }
     },
     {
       "id": "sub3a2",
@@ -781,7 +1029,23 @@
       "lane": 1,
       "depth": 5,
       "rationale": "抜き面や絞り面の微細な摩耗がどこまで進んでるかが見えない。",
-      "createdAt": "2026-04-10T09:47:00Z"
+      "createdAt": "2026-04-10T09:47:00Z",
+      "structuredRationale": {
+        "qcdesImpact": {
+          "quality": {
+            "impact": "negative",
+            "description": "微細な摩耗パターンを見落とすリスク"
+          },
+          "cost": {
+            "impact": "positive",
+            "description": "写真撮影・分析工数を削減"
+          },
+          "delivery": {
+            "impact": "positive",
+            "description": "記録工数削減で検証短縮"
+          }
+        }
+      }
     }
   ],
   "edges": [
