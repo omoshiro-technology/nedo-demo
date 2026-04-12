@@ -789,19 +789,30 @@ ${decision.content}${ambiguityText}${guidanceText}`;
                     <div style={{ marginTop: "16px" }}>
                       <button
                         onClick={async () => {
+                          console.log("[Preset] Button clicked");
                           try {
                             const res = await fetch("/preset-conferences/nedo-demo-decision-session.json");
-                            if (!res.ok) return;
+                            console.log("[Preset] Fetch response:", res.status);
+                            if (!res.ok) {
+                              console.error("[Preset] Fetch failed:", res.status);
+                              alert("プリセット読込失敗: " + res.status);
+                              return;
+                            }
                             const presetData = await res.json();
-                            setDnSidePanel({
+                            console.log("[Preset] Data loaded, nodes:", presetData.nodes?.length);
+                            const panelState = {
                               isOpen: true,
-                              initialData: { purpose: presetData.purpose, currentSituation: "" },
+                              initialData: { purpose: presetData.purpose || "", currentSituation: "" },
                               skipPreconditionModal: true,
                               skipPastCasePanel: true,
                               presetSession: presetData,
-                            });
+                            };
+                            console.log("[Preset] Setting dnSidePanel:", panelState.isOpen);
+                            setDnSidePanel(panelState);
+                            console.log("[Preset] setDnSidePanel called");
                           } catch (e) {
-                            console.error("Failed to load preset:", e);
+                            console.error("[Preset] Error:", e);
+                            alert("プリセット読込エラー: " + (e as Error).message);
                           }
                         }}
                         style={{
