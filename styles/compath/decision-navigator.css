@@ -2764,7 +2764,7 @@
 }
 
 .dn-popover__title {
-  font-size: 0.9rem;
+  font-size: 1.1rem;
   font-weight: 600;
   margin: 0;
   color: var(--ink);
@@ -6210,7 +6210,7 @@
 }
 
 .dn-popover__why-summary {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   line-height: 1.6;
   color: var(--ink);
   margin: 0 0 8px;
@@ -6295,7 +6295,7 @@
 }
 
 .dn-popover__risk-tag-desc {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   color: var(--ink);
   line-height: 1.4;
   margin: 0;

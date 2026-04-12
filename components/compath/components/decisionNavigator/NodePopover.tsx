@@ -164,8 +164,8 @@ export function NodePopover({
   if (!node || !isOpen || !position) return null;
 
   // ポップオーバーの位置を計算（ノードの右側に表示、画面端の場合は調整）
-  const popoverWidth = 320;
-  const popoverHeight = 320;
+  const popoverWidth = 480;
+  const popoverHeight = 400;
   const margin = 16;
 
   let left = position.x + margin;

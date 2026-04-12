@@ -68,8 +68,8 @@
       "lane": 0,
       "depth": -1,
       "position": {
-        "x": -84,
-        "y": 572
+        "x": 50,
+        "y": 860
       },
       "createdAt": "2026-04-10T09:00:00Z"
     },
@@ -82,8 +82,8 @@
       "status": "selected",
       "isRecommended": true,
       "position": {
-        "x": 336,
-        "y": 104
+        "x": 1030,
+        "y": 310
       },
       "parentId": null,
       "childIds": [
@@ -119,7 +119,7 @@
         "howThisHelps": "4工程に分散することで各工程の成形量を抑え、加工硬化を段階的に進行させる。割れ発生の閾値を大幅に下回り、不良率を0.3%に低減。"
       },
       "structuredRationale": {
-        "summary": "型費増200万円を不良コスト年間削減300万円で1年以内に回収。品質安定とサイクルタイム改善を同時に実現する最もバランスの取れた選択。",
+        "summary": "3工程は不良率リスク、焼鈍は寸法変化リスク。4工程が品質・コスト・納期の全てで最もバランスが良い。��費増200万円を不良削減300��円/年で1年回収。",
         "primary": {
           "type": "business_value",
           "text": "投資対効果: 型費増200万円 vs 不良コスト年間削減300万円。1年以内の投資回収が見込める。"
@@ -152,8 +152,8 @@
         }
       },
       "position": {
-        "x": 728,
-        "y": 26
+        "x": 1550,
+        "y": 140
       },
       "parentId": "c1",
       "pathRole": "recommended",
@@ -161,7 +161,7 @@
       "depth": 0,
       "hasPastCase": true,
       "pastCaseCount": 1,
-      "rationale": "型費増200万円 vs 不良コスト年間削減300万円で1年以内回収。",
+      "rationale": "3工程では2工程目で加工硬化が集中し不良率2%以上が見込まれる。3工程+焼鈍は寸法変化リスクとコスト増。4工程なら加工硬化を段階分散でき、不良率0.3%かつサイクルタイム改善。型費増200万円は不良コスト年間削減300万円で1年回収。",
       "createdAt": "2026-04-10T09:10:00Z",
       "selectedAt": "2026-04-10T09:12:00Z"
     },
@@ -183,15 +183,15 @@
         "howThisHelps": "型費を25%削減できるがリスクを受容する判断。撤退基準：試作で不良率3%超なら4工程に切替。"
       },
       "structuredRationale": {
-        "summary": "型費削減の魅力はあるが、品質リスクとの天秤で劣る。過去事例L19-054321で3工程→不良率5%の実績あり。",
+        "summary": "過去事例L19-054321で3工程→不良率5%、対応コストが型費削減の3倍。SUS304ではさらに悪化見込み。",
         "primary": {
           "type": "past_case",
           "text": "L19-054321: SPCC t1.0で3工程採用→量産3ヶ月後に不良率5%上昇、対応コスト型費削減の3倍"
         }
       },
       "position": {
-        "x": 728,
-        "y": 143
+        "x": 1550,
+        "y": 320
       },
       "parentId": "c1",
       "pathRole": "alternative",
@@ -199,7 +199,7 @@
       "depth": 0,
       "hasPastCase": true,
       "pastCaseCount": 1,
-      "rationale": "不良率上昇リスクが品質要求と両立しない可能性。",
+      "rationale": "型費25%削減は魅力的だが、L19-054321(SPCC)で3工程→不良率5%の実績がある。SUS304はSPCCより加工硬化が激しいため、���らに悪化する可能性が高い。不良対応コストが型費削減額の3倍以上になるリスク。",
       "createdAt": "2026-04-10T09:10:00Z"
     },
     {
@@ -213,8 +213,8 @@
       "riskLevel": "medium",
       "riskStrategy": "mitigate",
       "position": {
-        "x": 728,
-        "y": 260
+        "x": 1550,
+        "y": 500
       },
       "parentId": "c1",
       "pathRole": "alternative",
@@ -243,7 +243,7 @@
         "howThisHelps": "焼鈍を排除することで炉温度プロファイルへの依存を除去。4工程で成形量を分散すれば焼鈍なしでも加工硬化を許容範囲に収められる。"
       },
       "structuredRationale": {
-        "summary": "焼鈍なしの方が寸法精度が安定し、コストと納期も改善。焼鈍の撤退基準（型補正±0.2mm超）を設定した上での判断。",
+        "summary": "焼鈍挿入は寸法安定性を逆に悪化させるリスク。4工程分散なら焼鈍なしでも硬化を制御でき、コスト��納期・精度の全てで有利。",
         "primary": {
           "type": "context_fit",
           "text": "SUS304の4工程分散なら加工硬化を許容範囲に収められる。焼鈍コスト（1工程あたり＋αと納期2日増）を回避。"
@@ -256,14 +256,14 @@
         ]
       },
       "position": {
-        "x": 1120,
-        "y": -13
+        "x": 2070,
+        "y": 50
       },
       "parentId": "s1a",
       "pathRole": "recommended",
       "lane": 0,
       "depth": 1,
-      "rationale": "焼鈍なしの方が寸法精度が安定。炉の温度プロファイルに依存するリスクを排除。",
+      "rationale": "焼鈍を入れると炉温度プロファイルと冷却速度でスプリングバックが変動し、寸法���度が不安定になる。4工程で成形量を分散す��ば焼鈍なしでも加工硬化を許容範囲に収められ、寸法精度がむしろ安定する。焼鈍のコスト（1工程+α）と納期2日増も回避できる。",
       "createdAt": "2026-04-10T09:13:00Z",
       "selectedAt": "2026-04-10T09:14:00Z"
     },
@@ -278,8 +278,8 @@
       "riskLevel": "low",
       "riskStrategy": "avoid",
       "position": {
-        "x": 1120,
-        "y": 91
+        "x": 2070,
+        "y": 320
       },
       "parentId": "s1a",
       "pathRole": "alternative",
@@ -297,8 +297,8 @@
       "status": "selected",
       "isRecommended": true,
       "position": {
-        "x": 336,
-        "y": 520
+        "x": 510,
+        "y": 850
       },
       "parentId": null,
       "childIds": [
@@ -332,7 +332,7 @@
         "howThisHelps": "摩耗量閾値を定量化し、「摩耗量○mmを超えたらメンテ必要」という判定基準を数値で確立。停止コストを含めた全体LCCが精度高く算出される。"
       },
       "structuredRationale": {
-        "summary": "検証費用（約3週間）は量産の計画外停止1回分と同程度。投資対効果が明確に上回る。",
+        "summary": "過去実績ベースはSUS304の類似データ不足で精度が低い。実測+CAEなら閾値が数値化され、LCCが数字で確定する。検証費用≒停止1回分���",
         "primary": {
           "type": "business_value",
           "text": "検証費用 ≒ 量産停止1回のコスト。精度の高いLCCで事業判断の根拠が数字で確定する。"
@@ -349,14 +349,14 @@
         }
       },
       "position": {
-        "x": 728,
-        "y": 442
+        "x": 1030,
+        "y": 770
       },
       "parentId": "c2",
       "pathRole": "recommended",
       "lane": 0,
       "depth": 1,
-      "rationale": "検証費用は量産停止1回分。精度の高い見積もりで想定外コスト防止。",
+      "rationale": "過去実績ベースではSUS304深絞りの類似データが少な���精度に不安がある。実測+CAEで閾値を数値化すれば、月産数量あたりのメンテ日数が確定し、停止コストを含めたLCCが数字で見える。検証費用約3週間は量産停止1回分と同程度で十分にリターンがある。",
       "createdAt": "2026-04-10T09:25:00Z",
       "selectedAt": "2026-04-10T09:27:00Z"
     },
@@ -371,8 +371,8 @@
       "riskLevel": "medium",
       "riskStrategy": "accept",
       "position": {
-        "x": 728,
-        "y": 559
+        "x": 1030,
+        "y": 950
       },
       "parentId": "c2",
       "pathRole": "alternative",
@@ -403,7 +403,7 @@
         "howThisHelps": "現場の感覚知（音・手応え）、型分解実測（段差データ）、CAE逆算（シミュレーション）の三方向から検証し、閾値の信頼性を大幅に向上させる。"
       },
       "structuredRationale": {
-        "summary": "単一手法では見落としが発生する。三方向検証で閾値の信頼性を担保し、データに基づく判断で属人化を防ぐ。",
+        "summary": "CAE単独は材料ロット変動を反映不可。三点検証なら各手��の盲点を他が補完し、閾値の信頼性が格段に向上。",
         "primary": {
           "type": "pmbok_risk",
           "text": "リスク軽減策: 複数の独立した検証手法を組み合わせることで、単一手法の盲点を補完。"
@@ -416,14 +416,14 @@
         ]
       },
       "position": {
-        "x": 1120,
-        "y": 403
+        "x": 1550,
+        "y": 680
       },
       "parentId": "s2a",
       "pathRole": "recommended",
       "lane": 0,
       "depth": 2,
-      "rationale": "単一の手法では見落としが出る。三方向検証で閾値の信頼性を担保。",
+      "rationale": "CAE単独では材料ロット変動を反映できず、過去にCAE予測と実測が乖離した事例がある。現場の感覚���（音・手応え）、型分解実測（段差データ）、CAE逆算（シミュレーション）の3方向から検証することで、どれか1つの盲点を他が補完する。",
       "createdAt": "2026-04-10T09:28:00Z",
       "selectedAt": "2026-04-10T09:30:00Z"
     },
@@ -438,8 +438,8 @@
       "riskLevel": "medium",
       "riskStrategy": "accept",
       "position": {
-        "x": 1120,
-        "y": 520
+        "x": 1550,
+        "y": 860
       },
       "parentId": "s2a",
       "pathRole": "alternative",
@@ -460,8 +460,8 @@
       "riskLevel": "low",
       "riskStrategy": "avoid",
       "position": {
-        "x": 1512,
-        "y": 403
+        "x": 2070,
+        "y": 680
       },
       "parentId": "t2a1",
       "pathRole": "recommended",
@@ -480,8 +480,8 @@
       "status": "selected",
       "isRecommended": true,
       "position": {
-        "x": 336,
-        "y": 936
+        "x": 510,
+        "y": 1210
       },
       "parentId": null,
       "childIds": [
@@ -516,7 +516,7 @@
         "howThisHelps": "初期・中期・後期の3段階で型摩耗の進行パターンを定量的に把握し、量産条件との一致を事前に検証。試作→量産のギャップを可視化して対策。"
       },
       "structuredRationale": {
-        "summary": "検証不足による量産トラブルの対応コストは検証費用の10倍。4週間の遅延投資で量産リスクを大幅に低減。",
+        "summary": "簡易トライは中期の変化を見逃す（L23-091876で8倍コスト）。3段階なら摩耗パターン全体を把握し、移行判断の根拠が成立。",
         "primary": {
           "type": "past_case",
           "text": "L23-091876: 簡易検証で量産開始→型摩耗で品質劣化、対応コスト検証費用の8倍"
@@ -539,8 +539,8 @@
         }
       },
       "position": {
-        "x": 728,
-        "y": 858
+        "x": 1030,
+        "y": 1130
       },
       "parentId": "c3",
       "pathRole": "recommended",
@@ -548,7 +548,7 @@
       "depth": 2,
       "hasPastCase": true,
       "pastCaseCount": 1,
-      "rationale": "過去事例で検証不足→対応コスト検証費用の10倍。4週間遅延は十分にリターンあり。",
+      "rationale": "簡易トライ（2段階）では中期の型摩耗進行パターンを見逃すリスクがある。L23-091876で簡易検証→対応コスト8倍の実績。3段階なら初期→中期→後期の変化パターンを完全に把握でき、量産移行の判断根拠が成立す���。4週間遅延はトラブル10倍コストと比較して合理的。",
       "createdAt": "2026-04-10T09:40:00Z",
       "selectedAt": "2026-04-10T09:42:00Z"
     },
@@ -563,8 +563,8 @@
       "riskLevel": "high",
       "riskStrategy": "accept",
       "position": {
-        "x": 728,
-        "y": 988
+        "x": 1030,
+        "y": 1310
       },
       "parentId": "c3",
       "pathRole": "alternative",
@@ -587,16 +587,19 @@
       "riskLevel": "low",
       "riskStrategy": "avoid",
       "position": {
-        "x": 1120,
-        "y": 819
+        "x": 1550,
+        "y": 1040
       },
       "parentId": "s3a",
       "pathRole": "recommended",
       "lane": 0,
       "depth": 3,
-      "rationale": "記録が標準化されていないと試作データと量産データが繋がらず、移行判定の根拠が成立しない。",
+      "rationale": "担当者の判断に委ねると記録が属人化し、担当者不在時に基準が消失する。標準フォーマットで写真の撮り方・測定位置・硬さ測定箇所を統一すれば、試作データと初期ロット50個のデータが繋がり、���産でのメンテ判断が誰でもできるようになる。",
       "createdAt": "2026-04-10T09:43:00Z",
-      "selectedAt": "2026-04-10T09:44:00Z"
+      "selectedAt": "2026-04-10T09:44:00Z",
+      "structuredRationale": {
+        "summary": "担当者判断は属人化リスク。標準フォーマットなら記録が統一され、誰が見ても同じ判断ができる。データの連続性も確保。"
+      }
     },
     {
       "id": "t3a2",
@@ -609,8 +612,8 @@
       "riskLevel": "high",
       "riskStrategy": "accept",
       "position": {
-        "x": 1120,
-        "y": 936
+        "x": 1550,
+        "y": 1220
       },
       "parentId": "s3a",
       "pathRole": "alternative",
@@ -631,8 +634,8 @@
       "riskLevel": "low",
       "riskStrategy": "avoid",
       "position": {
-        "x": 1512,
-        "y": 819
+        "x": 2070,
+        "y": 1040
       },
       "parentId": "t3a1",
       "pathRole": "recommended",
@@ -652,8 +655,8 @@
       "isRecommended": true,
       "riskStrategy": "mitigate",
       "position": {
-        "x": 1960,
-        "y": 572
+        "x": 3110,
+        "y": 500
       },
       "parentId": "c3",
       "depth": 5,
@@ -673,8 +676,8 @@
       "riskLevel": "low",
       "riskStrategy": "mitigate",
       "position": {
-        "x": 1120,
-        "y": -13
+        "x": 2590,
+        "y": 50
       },
       "parentId": "t1a1",
       "pathRole": "recommended",
@@ -700,8 +703,8 @@
         "howThisHelps": "摩耗量の閾値を数値で定義し、誰が見ても同じ判断ができる基準を確立する。"
       },
       "position": {
-        "x": 1512,
-        "y": 403
+        "x": 2590,
+        "y": 410
       },
       "parentId": "a2a1",
       "pathRole": "recommended",
@@ -722,8 +725,8 @@
       "riskLevel": "high",
       "riskStrategy": "accept",
       "position": {
-        "x": 1512,
-        "y": 520
+        "x": 2590,
+        "y": 770
       },
       "parentId": "a2a1",
       "pathRole": "alternative",
@@ -748,8 +751,8 @@
         "howThisHelps": "摩耗パターン（面の削れ方、傷の進行方向）まで記録することで、数値だけでは捉えられない型劣化の兆候を早期発見できる。"
       },
       "position": {
-        "x": 1512,
-        "y": 819
+        "x": 2590,
+        "y": 950
       },
       "parentId": "a3a1",
       "pathRole": "recommended",
@@ -770,8 +773,8 @@
       "riskLevel": "medium",
       "riskStrategy": "accept",
       "position": {
-        "x": 1512,
-        "y": 936
+        "x": 2590,
+        "y": 1130
       },
       "parentId": "a3a1",
       "pathRole": "alternative",
@@ -972,7 +975,7 @@
       "nodeLabel": "4工程",
       "level": "strategy",
       "selectedAt": "2026-04-10T09:12:00Z",
-      "rationale": "型費増200万円 vs 不良コスト年間削減300万円",
+      "rationale": "3工��は不良率リスク（L19で3倍コスト���、焼鈍は寸法変化リスク。4工程が型費増200万円を不良削減300万/年で1年回収し最もバランスが良い。",
       "summary": "品質起点で4工程"
     },
     {
@@ -981,7 +984,7 @@
       "nodeLabel": "焼鈍なしで分散",
       "level": "tactic",
       "selectedAt": "2026-04-10T09:14:00Z",
-      "rationale": "焼鈍なしの方が寸法精度安定。炉依存リスク排除。",
+      "rationale": "焼鈍挿入は炉温度依存で寸法不安定��。4工程分散なら焼鈍なしで硬化制御＋コスト削減＋納期短縮を同時実現。",
       "summary": "焼鈍なし方針"
     },
     {
@@ -990,7 +993,7 @@
       "nodeLabel": "実測＋CAEでLCC",
       "level": "strategy",
       "selectedAt": "2026-04-10T09:27:00Z",
-      "rationale": "検証費用は量産停止1回分。採算が数字で確定。",
+      "rationale": "過去実績ベースはSUS304類似データ不足で精度不安。実測+CAEなら検証費用≒停止1回分でLCCが数字で確定。",
       "summary": "検証投資でLCC精度確保"
     },
     {
@@ -999,7 +1002,7 @@
       "nodeLabel": "三点検証で閾値確定",
       "level": "tactic",
       "selectedAt": "2026-04-10T09:30:00Z",
-      "rationale": "単一手法では見落とし。三方向で閾値の信頼性担保。",
+      "rationale": "CAE単独は材料ロット変動を反映不可。三点検証で各手法の盲点を補���し信頼性向上。",
       "summary": "三点検証モデル"
     },
     {
@@ -1017,7 +1020,7 @@
       "nodeLabel": "3段階検証",
       "level": "strategy",
       "selectedAt": "2026-04-10T09:42:00Z",
-      "rationale": "検証不足の対応コストが10倍。4週間遅延は許容範囲。",
+      "rationale": "簡易トライは中期の変化を見逃す（L23で8倍コスト）。3段階で摩耗パターン全体把握。4週間遅延<トラブル10倍コスト。",
       "summary": "段階的検証"
     },
     {
@@ -1026,7 +1029,7 @@
       "nodeLabel": "標準フォーマット",
       "level": "tactic",
       "selectedAt": "2026-04-10T09:44:00Z",
-      "rationale": "記録統一なしではデータが繋がらず移行判定不成立。",
+      "rationale": "担当者判断は属人化→基準消失リスク。フォーマット統一で誰でも同じ判断可能＋データ連続性確保。",
       "summary": "記録統一で属人化防止"
     },
     {
