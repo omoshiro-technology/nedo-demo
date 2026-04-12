@@ -28,7 +28,6 @@ export default function DecisionDemoPage() {
     <DemoScenarioProvider>
       <div className="compath-scope" style={{ height: "100vh" }}>
         <DecisionNavigatorPanel
-          initialPurpose={session.purpose}
           onClose={() => window.history.back()}
           skipPreconditionModal={true}
           skipPastCasePanel={true}
