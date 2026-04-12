@@ -81,11 +81,75 @@ export function applyAssessmentToProfile(
 
 /**
  * ユーザーのスキルプロファイルを取得（存在しなければ null）
+ * asOf が指定された場合、その日付以前のアセスメントだけでプロファイルを再構築する
  */
 export function getSkillProfile(
-  userId: string
+  userId: string,
+  asOf?: string
 ): SkillProfile | undefined {
-  return SkillMapRepository.findProfileByUser(userId);
+  if (!asOf) {
+    return SkillMapRepository.findProfileByUser(userId);
+  }
+
+  // asOf指定: アセスメント履歴から指定日時点のプロファイルを再構築
+  const allAssessments = SkillMapRepository.findAssessmentsByUser(userId);
+  const cutoff = new Date(asOf).getTime();
+  const filtered = allAssessments.filter(
+    (a) => new Date(a.assessedAt).getTime() <= cutoff
+  );
+
+  if (filtered.length === 0) {
+    // 指定日以前にアセスメントがない場合、全Lv.1の空プロファイルを返す
+    const baseProfile = SkillMapRepository.findProfileByUser(userId);
+    if (!baseProfile) return undefined;
+    const emptyProfile: SkillProfile = {
+      ...baseProfile,
+      totalAssessments: 0,
+      proficiencies: Object.fromEntries(
+        Object.entries(baseProfile.proficiencies).map(([id, p]) => [
+          id,
+          { ...p, currentLevel: 1 as SkillLevel, touchCount: 0, latestScores: null, lastAssessedAt: "" },
+        ])
+      ),
+    };
+    return emptyProfile;
+  }
+
+  // アセスメントを時系列順に適用してプロファイルを再構築
+  const baseProfile = SkillMapRepository.findProfileByUser(userId);
+  if (!baseProfile) return undefined;
+
+  const rebuilt: SkillProfile = {
+    ...baseProfile,
+    totalAssessments: filtered.length,
+    proficiencies: Object.fromEntries(
+      Object.entries(baseProfile.proficiencies).map(([id, p]) => [
+        id,
+        { ...p, currentLevel: 1 as SkillLevel, touchCount: 0, latestScores: null, lastAssessedAt: "" },
+      ])
+    ),
+  };
+
+  const sorted = [...filtered].sort(
+    (a, b) => new Date(a.assessedAt).getTime() - new Date(b.assessedAt).getTime()
+  );
+
+  for (const assessment of sorted) {
+    for (const skillId of assessment.touchedSkillIds) {
+      const prev = rebuilt.proficiencies[skillId];
+      if (!prev) continue;
+      const newLevel = assessment.skillLevels[skillId] ?? 1;
+      rebuilt.proficiencies[skillId] = {
+        ...prev,
+        currentLevel: Math.max(prev.currentLevel, newLevel) as SkillLevel,
+        touchCount: prev.touchCount + 1,
+        latestScores: assessment.thoughtQuality,
+        lastAssessedAt: assessment.assessedAt,
+      };
+    }
+  }
+
+  return rebuilt;
 }
 
 /**

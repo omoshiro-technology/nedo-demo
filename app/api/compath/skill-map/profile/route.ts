@@ -15,7 +15,8 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const profile = getSkillProfile(userId);
+  const asOf = request.nextUrl.searchParams.get("asOf") ?? undefined;
+  const profile = getSkillProfile(userId, asOf);
   if (!profile) {
     return NextResponse.json(
       { message: "Profile not found.", userId },

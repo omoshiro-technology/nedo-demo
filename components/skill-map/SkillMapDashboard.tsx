@@ -59,6 +59,8 @@ export default function SkillMapDashboard() {
   const [users, setUsers] = useState<SampleUser[]>([])
   const [selectedUserId, setSelectedUserId] = useState<string>("")
   const [profile, setProfile] = useState<SkillProfile | null>(null)
+  const [compareProfile, setCompareProfile] = useState<SkillProfile | null>(null)
+  const [compareDate, setCompareDate] = useState<string>("")
   const [initialLoading, setInitialLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [transitioning, setTransitioning] = useState(false)
@@ -99,6 +101,18 @@ export default function SkillMapDashboard() {
     }
   }, [selectedUserId, profile])
 
+  // 比較日付が変わったら比較用プロファイルを取得
+  useEffect(() => {
+    if (!selectedUserId || !compareDate) {
+      setCompareProfile(null)
+      return
+    }
+    fetch(`/api/compath/skill-map/profile?userId=${selectedUserId}&asOf=${compareDate}`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => setCompareProfile(data))
+      .catch(() => setCompareProfile(null))
+  }, [selectedUserId, compareDate])
+
   useEffect(() => {
     if (selectedUserId) fetchData()
   }, [selectedUserId]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -124,6 +138,26 @@ export default function SkillMapDashboard() {
           {selectedUser && (
             <span className="text-base text-gray-400">{selectedUser.role}</span>
           )}
+          <div className="flex items-center gap-2 ml-4 border-l pl-4">
+            <label className="text-sm text-gray-500 whitespace-nowrap">比較基準日:</label>
+            <input
+              type="date"
+              value={compareDate}
+              onChange={(e) => setCompareDate(e.target.value)}
+              className="text-sm border border-gray-200 rounded-md px-2 py-1 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-400"
+            />
+            {compareDate && (
+              <button
+                onClick={() => setCompareDate("")}
+                className="text-xs text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            )}
+            {compareDate && compareProfile && (
+              <span className="text-xs text-emerald-600 font-medium">差分表示中</span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -137,7 +171,7 @@ export default function SkillMapDashboard() {
           <Placeholder text="まだスキルアセスメントのデータがありません。" />
         ) : (
           <div className={`h-full transition-opacity duration-200 ${transitioning ? "opacity-60" : "opacity-100"}`}>
-            <FullScreenCard profile={profile} />
+            <FullScreenCard profile={profile} compareProfile={compareProfile} />
           </div>
         )}
       </div>
@@ -149,9 +183,20 @@ export default function SkillMapDashboard() {
 // フルスクリーンカード
 // ============================================================
 
-function FullScreenCard({ profile }: { profile: SkillProfile }) {
+function FullScreenCard({ profile, compareProfile }: { profile: SkillProfile; compareProfile?: SkillProfile | null }) {
   const [hoveredSkill, setHoveredSkill] = useState<string | null>(null)
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
+
+  // 差分計算: compareProfile(過去)と現在のprofileを比較し、上がったスキルを特定
+  const improvedSkills = new Set<string>()
+  if (compareProfile) {
+    for (const [skillId, current] of Object.entries(profile.proficiencies)) {
+      const past = compareProfile.proficiencies[skillId]
+      if (past && current.currentLevel > past.currentLevel) {
+        improvedSkills.add(skillId)
+      }
+    }
+  }
 
   const skillsByCategory = getSkillsByCategory()
 
@@ -179,6 +224,12 @@ function FullScreenCard({ profile }: { profile: SkillProfile }) {
               <span className="text-sm text-slate-500">Lv.{lv} {SKILL_LEVEL_LABELS[lv]}</span>
             </div>
           ))}
+          {improvedSkills.size > 0 && (
+            <div className="flex items-center gap-1.5 ml-2 pl-2 border-l">
+              <div className="w-4 h-4 rounded-sm bg-emerald-200 border border-emerald-500 ring-1 ring-emerald-400" />
+              <span className="text-sm font-medium text-emerald-700">スキル向上（{improvedSkills.size}件）</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -202,22 +253,29 @@ function FullScreenCard({ profile }: { profile: SkillProfile }) {
                     const prof = profile.proficiencies[skill.id]
                     const level = (prof?.currentLevel ?? 1) as SkillLevel
                     const isHovered = hoveredSkill === skill.id
+                    const isImproved = improvedSkills.has(skill.id)
+                    const pastLevel = compareProfile?.proficiencies[skill.id]?.currentLevel
                     return (
                       <div
                         key={skill.id}
                         className={`
                           flex-1 rounded-[4px] cursor-pointer overflow-hidden
                           flex items-center justify-center
-                          border transition-all px-1
-                          ${LEVEL_BG[level]} ${LEVEL_BORDER[level]}
-                          ${isHovered ? "ring-2 ring-indigo-400 scale-105 z-10" : "hover:brightness-95"}
+                          border transition-all px-1 relative
+                          ${isImproved ? "bg-emerald-200 border-emerald-500 ring-2 ring-emerald-400" : `${LEVEL_BG[level]} ${LEVEL_BORDER[level]}`}
+                          ${isHovered ? "ring-2 ring-indigo-400 scale-105 z-10" : !isImproved ? "hover:brightness-95" : ""}
                         `}
                         onMouseEnter={(e) => handleMouseEnter(skill.id, e)}
                         onMouseLeave={() => setHoveredSkill(null)}
                       >
-                        <span className={`text-xs font-medium truncate select-none ${LEVEL_TEXT[level]}`}>
+                        <span className={`text-xs font-medium truncate select-none ${isImproved ? "text-emerald-900" : LEVEL_TEXT[level]}`}>
                           {skill.name}
                         </span>
+                        {isImproved && (
+                          <span className="absolute top-0 right-0.5 text-[9px] font-bold text-emerald-700">
+                            Lv.{pastLevel}→{level}
+                          </span>
+                        )}
                       </div>
                     )
                   })}
