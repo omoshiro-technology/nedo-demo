@@ -21,6 +21,7 @@ import { ArchipelagoView } from "@/components/brain-room/archipelago-view"
 import { MessageTextWithReferences } from "@/components/brain-room/message-text-with-references"
 import { MermaidDiagram } from "@/components/brain-room/mermaid-diagram"
 import { WhiteboardView } from "@/components/brain-room/whiteboard-view"
+import { AgentMessageModal } from "@/components/brain-room/agent-message-modal"
 
 interface DiscussionInterfaceProps {
   characters: Character[]
@@ -57,6 +58,7 @@ export function DiscussionInterface({
   const [selectedChatPersonas, setSelectedChatPersonas] = useState<number[]>([])
   const [selectedConferenceMembers, setSelectedConferenceMembers] = useState<number[]>(() => characters.map(c => c.id))
   const [chatTurnCount, setChatTurnCount] = useState(0)
+  const [selectedMessageIndex, setSelectedMessageIndex] = useState<number | null>(null)
 
   // Archipelago View State
   const { toast } = useToast()
@@ -919,7 +921,8 @@ export function DiscussionInterface({
                       id={`message-${index}`}
                       className={`mb-4 flex items-start gap-3 p-2 rounded transition-colors duration-300 ${
                         msg.isUser ? "flex-row-reverse" : ""
-                      } ${highlightedMessageIndex === index ? "bg-yellow-100 border-l-4 border-yellow-400" : ""}`}
+                      } ${!msg.isUser ? "cursor-pointer hover:bg-gray-50" : ""} ${highlightedMessageIndex === index ? "bg-yellow-100 border-l-4 border-yellow-400" : ""}`}
+                      onClick={() => { if (!msg.isUser) setSelectedMessageIndex(index) }}
                     >
                       <div className={`p-2 rounded-full ${msg.isUser ? "bg-blue-200" : "bg-gray-200"}`}>
                         {msg.isUser ? (
@@ -1079,6 +1082,17 @@ export function DiscussionInterface({
           </AlertDescription>
         </Alert>
       )}
+
+      {/* Agent Message Detail Modal */}
+      <AgentMessageModal
+        open={selectedMessageIndex !== null}
+        onOpenChange={(open) => { if (!open) setSelectedMessageIndex(null) }}
+        message={selectedMessageIndex !== null ? messages[selectedMessageIndex] : null}
+        character={selectedMessageIndex !== null
+          ? characters.find(c => c.id === messages[selectedMessageIndex]?.characterId) || null
+          : null}
+        knowledgeFiles={knowledgeFiles}
+      />
 
       {/* Knowledge Modal */}
       <Dialog open={showKnowledgeModal} onOpenChange={setShowKnowledgeModal}>

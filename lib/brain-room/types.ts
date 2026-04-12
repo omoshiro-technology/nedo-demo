@@ -4,6 +4,7 @@ export interface Character {
   personality: string
   speakingStyle: string
   background: string
+  department?: string
 }
 
 export interface CharacterSet {
