@@ -210,6 +210,7 @@ export function DiscussionInterface({
         const isLastTurn = turn === maxTurns - 1
         const shouldUpdateWhiteboard = (turn > 0 && turn % 3 === 2) || isLastTurn
 
+        // 1. ターン処理（発言生成 + 次の話者選択）
         const response = await fetch("/api/conference-network/turn", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -222,7 +223,6 @@ export function DiscussionInterface({
             turn,
             nextSpeakerIndex,
             whiteboardHtml: currentWhiteboardHtml,
-            updateWhiteboard: shouldUpdateWhiteboard,
           }),
           signal: abortControllerRef.current.signal,
         })
@@ -251,9 +251,27 @@ export function DiscussionInterface({
         // Update UI
         setMessages((prev) => [...prev, result.message])
 
-        if (result.whiteboardHtml && result.whiteboardHtml !== currentWhiteboardHtml) {
-          currentWhiteboardHtml = result.whiteboardHtml
-          setWhiteboardHtml(currentWhiteboardHtml)
+        // 2. ホワイトボード更新（別API、非同期で並行実行）
+        if (shouldUpdateWhiteboard) {
+          fetch("/api/conference-network/whiteboard", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              theme,
+              purpose,
+              conversationHistory,
+              characters,
+              currentWhiteboardHtml,
+            }),
+          }).then(async (wbRes) => {
+            if (wbRes.ok) {
+              const wbResult = await wbRes.json()
+              if (wbResult.html) {
+                currentWhiteboardHtml = wbResult.html
+                setWhiteboardHtml(wbResult.html)
+              }
+            }
+          }).catch((err) => console.error("Whiteboard update failed:", err))
         }
 
         nextSpeakerIndex = result.nextSpeakerIndex

@@ -1,8 +1,7 @@
 import { selectNextSpeaker, generateCharacterTurn, getConferencePhase, type ConferenceNetworkContext } from "@/lib/brain-room/conference-network"
-import { updateWhiteboard } from "@/lib/brain-room/conference-agents"
 import type { Character, KnowledgeFile } from "@/lib/brain-room/types"
 
-export const maxDuration = 120
+export const maxDuration = 60
 
 interface TurnRequest {
   theme: string
@@ -13,7 +12,6 @@ interface TurnRequest {
   turn: number
   nextSpeakerIndex: number
   whiteboardHtml?: string
-  updateWhiteboard?: boolean
 }
 
 export async function POST(req: Request) {
@@ -28,7 +26,6 @@ export async function POST(req: Request) {
       turn,
       nextSpeakerIndex,
       whiteboardHtml = "",
-      updateWhiteboard: shouldUpdateWhiteboard = false,
     } = body
 
     if (!theme || !characters || characters.length < 2) {
@@ -81,27 +78,9 @@ export async function POST(req: Request) {
       console.error("Next speaker selection failed:", error)
     }
 
-    // 3. Whiteboard update (only when requested by client, every 3 turns)
-    let newWhiteboardHtml = whiteboardHtml
-    if (shouldUpdateWhiteboard) {
-      try {
-        const isFirstUpdate = !whiteboardHtml
-        newWhiteboardHtml = await updateWhiteboard(
-          theme,
-          purpose,
-          isFirstUpdate ? updatedHistory : updatedHistory.slice(-3),
-          characters,
-          whiteboardHtml,
-        )
-      } catch (error) {
-        console.error("Whiteboard update failed:", error)
-      }
-    }
-
     return Response.json({
       message,
       nextSpeakerIndex: newNextSpeakerIndex,
-      whiteboardHtml: newWhiteboardHtml,
       // AIが早期にisFinishedを返しても、ターン18未満では無視する
       isFinished: turn >= 18 && (result.isFinished || false),
       finishReason: turn >= 18 ? result.finishReason : undefined,
