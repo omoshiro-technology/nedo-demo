@@ -267,7 +267,7 @@ LAYOUT:
 - Do NOT use generic card/box UI. Use the wb-* classes defined above for a handwritten whiteboard feel.
 
 Return ONLY the HTML snippet. No markdown, no code fences, no explanation.`,
-    model: anthropic("claude-sonnet-4-6"),
+    model: anthropic("claude-haiku-4-5-20251001"),
   })
 
   const prompt = `テーマ: ${theme}
