@@ -12,6 +12,7 @@ type ChatLayoutProps = {
   onSelectSession: (sessionId: string) => void;
   onSelectHistory: (historyId: string) => void;
   onGoHome: () => void;
+  onLoadPreset?: () => void;
 };
 
 export default function ChatLayout({
@@ -22,6 +23,7 @@ export default function ChatLayout({
   onSelectSession,
   onSelectHistory,
   onGoHome,
+  onLoadPreset,
 }: ChatLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -31,7 +33,7 @@ export default function ChatLayout({
 
   return (
     <div className="chat-layout">
-      <Header onGoHome={onGoHome} />
+      <Header onGoHome={onGoHome} onLoadPreset={onLoadPreset} />
       <div className="chat-layout__body">
         <Sidebar
           isOpen={sidebarOpen}

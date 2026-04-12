@@ -46,6 +46,8 @@ type ChatPageProps = {
   onHistoryRefresh?: () => void;
   /** 履歴から読み込んだ分析結果（初期表示用） */
   loadedHistory?: AnalysisHistory | null;
+  /** プリセットデータ読込リクエスト（カウンタ、変化するたびにロード） */
+  presetRequest?: number;
 };
 
 export default function ChatPage({
@@ -56,6 +58,7 @@ export default function ChatPage({
   onStartSession,
   onHistoryRefresh,
   loadedHistory,
+  presetRequest,
 }: ChatPageProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStatusText, setProcessingStatusText] = useState<string | undefined>(undefined);
@@ -714,49 +717,29 @@ ${decision.content}${ambiguityText}${guidanceText}`;
       content: m.content,
     }));
 
-  // プリセット意思決定キャンバスを開く
-  const handleLoadPresetDecision = useCallback(async () => {
-    try {
-      const res = await fetch("/preset-conferences/nedo-demo-decision-session.json");
-      if (!res.ok) { alert("読込失敗: " + res.status); return; }
-      const presetData = await res.json();
-      setDnSidePanel({
-        isOpen: true,
-        initialData: { purpose: presetData.purpose || "", currentSituation: "" },
-        skipPreconditionModal: true,
-        skipPastCasePanel: true,
-        presetSession: presetData,
-      });
-    } catch (e) {
-      alert("読込エラー: " + (e as Error).message);
-    }
-  }, []);
+  // ヘッダーの「デモデータ」ボタンが押されたらプリセットを読み込む
+  useEffect(() => {
+    if (!presetRequest) return;
+    (async () => {
+      try {
+        const res = await fetch("/preset-conferences/nedo-demo-decision-session.json");
+        if (!res.ok) return;
+        const presetData = await res.json();
+        setDnSidePanel({
+          isOpen: true,
+          initialData: { purpose: presetData.purpose || "", currentSituation: "" },
+          skipPreconditionModal: true,
+          skipPastCasePanel: true,
+          presetSession: presetData,
+        });
+      } catch (e) {
+        console.error("Preset load failed:", e);
+      }
+    })();
+  }, [presetRequest]);
 
   return (
     <>
-      {/* 固定位置のプリセットボタン */}
-      {!dnSidePanel?.isOpen && (
-        <button
-          onClick={handleLoadPresetDecision}
-          style={{
-            position: "fixed",
-            bottom: "20px",
-            right: "20px",
-            zIndex: 9999,
-            padding: "10px 20px",
-            borderRadius: "10px",
-            border: "2px solid #1f7a6d",
-            backgroundColor: "#e8f1f0",
-            color: "#1f7a6d",
-            fontSize: "14px",
-            fontWeight: 700,
-            cursor: "pointer",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-          }}
-        >
-          📋 NEDOデモ（意思決定キャンバス）
-        </button>
-      )}
       {!selectedAgent ? (
         // ホーム画面: エージェント選択 + シナリオ切替
         <div className="chat-page chat-page--home">

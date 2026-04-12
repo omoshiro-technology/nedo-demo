@@ -1,6 +1,7 @@
 "use client"
 type HeaderProps = {
   onGoHome: () => void;
+  onLoadPreset?: () => void;
 };
 
 function getOsName(): string {
@@ -19,7 +20,7 @@ function getOsName(): string {
   return "Desktop";
 }
 
-export default function Header({ onGoHome }: HeaderProps) {
+export default function Header({ onGoHome, onLoadPreset }: HeaderProps) {
   const osName = getOsName();
 
   return (
@@ -37,6 +38,17 @@ export default function Header({ onGoHome }: HeaderProps) {
       </div>
 
       <div className="header__actions">
+        {onLoadPreset && (
+          <button
+            type="button"
+            className="header__action-btn"
+            title="NEDOデモ用サンプルデータを読み込む"
+            onClick={onLoadPreset}
+            style={{ color: "#1f7a6d", fontWeight: 600 }}
+          >
+            <span>📋 デモデータ</span>
+          </button>
+        )}
         <button
           type="button"
           className="header__action-btn header__action-btn--download"

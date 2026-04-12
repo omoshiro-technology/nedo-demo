@@ -19,6 +19,7 @@ export default function App() {
 
   const [historyRefreshTrigger, setHistoryRefreshTrigger] = useState(0);
   const [loadedHistory, setLoadedHistory] = useState<AnalysisHistory | null>(null);
+  const [presetRequest, setPresetRequest] = useState(0);
 
   const handleHistoryRefresh = useCallback(() => {
     setHistoryRefreshTrigger((prev) => prev + 1);
@@ -61,6 +62,7 @@ export default function App() {
         onSelectSession={handleSelectSession}
         onSelectHistory={handleSelectHistory}
         onGoHome={handleNewChat}
+        onLoadPreset={() => setPresetRequest(prev => prev + 1)}
       >
         <ChatPage
           selectedAgent={state.selectedAgent}
@@ -70,6 +72,7 @@ export default function App() {
           onStartSession={startSession}
           onHistoryRefresh={handleHistoryRefresh}
           loadedHistory={loadedHistory}
+          presetRequest={presetRequest}
         />
       </ChatLayout>
     </DemoScenarioProvider>
