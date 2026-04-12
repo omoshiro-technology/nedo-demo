@@ -346,6 +346,7 @@ function SkillTooltip({ skillId, profile, position }: { skillId: string; profile
   const categoryName = SKILL_CATEGORIES.find((c) => c.id === skill.categoryId)?.name ?? ""
 
   const TT_BG: Record<SkillLevel, string> = { 1: "bg-slate-50 border-slate-200", 2: "bg-sky-50 border-sky-200", 3: "bg-sky-50 border-sky-300", 4: "bg-indigo-50 border-indigo-200" }
+  const hasEvidence = (proficiency?.levelUpEvidence?.length ?? 0) > 0
 
   // 画面上部にスペースが足りなければ下方向に表示
   const showBelow = position.y < 350
@@ -358,7 +359,7 @@ function SkillTooltip({ skillId, profile, position }: { skillId: string; profile
           <div className="w-2.5 h-2.5 bg-white border-t border-l border-slate-200 rotate-45 mb-[-6px]" />
         </div>
       )}
-      <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-5 w-[420px]">
+      <div className={`bg-white rounded-xl shadow-lg border border-slate-200 p-5 ${hasEvidence ? "w-[720px]" : "w-[420px]"}`}>
         <div className="flex items-center justify-between gap-3 mb-3">
           <div>
             <div className="text-sm text-slate-400">{categoryName}</div>
@@ -368,56 +369,60 @@ function SkillTooltip({ skillId, profile, position }: { skillId: string; profile
             Lv.{currentLevel} {SKILL_LEVEL_LABELS[currentLevel]}
           </span>
         </div>
-        <div className="space-y-1.5">
-          {([1, 2, 3, 4] as SkillLevel[]).map((lv) => {
-            const def = skill.levels[lv]
-            const isCurrent = lv === currentLevel
-            const isCompleted = lv < currentLevel
-            const isFuture = lv > currentLevel
-            return (
-              <div key={lv} className={`rounded-lg border p-2.5 ${isCurrent ? `${TT_BG[lv]} ring-1 ring-indigo-300` : isCompleted ? "bg-slate-50/50 border-slate-100" : "bg-white border-slate-100"}`}>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className={`text-sm font-bold px-2 py-0.5 rounded ${isCurrent ? `${LEVEL_BG[lv]} ${LEVEL_TEXT[lv]}` : isCompleted ? "bg-emerald-100 text-emerald-600" : "bg-slate-100 text-slate-400"}`}>
-                    {isCompleted ? "\u2713" : ""} Lv.{lv} {SKILL_LEVEL_LABELS[lv]}
-                  </span>
-                  {isCurrent && <span className="text-sm font-medium text-indigo-500">&larr; 現在</span>}
-                </div>
-                <p className={`text-sm leading-relaxed ${isFuture ? "text-slate-400" : "text-slate-600"}`}>{def.description}</p>
-                {isCurrent && lv < 4 && <p className="text-sm text-amber-600 mt-1 font-medium">&rarr; {def.nextStep}</p>}
-              </div>
-            )
-          })}
-        </div>
-        {proficiency && proficiency.touchCount > 0 && (
-          <div className="mt-2 text-sm text-slate-400 text-right">{proficiency.touchCount} 回のセッションで接触</div>
-        )}
-        {proficiency?.levelUpEvidence && proficiency.levelUpEvidence.length > 0 && (
-          <div className="mt-3 pt-3 border-t border-emerald-200">
-            <div className="text-sm font-bold text-emerald-700 mb-2">レベルアップの根拠</div>
-            <div className="space-y-2">
-              {proficiency.levelUpEvidence.map((ev, i) => {
-                const sourceLabel: Record<string, string> = {
-                  brain_room_1shot: "BRAIN-Room",
-                  brain_room_conference: "BRAIN-Room 会議",
-                  compath_chat: "チャット",
-                  compath_decision_navigator: "意思決定キャンバス",
-                }
+        <div className={hasEvidence ? "flex gap-4" : ""}>
+          <div className={hasEvidence ? "flex-1 min-w-0" : ""}>
+            <div className="space-y-1.5">
+              {([1, 2, 3, 4] as SkillLevel[]).map((lv) => {
+                const def = skill.levels[lv]
+                const isCurrent = lv === currentLevel
+                const isCompleted = lv < currentLevel
+                const isFuture = lv > currentLevel
                 return (
-                  <div key={i} className="bg-emerald-50 rounded-lg border border-emerald-100 p-2.5">
+                  <div key={lv} className={`rounded-lg border p-2.5 ${isCurrent ? `${TT_BG[lv]} ring-1 ring-indigo-300` : isCompleted ? "bg-slate-50/50 border-slate-100" : "bg-white border-slate-100"}`}>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-emerald-200 text-emerald-800">
-                        {sourceLabel[ev.source] ?? ev.source}
+                      <span className={`text-sm font-bold px-2 py-0.5 rounded ${isCurrent ? `${LEVEL_BG[lv]} ${LEVEL_TEXT[lv]}` : isCompleted ? "bg-emerald-100 text-emerald-600" : "bg-slate-100 text-slate-400"}`}>
+                        {isCompleted ? "\u2713" : ""} Lv.{lv} {SKILL_LEVEL_LABELS[lv]}
                       </span>
-                      <span className="text-xs text-slate-400">{ev.sessionId}</span>
+                      {isCurrent && <span className="text-sm font-medium text-indigo-500">&larr; 現在</span>}
                     </div>
-                    <div className="text-sm font-medium text-slate-700 mb-0.5">{ev.project}</div>
-                    <p className="text-xs text-slate-500 leading-relaxed">{ev.reason}</p>
+                    <p className={`text-sm leading-relaxed ${isFuture ? "text-slate-400" : "text-slate-600"}`}>{def.description}</p>
+                    {isCurrent && lv < 4 && <p className="text-sm text-amber-600 mt-1 font-medium">&rarr; {def.nextStep}</p>}
                   </div>
                 )
               })}
             </div>
+            {proficiency && proficiency.touchCount > 0 && (
+              <div className="mt-2 text-sm text-slate-400 text-right">{proficiency.touchCount} 回のセッションで接触</div>
+            )}
           </div>
-        )}
+          {hasEvidence && (
+            <div className="w-[270px] shrink-0 border-l border-emerald-200 pl-4">
+              <div className="text-sm font-bold text-emerald-700 mb-2">履歴</div>
+              <div className="space-y-2 max-h-[350px] overflow-y-auto">
+                {proficiency!.levelUpEvidence!.map((ev, i) => {
+                  const sourceLabel: Record<string, string> = {
+                    brain_room_1shot: "BRAIN-Room",
+                    brain_room_conference: "BRAIN-Room 会議",
+                    compath_chat: "チャット",
+                    compath_decision_navigator: "意思決定キャンバス",
+                  }
+                  return (
+                    <div key={i} className="bg-emerald-50 rounded-lg border border-emerald-100 p-2.5">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-emerald-200 text-emerald-800">
+                          {sourceLabel[ev.source] ?? ev.source}
+                        </span>
+                        <span className="text-xs text-slate-400">{ev.sessionId}</span>
+                      </div>
+                      <div className="text-sm font-medium text-slate-700 mb-0.5">{ev.project}</div>
+                      <p className="text-xs text-slate-500 leading-relaxed">{ev.reason}</p>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
       {!showBelow && (
         <div className="flex justify-center">
