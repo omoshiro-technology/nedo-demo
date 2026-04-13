@@ -672,26 +672,26 @@ export function DiscussionInterface({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {status === "idle" && (
-            <div className="flex gap-2">
-              <Button
-                variant={appMode === "conference" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setAppMode("conference")}
-              >
-                会議モード
-              </Button>
-              <Button
-                variant={appMode === "chat" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setAppMode("chat")}
-              >
-                チャットモード
-              </Button>
-            </div>
-          )}
+          <div className={`flex gap-2 ${status !== "idle" ? "opacity-50 pointer-events-none" : ""}`}>
+            <Button
+              variant={appMode === "conference" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setAppMode("conference")}
+              disabled={status !== "idle"}
+            >
+              会議モード
+            </Button>
+            <Button
+              variant={appMode === "chat" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setAppMode("chat")}
+              disabled={status !== "idle"}
+            >
+              チャットモード
+            </Button>
+          </div>
 
-          {status === "idle" && (
+          <div className={status !== "idle" ? "opacity-50 pointer-events-none" : ""}>
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">
                 {appMode === "conference" ? "参加メンバー" : "会話する相手"}
@@ -751,9 +751,9 @@ export function DiscussionInterface({
                       : `${selectedChatPersonas.length}人のグループチャット`}
               </p>
             </div>
-          )}
+          </div>
 
-          {status !== "running" && (
+          <div className={status === "running" ? "opacity-50 pointer-events-none" : ""}>
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">プリセット</label>
               <div className="flex flex-wrap gap-2">
@@ -813,7 +813,7 @@ export function DiscussionInterface({
                 )}
               </div>
             </div>
-          )}
+          </div>
 
           <div className="space-y-2">
             <label htmlFor="theme" className="text-sm font-medium text-gray-700">
