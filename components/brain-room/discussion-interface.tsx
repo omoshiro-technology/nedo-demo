@@ -57,6 +57,7 @@ export function DiscussionInterface({
   const [isSending, setIsSending] = useState(false)
   const [selectedChatPersonas, setSelectedChatPersonas] = useState<number[]>([])
   const [selectedConferenceMembers, setSelectedConferenceMembers] = useState<number[]>(() => characters.map(c => c.id))
+  const [presetData, setPresetData] = useState<{ messages: any[]; whiteboardHtml: string } | null>(null)
   const [chatTurnCount, setChatTurnCount] = useState(0)
   const [selectedMessageIndex, setSelectedMessageIndex] = useState<number | null>(null)
 
@@ -186,6 +187,31 @@ export function DiscussionInterface({
     console.log("Theme:", theme)
     console.log("Purpose:", purpose)
     console.log("Characters:", conferenceCharacters.length, conferenceCharacters.map(c => c.name))
+
+    // プリセットデータがある場合はAPI呼び出しの代わりに再生
+    if (presetData) {
+      console.log("=== Preset Replay Mode ===")
+      setStatus("running")
+      setMessages([])
+      setWhiteboardHtml("")
+      setSummaryNodes({
+        root: { id: "root", label: `テーマ: ${theme}`, children: [], relatedMessages: [], summary: `会議のメインテーマ: ${theme}${purpose ? `\n目的: ${purpose}` : ""}` },
+      })
+
+      const allMessages = presetData.messages
+      for (let i = 0; i < allMessages.length; i++) {
+        await new Promise(r => setTimeout(r, 1500))
+        setMessages(prev => [...prev, allMessages[i]])
+        if ((i > 0 && i % 3 === 2) || i === allMessages.length - 1) {
+          setWhiteboardHtml(presetData.whiteboardHtml)
+        }
+      }
+
+      setStatus("finished")
+      setPresetData(null)
+      toast({ title: "会議完了", description: `${allMessages.length}ターンの会議が完了しました`, duration: 5000 })
+      return
+    }
 
     setStatus("running")
     setMessages([])
@@ -736,7 +762,7 @@ export function DiscussionInterface({
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-xs border-green-500 text-green-700 hover:bg-green-50"
+                      className={`text-xs ${presetData ? "border-green-500 text-green-700 bg-green-50" : ""}`}
                       onClick={async () => {
                         try {
                           const [dataRes, wbRes] = await Promise.all([
@@ -746,30 +772,12 @@ export function DiscussionInterface({
                           if (!dataRes.ok) throw new Error("Failed to load preset")
                           const preset = await dataRes.json()
                           const wbHtml = wbRes.ok ? await wbRes.text() : ""
-
                           setTheme(preset.theme)
                           setPurpose(preset.purpose)
-                          setMessages([])
-                          setWhiteboardHtml("")
-                          setStatus("running")
-
-                          // メッセージを一定間隔で1つずつ表示（アニメーション再生）
-                          const allMessages = preset.messages as any[]
-                          for (let i = 0; i < allMessages.length; i++) {
-                            await new Promise(r => setTimeout(r, 1500))
-                            setMessages(prev => [...prev, allMessages[i]])
-
-                            // 3ターンごと + 最終ターンでホワイトボードを表示
-                            if ((i > 0 && i % 3 === 2) || i === allMessages.length - 1) {
-                              setWhiteboardHtml(wbHtml)
-                            }
-                          }
-
-                          setStatus("finished")
-                          toast({ title: "再生完了", description: `${allMessages.length}ターンの会議を再生しました` })
+                          setPresetData({ messages: preset.messages, whiteboardHtml: wbHtml })
+                          toast({ title: "プリセット読込完了", description: "「会議を開始」を押すと再生されます" })
                         } catch (e) {
                           toast({ title: "読込エラー", description: "プリセットの読み込みに失敗しました", variant: "destructive" })
-                          setStatus("idle")
                         }
                       }}
                     >
