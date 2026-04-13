@@ -139,21 +139,24 @@ export default function SkillMapDashboard() {
             <span className="text-base text-gray-400">{selectedUser.role}</span>
           )}
           <div className="flex items-center gap-2 ml-4 border-l pl-4">
-            <label className="text-sm text-gray-500 whitespace-nowrap">比較基準日:</label>
-            <input
-              type="date"
-              value={compareDate}
-              onChange={(e) => setCompareDate(e.target.value)}
-              className="text-sm border border-gray-200 rounded-md px-2 py-1 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-400"
-            />
-            {compareDate && (
-              <button
-                onClick={() => setCompareDate("")}
-                className="text-xs text-gray-400 hover:text-gray-600"
-              >
-                ✕
-              </button>
-            )}
+            <button
+              onClick={() => {
+                if (compareDate) {
+                  setCompareDate("")
+                } else {
+                  const d = new Date()
+                  d.setMonth(d.getMonth() - 1)
+                  setCompareDate(d.toISOString().slice(0, 10))
+                }
+              }}
+              className={`text-sm font-medium px-3 py-1.5 rounded-md border transition-colors ${
+                compareDate
+                  ? "bg-emerald-50 border-emerald-300 text-emerald-700 hover:bg-emerald-100"
+                  : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
+              }`}
+            >
+              {compareDate ? "比較OFF" : "1ヶ月前と比較"}
+            </button>
             {compareDate && compareProfile && (
               <span className="text-xs text-emerald-600 font-medium">差分表示中</span>
             )}
