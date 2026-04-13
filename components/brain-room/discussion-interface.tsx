@@ -717,18 +717,11 @@ export function DiscussionInterface({
                   const isSelected = appMode === "conference"
                     ? selectedConferenceMembers.includes(c.id)
                     : selectedChatPersonas.includes(c.id)
-                  const bgMatch = (c.background || "").match(/(\d+)年/)
-                  const roleMatch = (c.background || "").match(/((?:[\u4e00-\u9fff]+[・]?)+(?:部門?|メーカー|科|部|課)?(?:の)?(?:[\u4e00-\u9fff]+))/)
-                  const shortRole = c.personality?.split("。")[0]?.substring(0, 30) || ""
                   return (
-                    <div
+                    <Button
                       key={c.id}
-                      className={`flex items-start gap-2 p-2.5 rounded-lg border-2 cursor-pointer transition-all ${
-                        isSelected
-                          ? "bg-blue-50 border-blue-400 shadow-sm"
-                          : "bg-white border-gray-200 hover:border-gray-300 opacity-60"
-                      }`}
-                      style={{ width: "calc(50% - 4px)", minWidth: "180px" }}
+                      variant={isSelected ? "default" : "outline"}
+                      size="sm"
                       onClick={() => {
                         if (appMode === "conference") {
                           setSelectedConferenceMembers((prev) =>
@@ -741,20 +734,8 @@ export function DiscussionInterface({
                         }
                       }}
                     >
-                      <div className="shrink-0 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                          <circle cx="12" cy="7" r="4" />
-                        </svg>
-                      </div>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-sm font-bold text-gray-800 truncate">{c.name}</span>
-                          {bgMatch && <span className="text-[10px] px-1 py-0.5 bg-gray-100 text-gray-500 rounded shrink-0">{bgMatch[1]}年</span>}
-                        </div>
-                        <p className="text-[11px] text-gray-500 leading-tight mt-0.5 line-clamp-2">{shortRole}</p>
-                      </div>
-                    </div>
+                      {c.name}
+                    </Button>
                   )
                 })}
               </div>
