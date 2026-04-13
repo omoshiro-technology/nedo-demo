@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
+import "@/styles/compath/index.css"
 
 // ============================================================
 // 型定義
@@ -35,12 +36,10 @@ const LEVEL_LABELS: Record<string, string> = {
   strategy: "大方針",
   tactic: "戦術",
   action: "アクション",
-  "sub-action": "詳細アクション",
-  criteria: "判断軸",
+  "sub-action": "詳細",
 }
 
 const DEMO_DECISIONS: DecisionEntry[] = [
-  // セッション1: SUS304深絞り（メインデモ）
   {
     id: "d-001", sessionId: "sess-001", sessionTitle: "SUS304 t1.5 深絞り形状 — 工程設計方針",
     label: "4工程（絞り→絞り→リストライク→トリム）",
@@ -117,8 +116,6 @@ const DEMO_DECISIONS: DecisionEntry[] = [
     rationale: "摩耗量の閾値を数値で定義し、誰が見ても同じ判断ができる基準を確立する。LCC計算の入力値も確定。",
     date: "2026-04-10", user: "田中 大輝",
   },
-
-  // セッション2: AL5052 曲げ加工
   {
     id: "d-101", sessionId: "sess-002", sessionTitle: "AL5052 t2.0 曲げ加工 — スプリングバック対策",
     label: "オーバーベンド角度を材料ロットごとに調整",
@@ -140,8 +137,6 @@ const DEMO_DECISIONS: DecisionEntry[] = [
     rationale: "V幅6倍では曲げ内Rが小さくなりすぎ、スプリングバック量が不安定。8倍にすることで成形力が均一化し再現性が向上。",
     date: "2026-04-08", user: "田中 大輝",
   },
-
-  // セッション3: SPCC 順送プレス
   {
     id: "d-201", sessionId: "sess-003", sessionTitle: "SPCC t1.2 順送プレス — 搬送ピッチ最適化",
     label: "搬送ピッチ22mm（材料歩留まり重視）",
@@ -163,8 +158,6 @@ const DEMO_DECISIONS: DecisionEntry[] = [
     rationale: "ピッチ22mmではφ3.0パイロットの配置余裕が不足。φ2.5に縮小しても位置決め精度±0.02mmは維持可能（実績あり）。",
     date: "2026-04-05", user: "佐藤 健一",
   },
-
-  // セッション4: SUS316 深絞り
   {
     id: "d-301", sessionId: "sess-004", sessionTitle: "SUS316 t1.0 深絞り — 潤滑条件選定",
     label: "塩素系潤滑油からボロン系に切替",
@@ -186,8 +179,6 @@ const DEMO_DECISIONS: DecisionEntry[] = [
     rationale: "作業者による塗布量のばらつき（0.5〜1.2g/m²）が割れ発生率の変動要因。0.8g/m²に標準化し不良率を0.5%低減。",
     date: "2026-04-03", user: "田中 大輝",
   },
-
-  // セッション5: SECC めっき鋼板
   {
     id: "d-401", sessionId: "sess-005", sessionTitle: "SECC t0.8 めっき鋼板 — 型かじり対策",
     label: "TiCNコーティング＋表面粗さRa0.1μm仕上げ",
@@ -197,8 +188,6 @@ const DEMO_DECISIONS: DecisionEntry[] = [
     tradeoffs: [{ give: "型寿命が10万→8万ショットに低下", get: "再処理コスト年間200万円削減" }],
     date: "2026-03-28", user: "佐藤 健一",
   },
-
-  // セッション6: ハイテン材
   {
     id: "d-501", sessionId: "sess-006", sessionTitle: "JSC780 t1.4 ハイテン材 — 割れ限界の検証方針",
     label: "成形限界線図（FLD）を実測で作成",
@@ -228,24 +217,6 @@ const ALL_SESSIONS = [...new Set(DEMO_DECISIONS.map(d => d.sessionId))].map(sid 
 })
 
 // ============================================================
-// QCDES バッジ
-// ============================================================
-
-function ImpactBadge({ label, impact }: { label: string; impact: string }) {
-  const colors: Record<string, string> = {
-    positive: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    negative: "bg-red-50 text-red-700 border-red-200",
-    neutral: "bg-slate-50 text-slate-500 border-slate-200",
-  }
-  const icons: Record<string, string> = { positive: "+", negative: "-", neutral: "=" }
-  return (
-    <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium border ${colors[impact] ?? colors.neutral}`}>
-      <span className="font-bold">{icons[impact] ?? "="}</span>{label}
-    </span>
-  )
-}
-
-// ============================================================
 // メインページ
 // ============================================================
 
@@ -272,147 +243,160 @@ export default function DecisionListPage() {
     })
   }, [query, sessionFilter, levelFilter])
 
-  const sessionCounts = useMemo(() => {
-    const map = new Map<string, number>()
-    for (const d of DEMO_DECISIONS) {
-      map.set(d.sessionId, (map.get(d.sessionId) ?? 0) + 1)
-    }
-    return map
-  }, [])
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* ヘッダー */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">意思決定ログ</h1>
-              <p className="text-sm text-gray-400 mt-0.5">{DEMO_DECISIONS.length}件の判断記録</p>
-            </div>
-            <div className="flex items-center gap-3 text-sm text-gray-500">
-              <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                {ALL_SESSIONS.length} セッション
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-blue-400" />
-                {new Set(DEMO_DECISIONS.map(d => d.user)).size} ユーザー
-              </span>
-            </div>
-          </div>
-
-          {/* 検索 + フィルター */}
-          <div className="flex gap-3">
-            <div className="flex-1 relative">
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-              <input
-                type="text"
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-                placeholder="キーワードで検索... (例: 加工硬化、型摩耗、LCC)"
-                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-              />
-            </div>
-            <select
-              value={sessionFilter}
-              onChange={e => setSessionFilter(e.target.value)}
-              className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              <option value="all">全セッション</option>
-              {ALL_SESSIONS.map(s => (
-                <option key={s.id} value={s.id}>{s.title.split("—")[0].trim()} ({sessionCounts.get(s.id)})</option>
-              ))}
-            </select>
-            <select
-              value={levelFilter}
-              onChange={e => setLevelFilter(e.target.value)}
-              className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              <option value="all">全レベル</option>
-              {Object.entries(LEVEL_LABELS).map(([k, v]) => (
-                <option key={k} value={k}>{v}</option>
-              ))}
-            </select>
-          </div>
+    <div className="compath-scope" style={{ overflow: "auto" }}>
+      <div style={{ maxWidth: 960, margin: "0 auto", padding: "32px 24px 80px" }}>
+        {/* ヘッダー */}
+        <div style={{ marginBottom: 24 }}>
+          <p className="eyebrow">Decision Log</p>
+          <h1 style={{ fontSize: "1.6rem", marginBottom: 4 }}>意思決定ログ</h1>
+          <p className="muted" style={{ fontSize: "0.9rem" }}>
+            {DEMO_DECISIONS.length}件の判断記録 / {ALL_SESSIONS.length}セッション
+          </p>
         </div>
-      </div>
 
-      {/* リスト */}
-      <div className="max-w-5xl mx-auto px-6 py-4">
+        {/* 検索 + フィルター */}
+        <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+          <div style={{ flex: 1, position: "relative" }}>
+            <svg style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--muted)" }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="text"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder="キーワードで検索... (例: 加工硬化、型摩耗、LCC)"
+              style={{
+                width: "100%", paddingLeft: 36, paddingRight: 12, paddingTop: 10, paddingBottom: 10,
+                fontSize: "0.9rem", border: "1px solid var(--line)", borderRadius: 12,
+                background: "var(--card)", outline: "none",
+                fontFamily: "inherit",
+              }}
+            />
+          </div>
+          <select
+            value={sessionFilter}
+            onChange={e => setSessionFilter(e.target.value)}
+            style={{
+              fontSize: "0.85rem", border: "1px solid var(--line)", borderRadius: 12,
+              padding: "8px 12px", background: "var(--card)", color: "var(--ink)",
+              fontFamily: "inherit", cursor: "pointer",
+            }}
+          >
+            <option value="all">全セッション</option>
+            {ALL_SESSIONS.map(s => (
+              <option key={s.id} value={s.id}>{s.title.split("—")[0].trim()}</option>
+            ))}
+          </select>
+          <select
+            value={levelFilter}
+            onChange={e => setLevelFilter(e.target.value)}
+            style={{
+              fontSize: "0.85rem", border: "1px solid var(--line)", borderRadius: 12,
+              padding: "8px 12px", background: "var(--card)", color: "var(--ink)",
+              fontFamily: "inherit", cursor: "pointer",
+            }}
+          >
+            <option value="all">全レベル</option>
+            {Object.entries(LEVEL_LABELS).map(([k, v]) => (
+              <option key={k} value={k}>{v}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* 件数 */}
+        {query || sessionFilter !== "all" || levelFilter !== "all" ? (
+          <p className="muted" style={{ fontSize: "0.8rem", marginBottom: 12 }}>
+            {filtered.length}件 / {DEMO_DECISIONS.length}件
+          </p>
+        ) : null}
+
+        {/* リスト */}
         {filtered.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
-            <p className="text-lg">該当する判断記録がありません</p>
-            <p className="text-sm mt-1">検索条件を変更してください</p>
+          <div style={{ textAlign: "center", padding: "60px 0" }}>
+            <p className="muted" style={{ fontSize: "1rem" }}>該当する判断記録がありません</p>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {filtered.map(d => {
               const isExpanded = expandedId === d.id
               return (
                 <div
                   key={d.id}
-                  className={`bg-white rounded-lg border transition-all cursor-pointer ${isExpanded ? "border-blue-300 shadow-md" : "border-gray-200 hover:border-gray-300 hover:shadow-sm"}`}
+                  style={{
+                    background: "var(--card)",
+                    border: `1px solid ${isExpanded ? "var(--accent)" : "var(--line)"}`,
+                    borderRadius: 14,
+                    transition: "border 0.15s, box-shadow 0.15s",
+                    boxShadow: isExpanded ? "var(--shadow)" : "none",
+                    cursor: "pointer",
+                  }}
                   onClick={() => setExpandedId(isExpanded ? null : d.id)}
                 >
-                  {/* コンパクト行 */}
-                  <div className="px-4 py-3 flex items-center gap-3">
-                    <span className={`shrink-0 px-2 py-0.5 rounded text-[10px] font-bold border ${
-                      d.level === "strategy" ? "bg-indigo-50 text-indigo-700 border-indigo-200"
-                      : d.level === "tactic" ? "bg-amber-50 text-amber-700 border-amber-200"
-                      : d.level === "action" ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                      : "bg-slate-50 text-slate-600 border-slate-200"
-                    }`}>
-                      {LEVEL_LABELS[d.level] ?? d.level}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-gray-900 truncate">{d.label}</div>
-                      <div className="text-xs text-gray-400 truncate mt-0.5">{d.sessionTitle}</div>
+                  {/* 行 */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 16px" }}>
+                    <LevelBadge level={d.level} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: "0.88rem", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {d.label}
+                      </div>
                     </div>
                     {d.confidence && (
-                      <span className="shrink-0 text-xs text-gray-400">{d.confidence}%</span>
+                      <span className="muted" style={{ fontSize: "0.78rem", flexShrink: 0 }}>{d.confidence}%</span>
                     )}
-                    <span className="shrink-0 text-xs text-gray-400">{d.date}</span>
-                    <span className="shrink-0 text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">{d.user}</span>
-                    <svg className={`shrink-0 text-gray-400 transition-transform ${isExpanded ? "rotate-180" : ""}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <span className="muted" style={{ fontSize: "0.78rem", flexShrink: 0 }}>{d.date}</span>
+                    <span style={{
+                      fontSize: "0.75rem", flexShrink: 0,
+                      padding: "2px 8px", borderRadius: 999,
+                      background: "rgba(31,122,109,0.08)", color: "var(--accent)", fontWeight: 600,
+                    }}>{d.user}</span>
+                    <svg style={{ flexShrink: 0, color: "var(--muted)", transition: "transform 0.15s", transform: isExpanded ? "rotate(180deg)" : "none" }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <polyline points="6 9 12 15 18 9" />
                     </svg>
                   </div>
 
-                  {/* 展開部分 */}
+                  {/* 展開 */}
                   {isExpanded && (
-                    <div className="px-4 pb-4 border-t border-gray-100">
-                      <div className="pt-3 space-y-3">
-                        {/* 説明 */}
-                        <p className="text-sm text-gray-600">{d.description}</p>
+                    <div style={{ padding: "0 16px 14px", borderTop: "1px solid var(--line)" }}>
+                      <div style={{ paddingTop: 12, display: "flex", flexDirection: "column", gap: 10 }}>
+                        <p className="muted" style={{ fontSize: "0.85rem", lineHeight: 1.5 }}>{d.description}</p>
+
+                        {/* セッション名 */}
+                        <p className="muted" style={{ fontSize: "0.78rem" }}>
+                          セッション: {d.sessionTitle}
+                        </p>
 
                         {/* 判断理由 */}
-                        <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
-                          <div className="text-xs font-bold text-blue-700 mb-1">判断理由</div>
-                          <p className="text-sm text-blue-900 leading-relaxed">{d.rationale}</p>
+                        <div style={{
+                          background: "rgba(31,122,109,0.06)", borderRadius: 10,
+                          padding: "10px 14px", borderLeft: "3px solid var(--accent)",
+                        }}>
+                          <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--accent)", marginBottom: 4 }}>判断理由</div>
+                          <p style={{ fontSize: "0.85rem", lineHeight: 1.6 }}>{d.rationale}</p>
                         </div>
 
-                        {/* QCDES影響 */}
+                        {/* QCDES */}
                         {d.qcdesImpact && (
-                          <div className="flex gap-2 flex-wrap">
-                            {d.qcdesImpact.quality && <ImpactBadge label={`Q: ${d.qcdesImpact.quality.description}`} impact={d.qcdesImpact.quality.impact} />}
-                            {d.qcdesImpact.cost && <ImpactBadge label={`C: ${d.qcdesImpact.cost.description}`} impact={d.qcdesImpact.cost.impact} />}
-                            {d.qcdesImpact.delivery && <ImpactBadge label={`D: ${d.qcdesImpact.delivery.description}`} impact={d.qcdesImpact.delivery.impact} />}
+                          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                            {d.qcdesImpact.quality && <QcdesBadge axis="Q" impact={d.qcdesImpact.quality.impact} text={d.qcdesImpact.quality.description} />}
+                            {d.qcdesImpact.cost && <QcdesBadge axis="C" impact={d.qcdesImpact.cost.impact} text={d.qcdesImpact.cost.description} />}
+                            {d.qcdesImpact.delivery && <QcdesBadge axis="D" impact={d.qcdesImpact.delivery.impact} text={d.qcdesImpact.delivery.description} />}
                           </div>
                         )}
 
                         {/* トレードオフ */}
                         {d.tradeoffs && d.tradeoffs.length > 0 && (
-                          <div className="bg-amber-50 rounded-lg p-3 border border-amber-100">
-                            <div className="text-xs font-bold text-amber-700 mb-1">トレードオフ</div>
+                          <div style={{
+                            background: "rgba(224,107,59,0.06)", borderRadius: 10,
+                            padding: "10px 14px", borderLeft: "3px solid var(--accent-2)",
+                          }}>
+                            <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--accent-2)", marginBottom: 4 }}>トレードオフ</div>
                             {d.tradeoffs.map((t, i) => (
-                              <div key={i} className="text-sm text-amber-900">
-                                <span className="text-red-600">- {t.give}</span>
-                                <span className="mx-2 text-amber-500">{"->"}</span>
-                                <span className="text-emerald-700">+ {t.get}</span>
-                              </div>
+                              <p key={i} style={{ fontSize: "0.83rem", lineHeight: 1.5 }}>
+                                <span style={{ color: "var(--missing)" }}>- {t.give}</span>
+                                <span style={{ margin: "0 6px", color: "var(--muted)" }}>{"-->"}</span>
+                                <span style={{ color: "var(--accent)" }}>+ {t.get}</span>
+                              </p>
                             ))}
                           </div>
                         )}
@@ -426,5 +410,45 @@ export default function DecisionListPage() {
         )}
       </div>
     </div>
+  )
+}
+
+// ============================================================
+// 小コンポーネント
+// ============================================================
+
+function LevelBadge({ level }: { level: string }) {
+  const colors: Record<string, { bg: string; fg: string }> = {
+    strategy: { bg: "rgba(31,122,109,0.12)", fg: "var(--accent)" },
+    tactic: { bg: "rgba(224,107,59,0.12)", fg: "var(--accent-2)" },
+    action: { bg: "rgba(31,28,22,0.08)", fg: "var(--ink)" },
+    "sub-action": { bg: "rgba(107,101,92,0.1)", fg: "var(--muted)" },
+  }
+  const c = colors[level] ?? colors.action
+  return (
+    <span style={{
+      flexShrink: 0, padding: "2px 8px", borderRadius: 999,
+      fontSize: "0.72rem", fontWeight: 700,
+      background: c.bg, color: c.fg,
+    }}>
+      {LEVEL_LABELS[level] ?? level}
+    </span>
+  )
+}
+
+function QcdesBadge({ axis, impact, text }: { axis: string; impact: string; text: string }) {
+  const icon = impact === "positive" ? "+" : impact === "negative" ? "-" : "="
+  const color = impact === "positive" ? "var(--accent)" : impact === "negative" ? "var(--missing)" : "var(--muted)"
+  return (
+    <span style={{
+      display: "inline-flex", alignItems: "center", gap: 4,
+      padding: "3px 8px", borderRadius: 8,
+      fontSize: "0.75rem", fontWeight: 500,
+      background: "rgba(31,28,22,0.04)",
+      border: "1px solid var(--line)",
+    }}>
+      <span style={{ fontWeight: 700, color }}>{icon}{axis}</span>
+      <span className="muted">{text}</span>
+    </span>
   )
 }
