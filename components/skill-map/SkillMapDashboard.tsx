@@ -13,7 +13,7 @@
  *     ┗ 下段 (auto)  : レベル定義ガイド
  */
 
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback, useRef, useLayoutEffect } from "react"
 import type {
   SkillProfile,
   SkillLevel,
@@ -332,6 +332,11 @@ const LEVEL_GUIDE: Array<{ level: SkillLevel; description: string; criteria: str
 // ============================================================
 
 function SkillDetailModal({ skillId, profile, onClose }: { skillId: string; profile: SkillProfile; onClose: () => void }) {
+  const [visible, setVisible] = useState(false)
+  useLayoutEffect(() => {
+    requestAnimationFrame(() => setVisible(true))
+  }, [])
+
   const skill = SKILL_MAP.get(skillId)
   if (!skill) return null
   const proficiency = profile.proficiencies[skillId]
@@ -343,8 +348,11 @@ function SkillDetailModal({ skillId, profile, onClose }: { skillId: string; prof
   const hasEvidence = evidence.length > 0
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={onClose}>
-      <div className={`bg-white rounded-xl shadow-xl border border-slate-200 p-5 max-h-[80vh] overflow-y-auto ${hasEvidence ? "w-[820px]" : "w-[420px]"}`} onClick={(e) => e.stopPropagation()}>
+    <div className={`fixed inset-0 z-50 flex items-center justify-center transition-colors duration-200 ${visible ? "bg-black/30" : "bg-black/0"}`} onClick={onClose}>
+      <div
+        className={`bg-white rounded-xl shadow-xl border border-slate-200 p-5 max-h-[80vh] overflow-y-auto transition-all duration-300 ease-out ${hasEvidence ? "w-[820px]" : "w-[420px]"} ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between gap-3 mb-3">
           <div>
             <div className="text-sm text-slate-400">{categoryName}</div>
