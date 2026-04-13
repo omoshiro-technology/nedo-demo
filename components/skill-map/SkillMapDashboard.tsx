@@ -184,8 +184,7 @@ export default function SkillMapDashboard() {
 // ============================================================
 
 function FullScreenCard({ profile, compareProfile }: { profile: SkillProfile; compareProfile?: SkillProfile | null }) {
-  const [hoveredSkill, setHoveredSkill] = useState<string | null>(null)
-  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
+  const [selectedSkill, setSelectedSkill] = useState<string | null>(null)
 
   // 差分計算: compareProfile(過去)と現在のprofileを比較し、上がったスキルを特定
   const improvedSkills = new Set<string>()
@@ -206,11 +205,6 @@ function FullScreenCard({ profile, compareProfile }: { profile: SkillProfile; co
     .sort((a, b) => new Date(b.lastAssessedAt).getTime() - new Date(a.lastAssessedAt).getTime())
     [0]?.latestScores ?? null
 
-  const handleMouseEnter = (skillId: string, e: React.MouseEvent) => {
-    setHoveredSkill(skillId)
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-    setTooltipPos({ x: rect.left + rect.width / 2, y: rect.top - 4 })
-  }
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-4 h-full flex flex-col">
@@ -252,7 +246,7 @@ function FullScreenCard({ profile, compareProfile }: { profile: SkillProfile; co
                   {skills.map((skill) => {
                     const prof = profile.proficiencies[skill.id]
                     const level = (prof?.currentLevel ?? 1) as SkillLevel
-                    const isHovered = hoveredSkill === skill.id
+                    const isSelected = selectedSkill === skill.id
                     const isImproved = improvedSkills.has(skill.id)
                     const pastLevel = compareProfile?.proficiencies[skill.id]?.currentLevel
                     return (
@@ -263,10 +257,9 @@ function FullScreenCard({ profile, compareProfile }: { profile: SkillProfile; co
                           flex items-center justify-center
                           border transition-all px-1 relative
                           ${isImproved ? "bg-emerald-200 border-emerald-500 ring-2 ring-emerald-400" : `${LEVEL_BG[level]} ${LEVEL_BORDER[level]}`}
-                          ${isHovered ? "ring-2 ring-indigo-400 scale-105 z-10" : !isImproved ? "hover:brightness-95" : ""}
+                          ${isSelected ? "ring-2 ring-indigo-400 scale-105 z-10" : !isImproved ? "hover:brightness-95" : ""}
                         `}
-                        onMouseEnter={(e) => handleMouseEnter(skill.id, e)}
-                        onMouseLeave={() => setHoveredSkill(null)}
+                        onClick={() => setSelectedSkill(skill.id)}
                       >
                         <span className={`text-xs font-medium truncate select-none ${isImproved ? "text-emerald-900" : LEVEL_TEXT[level]}`}>
                           {skill.name}
@@ -317,8 +310,8 @@ function FullScreenCard({ profile, compareProfile }: { profile: SkillProfile; co
         </div>
       </div>
 
-      {/* ツールチップ */}
-      {hoveredSkill && <SkillTooltip skillId={hoveredSkill} profile={profile} position={tooltipPos} />}
+      {/* スキル詳細モーダル */}
+      {selectedSkill && <SkillDetailModal skillId={selectedSkill} profile={profile} onClose={() => setSelectedSkill(null)} />}
     </div>
   )
 }
@@ -338,43 +331,31 @@ const LEVEL_GUIDE: Array<{ level: SkillLevel; description: string; criteria: str
 // ツールチップ
 // ============================================================
 
-function SkillTooltip({ skillId, profile, position }: { skillId: string; profile: SkillProfile; position: { x: number; y: number } }) {
+function SkillDetailModal({ skillId, profile, onClose }: { skillId: string; profile: SkillProfile; onClose: () => void }) {
   const skill = SKILL_MAP.get(skillId)
   if (!skill) return null
   const proficiency = profile.proficiencies[skillId]
   const currentLevel = (proficiency?.currentLevel ?? 1) as SkillLevel
   const categoryName = SKILL_CATEGORIES.find((c) => c.id === skill.categoryId)?.name ?? ""
 
-  const TT_BG: Record<SkillLevel, string> = { 1: "bg-slate-50 border-slate-200", 2: "bg-sky-50 border-sky-200", 3: "bg-sky-50 border-sky-300", 4: "bg-indigo-50 border-indigo-200" }
+  const ML_BG: Record<SkillLevel, string> = { 1: "bg-slate-50 border-slate-200", 2: "bg-sky-50 border-sky-200", 3: "bg-sky-50 border-sky-300", 4: "bg-indigo-50 border-indigo-200" }
   const evidence = proficiency?.levelUpEvidence?.filter(ev => ev.source === "compath_decision_navigator") ?? []
   const hasEvidence = evidence.length > 0
 
-  // 画面上部にスペースが足りなければ下方向に表示
-  const showBelow = position.y < 350
-
-  // 横方向のはみ出し防止
-  const tooltipWidth = hasEvidence ? 820 : 420
-  const halfW = tooltipWidth / 2
-  const vw = typeof window !== "undefined" ? window.innerWidth : 1920
-  const clampedX = Math.max(halfW + 8, Math.min(position.x, vw - halfW - 8))
-
   return (
-    <div className="fixed z-50 pointer-events-none" style={{ left: `${clampedX}px`, top: `${position.y}px`, transform: showBelow ? "translate(-50%, 16px)" : "translate(-50%, -100%)" }}>
-      {/* 下向き表示のとき矢印を上に */}
-      {showBelow && (
-        <div className="flex justify-center">
-          <div className="w-2.5 h-2.5 bg-white border-t border-l border-slate-200 rotate-45 mb-[-6px]" />
-        </div>
-      )}
-      <div className={`bg-white rounded-xl shadow-lg border border-slate-200 p-5 ${hasEvidence ? "w-[820px]" : "w-[420px]"}`}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={onClose}>
+      <div className={`bg-white rounded-xl shadow-xl border border-slate-200 p-5 max-h-[80vh] overflow-y-auto ${hasEvidence ? "w-[820px]" : "w-[420px]"}`} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between gap-3 mb-3">
           <div>
             <div className="text-sm text-slate-400">{categoryName}</div>
             <div className="text-lg font-bold text-slate-800">{skill.name}</div>
           </div>
-          <span className={`shrink-0 px-3 py-1 rounded text-base font-bold ${LEVEL_BG[currentLevel]} ${LEVEL_TEXT[currentLevel]} border ${LEVEL_BORDER[currentLevel]}`}>
-            Lv.{currentLevel} {SKILL_LEVEL_LABELS[currentLevel]}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className={`shrink-0 px-3 py-1 rounded text-base font-bold ${LEVEL_BG[currentLevel]} ${LEVEL_TEXT[currentLevel]} border ${LEVEL_BORDER[currentLevel]}`}>
+              Lv.{currentLevel} {SKILL_LEVEL_LABELS[currentLevel]}
+            </span>
+            <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
+          </div>
         </div>
         <div className={hasEvidence ? "flex gap-4" : ""}>
           <div className={hasEvidence ? "flex-1 min-w-0" : ""}>
@@ -385,7 +366,7 @@ function SkillTooltip({ skillId, profile, position }: { skillId: string; profile
                 const isCompleted = lv < currentLevel
                 const isFuture = lv > currentLevel
                 return (
-                  <div key={lv} className={`rounded-lg border p-2.5 ${isCurrent ? `${TT_BG[lv]} ring-1 ring-indigo-300` : isCompleted ? "bg-slate-50/50 border-slate-100" : "bg-white border-slate-100"}`}>
+                  <div key={lv} className={`rounded-lg border p-2.5 ${isCurrent ? `${ML_BG[lv]} ring-1 ring-indigo-300` : isCompleted ? "bg-slate-50/50 border-slate-100" : "bg-white border-slate-100"}`}>
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`text-sm font-bold px-2 py-0.5 rounded ${isCurrent ? `${LEVEL_BG[lv]} ${LEVEL_TEXT[lv]}` : isCompleted ? "bg-emerald-100 text-emerald-600" : "bg-slate-100 text-slate-400"}`}>
                         {isCompleted ? "\u2713" : ""} Lv.{lv} {SKILL_LEVEL_LABELS[lv]}
@@ -396,7 +377,7 @@ function SkillTooltip({ skillId, profile, position }: { skillId: string; profile
                     {isCurrent && lv < 4 && (
                       <div className="mt-2 p-2.5 rounded-lg bg-amber-50 border border-amber-200">
                         <div className="text-xs font-bold text-amber-700 mb-1">
-                          📈 Lv.{lv + 1} {SKILL_LEVEL_LABELS[(lv + 1) as SkillLevel]} に上がるには
+                          Lv.{lv + 1} {SKILL_LEVEL_LABELS[(lv + 1) as SkillLevel]} に上がるには
                         </div>
                         <p className="text-sm text-amber-800 leading-relaxed font-medium">{def.nextStep}</p>
                         {skill.levels[(lv + 1) as SkillLevel] && (
@@ -429,11 +410,6 @@ function SkillTooltip({ skillId, profile, position }: { skillId: string; profile
           )}
         </div>
       </div>
-      {!showBelow && (
-        <div className="flex justify-center">
-          <div className="w-2.5 h-2.5 bg-white border-b border-r border-slate-200 rotate-45 -mt-[6px]" />
-        </div>
-      )}
     </div>
   )
 }
