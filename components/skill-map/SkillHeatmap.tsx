@@ -43,23 +43,9 @@ export const LEVEL_BORDER: Record<SkillLevel, string> = {
 // ============================================================
 
 export function SkillHeatmapGrid({ profile }: Props) {
-  const [hoveredSkill, setHoveredSkill] = useState<string | null>(null)
-  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
+  const [selectedSkill, setSelectedSkill] = useState<string | null>(null)
 
   const skillsByCategory = getSkillsByCategory()
-
-  const handleMouseEnter = (skillId: string, e: React.MouseEvent) => {
-    setHoveredSkill(skillId)
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-    setTooltipPos({
-      x: rect.left + rect.width / 2,
-      y: rect.top - 4,
-    })
-  }
-
-  const handleMouseLeave = () => {
-    setHoveredSkill(null)
-  }
 
   return (
     <>
@@ -78,7 +64,7 @@ export function SkillHeatmapGrid({ profile }: Props) {
               {skills.map((skill) => {
                 const proficiency = profile.proficiencies[skill.id]
                 const level = (proficiency?.currentLevel ?? 1) as SkillLevel
-                const isHovered = hoveredSkill === skill.id
+                const isSelected = selectedSkill === skill.id
                 return (
                   <div
                     key={skill.id}
@@ -87,10 +73,9 @@ export function SkillHeatmapGrid({ profile }: Props) {
                       flex items-center justify-center
                       border transition-all
                       ${LEVEL_BG[level]} ${LEVEL_BORDER[level]}
-                      ${isHovered ? "ring-2 ring-indigo-400 scale-110 z-10" : "hover:brightness-95"}
+                      ${isSelected ? "ring-2 ring-indigo-400 scale-110 z-10" : "hover:brightness-95"}
                     `}
-                    onMouseEnter={(e) => handleMouseEnter(skill.id, e)}
-                    onMouseLeave={handleMouseLeave}
+                    onClick={() => setSelectedSkill(skill.id)}
                   >
                     <span
                       className={`text-[9px] font-medium leading-[1.2] text-center px-0.5 select-none ${LEVEL_TEXT[level]}`}
@@ -107,12 +92,12 @@ export function SkillHeatmapGrid({ profile }: Props) {
         )
       })}
 
-      {/* ホバーツールチップ */}
-      {hoveredSkill && (
-        <SkillTooltip
-          skillId={hoveredSkill}
+      {/* スキル詳細モーダル */}
+      {selectedSkill && (
+        <SkillDetailModal
+          skillId={selectedSkill}
           profile={profile}
-          position={tooltipPos}
+          onClose={() => setSelectedSkill(null)}
         />
       )}
     </>
@@ -200,17 +185,17 @@ export function HeatmapLegend() {
 }
 
 // ============================================================
-// ツールチップ
+// スキル詳細モーダル
 // ============================================================
 
-function SkillTooltip({
+function SkillDetailModal({
   skillId,
   profile,
-  position,
+  onClose,
 }: {
   skillId: string
   profile: SkillProfile
-  position: { x: number; y: number }
+  onClose: () => void
 }) {
   const skill = SKILL_MAP.get(skillId)
   if (!skill) return null
@@ -220,7 +205,7 @@ function SkillTooltip({
   const categoryName =
     SKILL_CATEGORIES.find((c) => c.id === skill.categoryId)?.name ?? ""
 
-  const TOOLTIP_LEVEL_BG: Record<SkillLevel, string> = {
+  const MODAL_LEVEL_BG: Record<SkillLevel, string> = {
     1: "bg-slate-50 border-slate-200",
     2: "bg-sky-50 border-sky-200",
     3: "bg-sky-50 border-sky-300",
@@ -229,24 +214,31 @@ function SkillTooltip({
 
   return (
     <div
-      className="fixed z-50 pointer-events-none"
-      style={{
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-        transform: "translate(-50%, -100%)",
-      }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+      onClick={onClose}
     >
-      <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-4 w-[340px]">
-        <div className="flex items-center justify-between gap-3 mb-3">
+      <div
+        className="bg-white rounded-xl shadow-xl border border-slate-200 p-5 w-[380px] max-h-[80vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between gap-3 mb-4">
           <div>
             <div className="text-[10px] text-slate-400">{categoryName}</div>
             <div className="text-sm font-bold text-slate-800">{skill.name}</div>
           </div>
-          <span
-            className={`shrink-0 px-2 py-0.5 rounded text-xs font-bold ${LEVEL_BG[currentLevel]} ${LEVEL_TEXT[currentLevel]} border ${LEVEL_BORDER[currentLevel]}`}
-          >
-            Lv.{currentLevel} {SKILL_LEVEL_LABELS[currentLevel]}
-          </span>
+          <div className="flex items-center gap-2">
+            <span
+              className={`shrink-0 px-2 py-0.5 rounded text-xs font-bold ${LEVEL_BG[currentLevel]} ${LEVEL_TEXT[currentLevel]} border ${LEVEL_BORDER[currentLevel]}`}
+            >
+              Lv.{currentLevel} {SKILL_LEVEL_LABELS[currentLevel]}
+            </span>
+            <button
+              onClick={onClose}
+              className="text-slate-400 hover:text-slate-600 text-lg leading-none"
+            >
+              &times;
+            </button>
+          </div>
         </div>
 
         <div className="space-y-1.5">
@@ -261,7 +253,7 @@ function SkillTooltip({
                 key={lv}
                 className={`rounded-lg border p-2.5 transition-all ${
                   isCurrent
-                    ? `${TOOLTIP_LEVEL_BG[lv]} ring-1 ring-indigo-300`
+                    ? `${MODAL_LEVEL_BG[lv]} ring-1 ring-indigo-300`
                     : isCompleted
                       ? "bg-slate-50/50 border-slate-100"
                       : "bg-white border-slate-100"
@@ -303,13 +295,10 @@ function SkillTooltip({
         </div>
 
         {proficiency && proficiency.touchCount > 0 && (
-          <div className="mt-2 text-[10px] text-slate-400 text-right">
+          <div className="mt-3 text-[10px] text-slate-400 text-right">
             {proficiency.touchCount} 回のセッションで接触
           </div>
         )}
-      </div>
-      <div className="flex justify-center">
-        <div className="w-2.5 h-2.5 bg-white border-b border-r border-slate-200 rotate-45 -mt-[6px]" />
       </div>
     </div>
   )

@@ -101,13 +101,13 @@ export const LAYOUT_V2 = {
   // ============================================================
 
   /** 判断軸から選択肢へのX方向オフセット */
-  OPTION_X_OFFSET: 280,
+  OPTION_X_OFFSET: 220,
 
   /** 選択肢間の縦間隔 */
   OPTION_Y_SPACING: 90,
 
   /** 探索ノードのX方向オフセット（選択肢からの距離） */
-  EXPLORATION_X_OFFSET: 300,
+  EXPLORATION_X_OFFSET: 240,
 
   /** ノードの高さ（理由ラベル含む、重なり判定用） */
   NODE_HEIGHT_WITH_LABEL: 100,
