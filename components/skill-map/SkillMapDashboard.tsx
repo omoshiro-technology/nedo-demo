@@ -393,7 +393,19 @@ function SkillTooltip({ skillId, profile, position }: { skillId: string; profile
                       {isCurrent && <span className="text-sm font-medium text-indigo-500">&larr; 現在</span>}
                     </div>
                     <p className={`text-sm leading-relaxed ${isFuture ? "text-slate-400" : "text-slate-600"}`}>{def.description}</p>
-                    {isCurrent && lv < 4 && <p className="text-sm text-amber-600 mt-1 font-medium">&rarr; {def.nextStep}</p>}
+                    {isCurrent && lv < 4 && (
+                      <div className="mt-2 p-2.5 rounded-lg bg-amber-50 border border-amber-200">
+                        <div className="text-xs font-bold text-amber-700 mb-1">
+                          📈 Lv.{lv + 1} {SKILL_LEVEL_LABELS[(lv + 1) as SkillLevel]} に上がるには
+                        </div>
+                        <p className="text-sm text-amber-800 leading-relaxed font-medium">{def.nextStep}</p>
+                        {skill.levels[(lv + 1) as SkillLevel] && (
+                          <p className="text-xs text-amber-600 mt-1">
+                            到達基準: {skill.levels[(lv + 1) as SkillLevel].description}
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )
               })}
