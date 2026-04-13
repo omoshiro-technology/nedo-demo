@@ -193,16 +193,40 @@ export function CharacterConfigForm({ onSave, onDelete, onLoad, characterSets, k
                 {characterSets.map((set) => (
                   <div
                     key={set.id}
-                    className={`p-3 rounded-lg cursor-pointer border ${
-                      editingSet.id === set.id ? "bg-blue-50 border-blue-500" : "hover:bg-gray-50"
+                    className={`p-4 rounded-xl cursor-pointer border-2 transition-all ${
+                      editingSet.id === set.id ? "bg-blue-50 border-blue-500 shadow-md" : "hover:bg-gray-50 border-gray-200 hover:border-gray-300"
                     }`}
                     onClick={() => handleSelectSet(set)}
                   >
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="font-semibold">{set.name}</p>
-                        <p className="text-xs text-gray-500">
-                          {set.isPreset ? "プリセット" : `作成日: ${new Date(set.createdAt).toLocaleDateString()}`}
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-blue-600 shrink-0">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                          </svg>
+                          <p className="font-bold text-base">{set.name}</p>
+                          {set.isPreset && <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded font-medium">プリセット</span>}
+                        </div>
+                        <div className="flex flex-wrap gap-1.5 mb-1">
+                          {set.characters.map((c) => (
+                            <div key={c.id} className="flex items-center gap-1 px-2 py-1 bg-white border rounded-md text-xs">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400 shrink-0">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                              </svg>
+                              <span className="font-medium text-gray-700">{c.name}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <p className="text-[11px] text-gray-400 mt-1">
+                          {set.characters.length}名 · {set.characters.map(c => {
+                            const bg = c.background || ""
+                            const match = bg.match(/(\d+)年/)
+                            return match ? `${c.name.split(' ').pop()}${match[1]}年` : c.name.split(' ').pop()
+                          }).join('、')}
                         </p>
                       </div>
                       <div className="flex gap-1">
