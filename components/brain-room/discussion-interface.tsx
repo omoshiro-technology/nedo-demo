@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useToast } from "@/components/ui/use-toast"
-import { Bot, Sparkles, FileText, Settings, Users, FileOutput, Square, Target, Brain, Info } from "lucide-react"
+import { Bot, Sparkles, FileText, Settings, Users, FileOutput, Square, Target, Brain, Info, Download } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { MindMapView } from "@/components/brain-room/mindmap-view"
@@ -56,6 +56,7 @@ export function DiscussionInterface({
   const [chatInput, setChatInput] = useState("")
   const [isSending, setIsSending] = useState(false)
   const [isGeneratingSlide, setIsGeneratingSlide] = useState(false)
+  const [isGeneratingPptx, setIsGeneratingPptx] = useState(false)
   const [selectedChatPersonas, setSelectedChatPersonas] = useState<number[]>([])
   const [selectedConferenceMembers, setSelectedConferenceMembers] = useState<number[]>(() => characters.map(c => c.id))
   const [presetData, setPresetData] = useState<{ messages: any[]; whiteboardHtml: string } | null>(null)
@@ -1133,6 +1134,50 @@ export function DiscussionInterface({
                     >
                       <Sparkles className="mr-2 h-4 w-4" />
                       {isGeneratingSlide ? "生成中..." : "スライドを作成"}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={isGeneratingPptx}
+                      onClick={async () => {
+                        setIsGeneratingPptx(true)
+                        try {
+                          const res = await fetch("/api/generate-slide-pptx", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ whiteboardHtml, theme }),
+                          })
+                          if (!res.ok) throw new Error(`API error: ${res.status}`)
+                          const blob = await res.blob()
+                          const disposition = res.headers.get("Content-Disposition") || ""
+                          const starMatch = disposition.match(/filename\*=UTF-8''([^;]+)/i)
+                          const plainMatch = disposition.match(/filename="([^"]+)"/i)
+                          const fileName = starMatch
+                            ? decodeURIComponent(starMatch[1])
+                            : plainMatch?.[1] || "slides.pptx"
+                          const url = URL.createObjectURL(blob)
+                          const a = document.createElement("a")
+                          a.href = url
+                          a.download = fileName
+                          document.body.appendChild(a)
+                          a.click()
+                          document.body.removeChild(a)
+                          setTimeout(() => URL.revokeObjectURL(url), 1000)
+                          toast({ title: "PPTXをダウンロードしました", description: fileName })
+                        } catch (err) {
+                          console.error(err)
+                          toast({
+                            title: "PPTX生成に失敗しました",
+                            description: err instanceof Error ? err.message : "Unknown error",
+                            variant: "destructive",
+                          })
+                        } finally {
+                          setIsGeneratingPptx(false)
+                        }
+                      }}
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      {isGeneratingPptx ? "生成中..." : "PPTXダウンロード"}
                     </Button>
                   </div>
                 )}
