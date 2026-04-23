@@ -25,6 +25,7 @@ import {
   SKILL_MAP,
   getSkillsByCategory,
 } from "@/lib/compath/domain/skillMap/skillCatalog"
+import { getSkillLabel } from "@/lib/compath/domain/skillMap/industryLabels"
 import { QCDESRadar } from "./QCDESRadar"
 
 type SampleUser = { id: string; name: string; role: string; industry: Industry }
@@ -217,7 +218,7 @@ export default function SkillMapDashboard() {
           <Placeholder text="まだスキルアセスメントのデータがありません。" />
         ) : (
           <div className={`h-full transition-opacity duration-200 ${transitioning ? "opacity-60" : "opacity-100"}`}>
-            <FullScreenCard profile={profile} compareProfile={compareProfile} />
+            <FullScreenCard profile={profile} compareProfile={compareProfile} industry={selectedIndustry} />
           </div>
         )}
       </div>
@@ -229,7 +230,7 @@ export default function SkillMapDashboard() {
 // フルスクリーンカード
 // ============================================================
 
-function FullScreenCard({ profile, compareProfile }: { profile: SkillProfile; compareProfile?: SkillProfile | null }) {
+function FullScreenCard({ profile, compareProfile, industry }: { profile: SkillProfile; compareProfile?: SkillProfile | null; industry: Industry }) {
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null)
 
   // 差分計算: compareProfile(過去)と現在のprofileを比較し、上がったスキルを特定
@@ -314,7 +315,7 @@ function FullScreenCard({ profile, compareProfile }: { profile: SkillProfile; co
                         onClick={() => setSelectedSkill(skill.id)}
                       >
                         <span className={`text-xs font-medium truncate select-none ${isImproved ? "text-emerald-900" : LEVEL_TEXT[level]}`}>
-                          {skill.name}
+                          {getSkillLabel(skill.id, industry, skill.name)}
                         </span>
                         {isImproved && (
                           <span className="absolute top-0 right-0.5 text-[9px] font-bold text-emerald-700">
@@ -380,7 +381,7 @@ function FullScreenCard({ profile, compareProfile }: { profile: SkillProfile; co
       </div>
 
       {/* スキル詳細モーダル */}
-      {selectedSkill && <SkillDetailModal skillId={selectedSkill} profile={profile} onClose={() => setSelectedSkill(null)} />}
+      {selectedSkill && <SkillDetailModal skillId={selectedSkill} profile={profile} industry={industry} onClose={() => setSelectedSkill(null)} />}
     </div>
   )
 }
@@ -400,7 +401,7 @@ const LEVEL_GUIDE: Array<{ level: SkillLevel; description: string; criteria: str
 // ツールチップ
 // ============================================================
 
-function SkillDetailModal({ skillId, profile, onClose }: { skillId: string; profile: SkillProfile; onClose: () => void }) {
+function SkillDetailModal({ skillId, profile, industry, onClose }: { skillId: string; profile: SkillProfile; industry: Industry; onClose: () => void }) {
   const [visible, setVisible] = useState(false)
   useLayoutEffect(() => {
     requestAnimationFrame(() => setVisible(true))
@@ -425,7 +426,7 @@ function SkillDetailModal({ skillId, profile, onClose }: { skillId: string; prof
         <div className="flex items-center justify-between gap-3 mb-3">
           <div>
             <div className="text-sm text-slate-400">{categoryName}</div>
-            <div className="text-lg font-bold text-slate-800">{skill.name}</div>
+            <div className="text-lg font-bold text-slate-800">{getSkillLabel(skill.id, industry, skill.name)}</div>
           </div>
           <div className="flex items-center gap-2">
             <span className={`shrink-0 px-3 py-1 rounded text-base font-bold ${LEVEL_BG[currentLevel]} ${LEVEL_TEXT[currentLevel]} border ${LEVEL_BORDER[currentLevel]}`}>
