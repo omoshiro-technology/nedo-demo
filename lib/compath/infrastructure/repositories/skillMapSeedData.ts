@@ -11,6 +11,7 @@ import type {
   SkillLevel,
   SessionSource,
   SkillProficiency,
+  Industry,
 } from "../../domain/skillMap/types";
 import { SKILL_DEFINITIONS } from "../../domain/skillMap/skillCatalog";
 
@@ -19,16 +20,30 @@ import { MURATA_SKILLS, murataAssessments } from "./seedData/murata";
 import { NAKAJIMA_SKILLS, nakajimaAssessments } from "./seedData/nakajima";
 import { FUJIWARA_SKILLS, fujiwaraAssessments } from "./seedData/fujiwara";
 import { TANAKA_SKILLS_AFTER, tanakaAssessments, TANAKA_EVIDENCE } from "./seedData/tanaka";
+import { YAMADA_SKILLS, yamadaAssessments } from "./seedData/yamada";
+import { SATO_SKILLS, satoAssessments } from "./seedData/sato";
 
 // ============================================================
 // 公開データ
 // ============================================================
 
-export const SAMPLE_USERS = [
-  { id: "tanaka-daiki", name: "田中 大輝", role: "工程設計見習い（2年目）" },
-  { id: "murata-tetsuo", name: "村田 鉄男", role: "ベテラン工程設計者（38年）" },
-  { id: "nakajima-kota", name: "中島 康太", role: "生産技術マネージャー（12年）" },
-  { id: "fujiwara-shota", name: "藤原 翔太", role: "若手CAEエンジニア（3年）" },
+export type SampleUser = {
+  id: string;
+  name: string;
+  role: string;
+  industry: Industry;
+};
+
+export const SAMPLE_USERS: SampleUser[] = [
+  // 板金加工
+  { id: "tanaka-daiki", name: "田中 大輝", role: "工程設計見習い（2年目）", industry: "sheet-metal" },
+  { id: "murata-tetsuo", name: "村田 鉄男", role: "ベテラン工程設計者（38年）", industry: "sheet-metal" },
+  { id: "nakajima-kota", name: "中島 康太", role: "生産技術マネージャー（12年）", industry: "sheet-metal" },
+  { id: "fujiwara-shota", name: "藤原 翔太", role: "若手CAEエンジニア（3年）", industry: "sheet-metal" },
+  // 半導体製造
+  { id: "yamada-naoto", name: "山田 直人", role: "プロセスエンジニア（8年）", industry: "semiconductor" },
+  // 食品製造
+  { id: "sato-yumi", name: "佐藤 由美", role: "品質管理リーダー（12年）", industry: "food-manufacturing" },
 ];
 
 // ============================================================
@@ -96,6 +111,8 @@ export function generateSeedData(): {
     ...murataAssessments(),
     ...nakajimaAssessments(),
     ...fujiwaraAssessments(),
+    ...yamadaAssessments(),
+    ...satoAssessments(),
   ];
 
   const tanakaProfile = buildProfile("tanaka-daiki", TANAKA_SKILLS_AFTER, allAssessments);
@@ -112,6 +129,8 @@ export function generateSeedData(): {
     buildProfile("murata-tetsuo", MURATA_SKILLS, allAssessments),
     buildProfile("nakajima-kota", NAKAJIMA_SKILLS, allAssessments),
     buildProfile("fujiwara-shota", FUJIWARA_SKILLS, allAssessments),
+    buildProfile("yamada-naoto", YAMADA_SKILLS, allAssessments),
+    buildProfile("sato-yumi", SATO_SKILLS, allAssessments),
   ];
 
   return { assessments: allAssessments, profiles };

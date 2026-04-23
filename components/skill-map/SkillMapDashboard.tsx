@@ -13,12 +13,13 @@
  *     ┗ 下段 (auto)  : レベル定義ガイド
  */
 
-import { useState, useEffect, useCallback, useRef, useLayoutEffect } from "react"
+import { useState, useEffect, useCallback, useRef, useLayoutEffect, useMemo } from "react"
 import type {
   SkillProfile,
   SkillLevel,
+  Industry,
 } from "@/lib/compath/domain/skillMap/types"
-import { SKILL_LEVEL_LABELS } from "@/lib/compath/domain/skillMap/types"
+import { SKILL_LEVEL_LABELS, INDUSTRY_LABELS } from "@/lib/compath/domain/skillMap/types"
 import {
   SKILL_CATEGORIES,
   SKILL_MAP,
@@ -26,7 +27,7 @@ import {
 } from "@/lib/compath/domain/skillMap/skillCatalog"
 import { QCDESRadar } from "./QCDESRadar"
 
-type SampleUser = { id: string; name: string; role: string }
+type SampleUser = { id: string; name: string; role: string; industry: Industry }
 
 // ============================================================
 // 色定義
@@ -57,6 +58,7 @@ const LEVEL_BORDER: Record<SkillLevel, string> = {
 
 export default function SkillMapDashboard() {
   const [users, setUsers] = useState<SampleUser[]>([])
+  const [selectedIndustry, setSelectedIndustry] = useState<Industry>("sheet-metal")
   const [selectedUserId, setSelectedUserId] = useState<string>("")
   const [profile, setProfile] = useState<SkillProfile | null>(null)
   const [compareProfile, setCompareProfile] = useState<SkillProfile | null>(null)
@@ -66,18 +68,40 @@ export default function SkillMapDashboard() {
   const [transitioning, setTransitioning] = useState(false)
   const fetchRef = useRef(0)
 
+  // 業界で絞り込んだユーザー一覧
+  const filteredUsers = useMemo(
+    () => users.filter((u) => u.industry === selectedIndustry),
+    [users, selectedIndustry]
+  )
+
+  // 業界で利用可能な業界一覧（存在するユーザーの業界のみ）
+  const availableIndustries = useMemo(() => {
+    const set = new Set<Industry>()
+    users.forEach((u) => set.add(u.industry))
+    return Array.from(set)
+  }, [users])
+
   useEffect(() => {
     fetch("/api/compath/skill-map/users")
       .then((r) => r.json())
       .then((data) => {
         const list: SampleUser[] = data.users ?? []
         setUsers(list)
-        if (list.length > 0 && !selectedUserId) {
-          setSelectedUserId(list[0].id)
+        const firstInIndustry = list.find((u) => u.industry === "sheet-metal")
+        if (firstInIndustry && !selectedUserId) {
+          setSelectedUserId(firstInIndustry.id)
         }
       })
       .catch(() => {})
   }, [])
+
+  // 業界切り替え時、その業界の先頭キャラを自動選択
+  useEffect(() => {
+    if (filteredUsers.length === 0) return
+    if (!filteredUsers.some((u) => u.id === selectedUserId)) {
+      setSelectedUserId(filteredUsers[0].id)
+    }
+  }, [selectedIndustry, filteredUsers, selectedUserId])
 
   const fetchData = useCallback(async () => {
     if (!selectedUserId) return
@@ -134,12 +158,23 @@ export default function SkillMapDashboard() {
       <div className="flex items-center border-b border-gray-200 bg-white px-5 py-2.5 shrink-0">
         <h1 className="text-xl font-bold text-gray-900 mr-4">スキルマップ</h1>
         <div className="ml-auto flex items-center gap-3">
+          {/* 業界プルダウン */}
+          <select
+            value={selectedIndustry}
+            onChange={(e) => setSelectedIndustry(e.target.value as Industry)}
+            className="text-base border border-gray-200 rounded-md px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400"
+          >
+            {availableIndustries.map((ind) => (
+              <option key={ind} value={ind}>{INDUSTRY_LABELS[ind]}</option>
+            ))}
+          </select>
+          {/* 人物プルダウン（業界で絞り込み） */}
           <select
             value={selectedUserId}
             onChange={(e) => setSelectedUserId(e.target.value)}
             className="text-base border border-gray-200 rounded-md px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400"
           >
-            {users.map((u) => (
+            {filteredUsers.map((u) => (
               <option key={u.id} value={u.id}>{u.name}</option>
             ))}
           </select>

@@ -62,6 +62,19 @@ export type QCDESCoverage = {
   safety: number;
 };
 
+// ============================================================
+// 業界区分（デモ用マルチ業界対応）
+// ============================================================
+
+/** 製造業内の業界区分 */
+export type Industry = "sheet-metal" | "semiconductor" | "food-manufacturing";
+
+export const INDUSTRY_LABELS: Record<Industry, string> = {
+  "sheet-metal": "板金加工",
+  "semiconductor": "半導体製造",
+  "food-manufacturing": "食品製造",
+};
+
 /**
  * 思考品質スコア — セッション単位で算出
  *
