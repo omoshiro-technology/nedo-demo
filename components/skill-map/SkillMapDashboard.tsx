@@ -160,25 +160,33 @@ export default function SkillMapDashboard() {
         <h1 className="text-xl font-bold text-gray-900 mr-4">スキルマップ</h1>
         <div className="ml-auto flex items-center gap-3">
           {/* 業界プルダウン */}
-          <select
-            value={selectedIndustry}
-            onChange={(e) => setSelectedIndustry(e.target.value as Industry)}
-            className="text-base border border-gray-200 rounded-md px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400"
-          >
-            {availableIndustries.map((ind) => (
-              <option key={ind} value={ind}>{INDUSTRY_LABELS[ind]}</option>
-            ))}
-          </select>
+          <label className="flex items-center gap-2 text-sm text-gray-500">
+            業界別:
+            <select
+              value={selectedIndustry}
+              onChange={(e) => setSelectedIndustry(e.target.value as Industry)}
+              className="text-base border border-gray-200 rounded-md px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400"
+            >
+              {availableIndustries.map((ind) => (
+                <option key={ind} value={ind}>{INDUSTRY_LABELS[ind]}</option>
+              ))}
+            </select>
+          </label>
+          {/* ブレッドクラムセパレータ */}
+          <span className="text-gray-400">&gt;</span>
           {/* 人物プルダウン（業界で絞り込み） */}
-          <select
-            value={selectedUserId}
-            onChange={(e) => setSelectedUserId(e.target.value)}
-            className="text-base border border-gray-200 rounded-md px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400"
-          >
-            {filteredUsers.map((u) => (
-              <option key={u.id} value={u.id}>{u.name}</option>
-            ))}
-          </select>
+          <label className="flex items-center gap-2 text-sm text-gray-500">
+            人物:
+            <select
+              value={selectedUserId}
+              onChange={(e) => setSelectedUserId(e.target.value)}
+              className="text-base border border-gray-200 rounded-md px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400"
+            >
+              {filteredUsers.map((u) => (
+                <option key={u.id} value={u.id}>{u.name}</option>
+              ))}
+            </select>
+          </label>
           {selectedUser && (
             <span className="text-base text-gray-400">{selectedUser.role}</span>
           )}
