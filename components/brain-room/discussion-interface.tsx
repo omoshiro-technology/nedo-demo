@@ -55,6 +55,7 @@ export function DiscussionInterface({
   const [appMode, setAppMode] = useState<"conference" | "chat">("conference")
   const [chatInput, setChatInput] = useState("")
   const [isSending, setIsSending] = useState(false)
+  const [isGeneratingSlide, setIsGeneratingSlide] = useState(false)
   const [selectedChatPersonas, setSelectedChatPersonas] = useState<number[]>([])
   const [selectedConferenceMembers, setSelectedConferenceMembers] = useState<number[]>(() => characters.map(c => c.id))
   const [presetData, setPresetData] = useState<{ messages: any[]; whiteboardHtml: string } | null>(null)
@@ -1077,15 +1078,63 @@ export function DiscussionInterface({
                   <p className="text-sm text-gray-500">議論の構造をホワイトボード形式で可視化</p>
                 </div>
                 {whiteboardHtml && (
-                  <button
-                    className="text-xs text-gray-500 hover:text-gray-800 underline"
-                    onClick={() => {
-                      navigator.clipboard.writeText(whiteboardHtml)
-                      toast({ title: "コピー完了", description: "HTMLソースをコピーしました。" })
-                    }}
-                  >
-                    HTMLソースをコピー
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      className="text-xs text-gray-500 hover:text-gray-800 underline"
+                      onClick={() => {
+                        navigator.clipboard.writeText(whiteboardHtml)
+                        toast({ title: "コピー完了", description: "HTMLソースをコピーしました。" })
+                      }}
+                    >
+                      HTMLソースをコピー
+                    </button>
+                    <Button
+                      size="sm"
+                      disabled={isGeneratingSlide}
+                      onClick={async () => {
+                        setIsGeneratingSlide(true)
+                        const tab = window.open("", "_blank")
+                        if (tab) {
+                          tab.document.write(
+                            `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>スライドを生成中...</title><style>body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#1a1a1a;color:#fff;font-family:'Noto Sans JP',sans-serif;}.box{text-align:center}.spinner{width:48px;height:48px;border:4px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}@keyframes spin{to{transform:rotate(360deg)}}</style></head><body><div class="box"><div class="spinner"></div><p>スライドを生成しています…</p></div></body></html>`,
+                          )
+                          tab.document.close()
+                        }
+                        try {
+                          const res = await fetch("/api/generate-slide", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ whiteboardHtml, theme }),
+                          })
+                          if (!res.ok) throw new Error(`API error: ${res.status}`)
+                          const html = await res.text()
+                          if (tab) {
+                            tab.document.open()
+                            tab.document.write(html)
+                            tab.document.close()
+                          } else {
+                            const blob = new Blob([html], { type: "text/html" })
+                            const url = URL.createObjectURL(blob)
+                            window.open(url, "_blank")
+                          }
+                          toast({ title: "スライドを生成しました", description: "新しいタブで表示しています。" })
+                        } catch (err) {
+                          console.error(err)
+                          if (tab) tab.close()
+                          toast({
+                            title: "スライド生成に失敗しました",
+                            description: err instanceof Error ? err.message : "Unknown error",
+                            variant: "destructive",
+                          })
+                        } finally {
+                          setIsGeneratingSlide(false)
+                        }
+                      }}
+                    >
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      {isGeneratingSlide ? "生成中..." : "スライドを作成"}
+                    </Button>
+                  </div>
                 )}
               </div>
               {whiteboardHtml ? (
