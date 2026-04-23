@@ -32,6 +32,9 @@ export const SUZUKI_SKILLS: SkillLevelMap = {
 
 export function suzukiAssessments(): SkillAssessment[] {
   return makeAssessments("suzuki-sho", SUZUKI_SKILLS, [
+    // 過去四半期（クオーター比較用）
+    { source: "compath_chat", purpose: "装置保全年間計画の見直し", tq: tq(72, 70, 68, 75, qcdes(65, 70, 68, 30, 45)), skills: ["preventive-maint", "equip-diag", "work-standard"], daysAgo: 120 },
+    { source: "brain_room_1shot", purpose: "生産性向上 KPI の設計", tq: tq(70, 72, 68, 72, qcdes(62, 72, 65, 28, 40)), skills: ["productivity", "equip-eval", "process-control"], daysAgo: 100 },
     { source: "brain_room_1shot", purpose: "エッチング装置の自動化ロジック改善", tq: tq(75, 78, 72, 80, qcdes(68, 75, 70, 35, 40)), skills: ["automation", "plc-control", "equip-eval", "productivity"], daysAgo: 49 },
     { source: "compath_decision_navigator", purpose: "真空ポンプの交換タイミング最適化", tq: tq(72, 80, 75, 78, qcdes(55, 88, 65, 40, 50)), skills: ["preventive-maint", "equip-diag", "cost-control"], daysAgo: 42 },
     { source: "compath_chat", purpose: "装置トラブル時の初動対応フロー", tq: tq(78, 75, 70, 80, qcdes(80, 55, 72, 30, 65)), skills: ["troubleshoot", "emergency", "daily-inspect"], daysAgo: 35 },

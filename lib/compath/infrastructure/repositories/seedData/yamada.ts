@@ -32,6 +32,9 @@ export const YAMADA_SKILLS: SkillLevelMap = {
 
 export function yamadaAssessments(): SkillAssessment[] {
   return makeAssessments("yamada-naoto", YAMADA_SKILLS, [
+    // 過去四半期（クオーター比較用）
+    { source: "brain_room_1shot", purpose: "前四半期のプロセス標準化見直し", tq: tq(78, 75, 72, 82, qcdes(82, 62, 38, 55, 42)), skills: ["process-control", "work-standard", "qc-method"], daysAgo: 120 },
+    { source: "compath_decision_navigator", purpose: "クリーンルーム運用基準の更新", tq: tq(75, 72, 70, 78, qcdes(80, 58, 42, 70, 68)), skills: ["occupational-safety", "chemical-mgmt", "five-s"], daysAgo: 100 },
     { source: "brain_room_1shot", purpose: "CVD成膜工程の膜厚ばらつき原因分析", tq: tq(82, 78, 75, 85, qcdes(88, 65, 40, 60, 40)), skills: ["qc-method", "measurement", "troubleshoot", "spc"], daysAgo: 56 },
     { source: "compath_decision_navigator", purpose: "エッチング装置のメンテナンス周期最適化", tq: tq(78, 82, 80, 80, qcdes(72, 70, 55, 45, 35)), skills: ["preventive-maint", "equip-diag", "equip-eval", "productivity"], daysAgo: 49 },
     { source: "compath_chat", purpose: "クリーンルーム異物検出の初動対応フロー改訂", tq: tq(80, 75, 82, 78, qcdes(85, 30, 45, 72, 78)), skills: ["occupational-safety", "qc-method", "daily-inspect", "five-s"], daysAgo: 42 },

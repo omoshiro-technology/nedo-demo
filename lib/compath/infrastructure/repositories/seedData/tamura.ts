@@ -32,6 +32,9 @@ export const TAMURA_SKILLS: SkillLevelMap = {
 
 export function tamuraAssessments(): SkillAssessment[] {
   return makeAssessments("tamura-masao", TAMURA_SKILLS, [
+    // 過去四半期（クオーター比較用）
+    { source: "brain_room_1shot", purpose: "前年度の工場運営振り返り", tq: tq(90, 85, 82, 92, qcdes(90, 88, 88, 52, 72)), skills: ["production-plan", "work-standard", "cost-control"], daysAgo: 120 },
+    { source: "compath_decision_navigator", purpose: "新年度予算計画の策定", tq: tq(88, 85, 80, 92, qcdes(85, 92, 85, 50, 70)), skills: ["cost-control", "production-plan", "outsource-mgmt"], daysAgo: 100 },
     { source: "brain_room_1shot", purpose: "年度計画と月次 KPI の設計", tq: tq(92, 88, 85, 95, qcdes(92, 92, 90, 55, 75)), skills: ["production-plan", "cost-control", "productivity", "delivery-mgmt"], daysAgo: 56 },
     { source: "compath_decision_navigator", purpose: "大口顧客のクレーム対応と再発防止", tq: tq(90, 92, 88, 92, qcdes(95, 70, 85, 50, 92)), skills: ["customer-negotiation", "troubleshoot", "qc-method", "risk-assessment"], daysAgo: 49 },
     { source: "brain_room_1shot", purpose: "HACCP 内部監査の実施と改善", tq: tq(88, 85, 82, 90, qcdes(92, 60, 72, 80, 92)), skills: ["audit", "qc-method", "occupational-safety", "industry-standard"], daysAgo: 42 },

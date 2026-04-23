@@ -31,6 +31,8 @@ export const KIMURA_SKILLS: SkillLevelMap = {
 
 export function kimuraAssessments(): SkillAssessment[] {
   return makeAssessments("kimura-yu", KIMURA_SKILLS, [
+    // 入社時（クオーター比較用）
+    { source: "compath_chat", purpose: "半導体業界の基本用語を先輩AIに質問", tq: tq(8, 5, 4, 7, qcdes(8, 0, 0, 5, 10)), skills: ["industry-standard"], daysAgo: 120 },
     { source: "brain_room_1shot", purpose: "成膜工程の基礎を学ぶ", tq: tq(25, 20, 18, 30, qcdes(30, 15, 10, 20, 15)), skills: ["press-forming", "surface-treat", "measurement"], daysAgo: 45 },
     { source: "compath_chat", purpose: "クリーンルームの5S活動と基本ルール", tq: tq(30, 25, 22, 35, qcdes(35, 10, 15, 40, 45)), skills: ["occupational-safety", "five-s", "daily-inspect"], daysAgo: 35 },
     { source: "brain_room_1shot", purpose: "異物検出装置の日常点検方法", tq: tq(35, 30, 28, 40, qcdes(40, 15, 20, 15, 20)), skills: ["daily-inspect", "inspection", "qc-method"], daysAgo: 21 },

@@ -32,6 +32,9 @@ export const WATANABE_SKILLS: SkillLevelMap = {
 
 export function watanabeAssessments(): SkillAssessment[] {
   return makeAssessments("watanabe-sho", WATANABE_SKILLS, [
+    // 過去四半期（クオーター比較用）
+    { source: "compath_chat", purpose: "既存ラインの設備点検運用レビュー", tq: tq(78, 75, 72, 82, qcdes(72, 75, 78, 38, 50)), skills: ["preventive-maint", "equip-diag", "work-standard"], daysAgo: 120 },
+    { source: "brain_room_1shot", purpose: "ライン切替時間の短縮検討", tq: tq(80, 78, 75, 82, qcdes(78, 80, 75, 35, 52)), skills: ["cycle-time", "line-layout", "process-seq"], daysAgo: 100 },
     { source: "brain_room_1shot", purpose: "充填ラインの自動化率向上プロジェクト", tq: tq(82, 80, 78, 85, qcdes(75, 80, 82, 40, 55)), skills: ["automation", "plc-control", "line-layout", "productivity"], daysAgo: 49 },
     { source: "compath_decision_navigator", purpose: "新型包装機の導入評価", tq: tq(85, 88, 82, 88, qcdes(82, 85, 72, 50, 55)), skills: ["method-eval", "equip-eval", "cost-est", "process-dev"], daysAgo: 42 },
     { source: "compath_chat", purpose: "ラインバランシング改善とサイクルタイム", tq: tq(80, 82, 78, 85, qcdes(80, 82, 78, 35, 45)), skills: ["cycle-time", "line-layout", "work-standard", "productivity"], daysAgo: 35 },

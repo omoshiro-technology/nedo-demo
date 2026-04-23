@@ -32,6 +32,9 @@ export const TAKAHASHI_SKILLS: SkillLevelMap = {
 
 export function takahashiAssessments(): SkillAssessment[] {
   return makeAssessments("takahashi-kenji", TAKAHASHI_SKILLS, [
+    // 過去四半期（クオーター比較用）
+    { source: "brain_room_1shot", purpose: "前世代ノードの振り返り設計レビュー", tq: tq(88, 85, 82, 92, qcdes(88, 80, 72, 50, 65)), skills: ["process-seq", "die-design", "process-dev"], daysAgo: 120 },
+    { source: "compath_decision_navigator", purpose: "歩留まり改善の恒久対策検討", tq: tq(90, 88, 85, 92, qcdes(92, 72, 68, 48, 65)), skills: ["reliability", "troubleshoot", "spc"], daysAgo: 100 },
     { source: "brain_room_1shot", purpose: "新世代ノードのプロセスフロー設計方針", tq: tq(92, 90, 88, 95, qcdes(92, 85, 75, 55, 70)), skills: ["process-seq", "die-design", "forming-sim", "process-dev"], daysAgo: 56 },
     { source: "compath_decision_navigator", purpose: "CMP 装置の更新 vs 既存改造の比較", tq: tq(88, 92, 85, 90, qcdes(90, 88, 70, 40, 55)), skills: ["equip-eval", "cost-est", "method-eval", "grinding"], daysAgo: 49 },
     { source: "brain_room_1shot", purpose: "歩留まり改善プロジェクト FMEA", tq: tq(95, 92, 90, 95, qcdes(95, 75, 70, 50, 70)), skills: ["process-fmea", "reliability", "troubleshoot", "productivity"], daysAgo: 42 },

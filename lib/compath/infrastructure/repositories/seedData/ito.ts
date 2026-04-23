@@ -31,6 +31,8 @@ export const ITO_SKILLS: SkillLevelMap = {
 
 export function itoAssessments(): SkillAssessment[] {
   return makeAssessments("ito-ai", ITO_SKILLS, [
+    // 入社時（クオーター比較用）
+    { source: "compath_chat", purpose: "食品業界の基本用語を先輩AIに質問", tq: tq(8, 5, 4, 7, qcdes(10, 0, 0, 5, 15)), skills: ["industry-standard"], daysAgo: 120 },
     { source: "brain_room_1shot", purpose: "HACCP の基本と重要管理点の考え方", tq: tq(28, 22, 20, 32, qcdes(35, 10, 15, 30, 45)), skills: ["qc-method", "risk-assessment", "industry-standard"], daysAgo: 45 },
     { source: "compath_chat", purpose: "食品工場の 5S とアレルゲン管理", tq: tq(30, 25, 22, 35, qcdes(40, 10, 15, 35, 50)), skills: ["five-s", "chemical-mgmt", "occupational-safety"], daysAgo: 35 },
     { source: "brain_room_1shot", purpose: "異物検査装置の日常点検", tq: tq(32, 28, 25, 38, qcdes(45, 15, 20, 15, 25)), skills: ["daily-inspect", "inspection", "qc-method"], daysAgo: 21 },

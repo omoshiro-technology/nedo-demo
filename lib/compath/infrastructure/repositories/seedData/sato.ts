@@ -32,6 +32,9 @@ export const SATO_SKILLS: SkillLevelMap = {
 
 export function satoAssessments(): SkillAssessment[] {
   return makeAssessments("sato-yumi", SATO_SKILLS, [
+    // 過去四半期（クオーター比較用）
+    { source: "brain_room_1shot", purpose: "年度品質方針の策定", tq: tq(85, 82, 78, 88, qcdes(88, 48, 65, 75, 88)), skills: ["qc-method", "work-standard", "audit"], daysAgo: 120 },
+    { source: "compath_decision_navigator", purpose: "食中毒リスク評価の更新", tq: tq(82, 80, 78, 85, qcdes(88, 55, 62, 70, 90)), skills: ["risk-assessment", "chemical-mgmt", "occupational-safety"], daysAgo: 100 },
     { source: "brain_room_1shot", purpose: "HACCP計画の重要管理点見直し", tq: tq(88, 85, 82, 90, qcdes(92, 50, 68, 80, 92)), skills: ["qc-method", "audit", "occupational-safety", "risk-assessment"], daysAgo: 56 },
     { source: "compath_decision_navigator", purpose: "アレルゲン混入防止のゾーニング再設計", tq: tq(82, 80, 85, 82, qcdes(88, 55, 50, 72, 88)), skills: ["chemical-mgmt", "line-layout", "work-standard", "five-s"], daysAgo: 49 },
     { source: "compath_chat", purpose: "原材料サプライヤー監査項目の更新", tq: tq(85, 82, 78, 88, qcdes(92, 68, 72, 48, 60)), skills: ["supplier-quality", "audit", "inspection", "industry-standard"], daysAgo: 42 },

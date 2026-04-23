@@ -57,12 +57,29 @@ const LEVEL_BORDER: Record<SkillLevel, string> = {
 // メインコンポーネント
 // ============================================================
 
+// 比較モードの種類
+type CompareMode = "monthly" | "quarterly"
+
+const COMPARE_MODE_LABELS: Record<CompareMode, string> = {
+  "monthly": "1ヶ月前と比較",
+  "quarterly": "期末比較（クオーター）",
+}
+
+// compareMode に応じて「何日前」を返す
+function getDaysAgo(mode: CompareMode): number {
+  switch (mode) {
+    case "monthly": return 30
+    case "quarterly": return 90
+  }
+}
+
 export default function SkillMapDashboard() {
   const [users, setUsers] = useState<SampleUser[]>([])
   const [selectedIndustry, setSelectedIndustry] = useState<Industry>("sheet-metal")
   const [selectedUserId, setSelectedUserId] = useState<string>("")
   const [profile, setProfile] = useState<SkillProfile | null>(null)
   const [compareProfile, setCompareProfile] = useState<SkillProfile | null>(null)
+  const [compareMode, setCompareMode] = useState<CompareMode>("monthly")
   const [compareDate, setCompareDate] = useState<string>("")
   const [initialLoading, setInitialLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -142,13 +159,13 @@ export default function SkillMapDashboard() {
     if (selectedUserId) fetchData()
   }, [selectedUserId]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ユーザー選択時に compareDate を「1ヶ月前」に自動セット
+  // ユーザー選択 or 比較モード変更時に compareDate を自動セット
   useEffect(() => {
     if (!selectedUserId) return
     const d = new Date()
-    d.setMonth(d.getMonth() - 1)
+    d.setDate(d.getDate() - getDaysAgo(compareMode))
     setCompareDate(d.toISOString().slice(0, 10))
-  }, [selectedUserId])
+  }, [selectedUserId, compareMode])
 
   const hasData = profile && profile.totalAssessments > 0
   const selectedUser = users.find((u) => u.id === selectedUserId)
@@ -191,27 +208,17 @@ export default function SkillMapDashboard() {
             {selectedUser?.role ?? ""}
           </span>
           <div className="flex items-center gap-2 ml-4 border-l pl-4">
-            <button
-              onClick={() => {
-                if (compareDate) {
-                  setCompareDate("")
-                } else {
-                  const d = new Date()
-                  d.setMonth(d.getMonth() - 1)
-                  setCompareDate(d.toISOString().slice(0, 10))
-                }
-              }}
-              className={`text-sm font-medium px-3 py-1.5 rounded-md border transition-colors ${
-                compareDate
-                  ? "bg-emerald-50 border-emerald-300 text-emerald-700 hover:bg-emerald-100"
-                  : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
-              }`}
-            >
-              {compareDate ? "比較OFF" : "1ヶ月前と比較"}
-            </button>
-            {compareDate && compareProfile && (
-              <span className="text-xs text-emerald-600 font-medium">差分表示中</span>
-            )}
+            <label className="flex items-center gap-2 text-sm text-gray-500">
+              比較:
+              <select
+                value={compareMode}
+                onChange={(e) => setCompareMode(e.target.value as CompareMode)}
+                className="text-base border border-gray-200 rounded-md px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400 w-[200px]"
+              >
+                <option value="monthly">{COMPARE_MODE_LABELS["monthly"]}</option>
+                <option value="quarterly">{COMPARE_MODE_LABELS["quarterly"]}</option>
+              </select>
+            </label>
           </div>
         </div>
       </div>
@@ -226,7 +233,7 @@ export default function SkillMapDashboard() {
           <Placeholder text="まだスキルアセスメントのデータがありません。" />
         ) : (
           <div className={`h-full transition-opacity duration-200 ${transitioning ? "opacity-60" : "opacity-100"}`}>
-            <FullScreenCard profile={profile} compareProfile={compareProfile} industry={selectedIndustry} />
+            <FullScreenCard profile={profile} compareProfile={compareProfile} industry={selectedIndustry} compareMode={compareMode} />
           </div>
         )}
       </div>
@@ -238,7 +245,7 @@ export default function SkillMapDashboard() {
 // フルスクリーンカード
 // ============================================================
 
-function FullScreenCard({ profile, compareProfile, industry }: { profile: SkillProfile; compareProfile?: SkillProfile | null; industry: Industry }) {
+function FullScreenCard({ profile, compareProfile, industry, compareMode }: { profile: SkillProfile; compareProfile?: SkillProfile | null; industry: Industry; compareMode: CompareMode }) {
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null)
 
   // 差分計算: compareProfile(過去)と現在のprofileを比較し、上がったスキルを特定
@@ -339,33 +346,56 @@ function FullScreenCard({ profile, compareProfile, industry }: { profile: SkillP
           })}
         </div>
 
-        {/* 右: QCDES レーダー 2枚横並び — 45%幅 */}
+        {/* 右: QCDES レーダー — 45%幅
+             compareMode により表示切替:
+               - monthly:   2枚横並び（過去 / 現在）
+               - quarterly: 重ね表示（1枚に過去 + 現在 + 色付け）
+        */}
         <div className="w-[45%] min-h-0 rounded-lg border border-gray-100 bg-gray-50/50 p-3 flex flex-col">
           <h3 className="text-base font-bold text-gray-600 mb-2 shrink-0">観点網羅度（QCDES）</h3>
-          <div className="flex-1 min-h-0 flex gap-4">
-            {/* 1ヶ月前 */}
-            <div className="flex-1 flex flex-col min-w-0">
-              <p className="text-xs text-center font-medium text-gray-500 mb-1 shrink-0">1ヶ月前</p>
-              <div className="flex-1 min-h-0">
-                {compareLatestScores ? (
-                  <QCDESRadar scores={compareLatestScores} compact />
-                ) : (
-                  <div className="h-full flex items-center justify-center text-xs text-gray-400">データなし</div>
-                )}
+          {compareMode === "monthly" ? (
+            <div className="flex-1 min-h-0 flex gap-4">
+              {/* 1ヶ月前 */}
+              <div className="flex-1 flex flex-col min-w-0">
+                <p className="text-xs text-center font-medium text-gray-500 mb-1 shrink-0">1ヶ月前</p>
+                <div className="flex-1 min-h-0">
+                  {compareLatestScores ? (
+                    <QCDESRadar scores={compareLatestScores} compact />
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-xs text-gray-400">データなし</div>
+                  )}
+                </div>
+              </div>
+              {/* 現在 */}
+              <div className="flex-1 flex flex-col min-w-0">
+                <p className="text-xs text-center font-medium text-gray-500 mb-1 shrink-0">現在</p>
+                <div className="flex-1 min-h-0">
+                  {latestScores ? (
+                    <QCDESRadar scores={latestScores} compact />
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-xs text-gray-400">データなし</div>
+                  )}
+                </div>
               </div>
             </div>
-            {/* 現在 */}
-            <div className="flex-1 flex flex-col min-w-0">
-              <p className="text-xs text-center font-medium text-gray-500 mb-1 shrink-0">現在</p>
+          ) : (
+            <div className="flex-1 min-h-0 flex flex-col">
+              <p className="text-xs text-center font-medium text-gray-500 mb-1 shrink-0">期末比較（前四半期 → 現在）</p>
               <div className="flex-1 min-h-0">
                 {latestScores ? (
-                  <QCDESRadar scores={latestScores} compact />
+                  <QCDESRadar
+                    scores={latestScores}
+                    compareScores={compareLatestScores}
+                    overlayColor="growth"
+                    currentLabel="現在"
+                    pastLabel="前四半期"
+                  />
                 ) : (
                   <div className="h-full flex items-center justify-center text-xs text-gray-400">データなし</div>
                 )}
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
