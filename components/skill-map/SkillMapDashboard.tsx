@@ -165,7 +165,7 @@ export default function SkillMapDashboard() {
             <select
               value={selectedIndustry}
               onChange={(e) => setSelectedIndustry(e.target.value as Industry)}
-              className="text-base border border-gray-200 rounded-md px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400"
+              className="text-base border border-gray-200 rounded-md px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400 w-[130px]"
             >
               {availableIndustries.map((ind) => (
                 <option key={ind} value={ind}>{INDUSTRY_LABELS[ind]}</option>
@@ -180,18 +180,16 @@ export default function SkillMapDashboard() {
             <select
               value={selectedUserId}
               onChange={(e) => setSelectedUserId(e.target.value)}
-              className="text-base border border-gray-200 rounded-md px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400"
+              className="text-base border border-gray-200 rounded-md px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400 w-[130px]"
             >
               {filteredUsers.map((u) => (
                 <option key={u.id} value={u.id}>{u.name}</option>
               ))}
             </select>
           </label>
-          {selectedUser && (
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-slate-100 text-slate-600 border border-slate-200">
-              {selectedUser.role}
-            </span>
-          )}
+          <span className="inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-medium bg-slate-100 text-slate-600 border border-slate-200 w-[220px] truncate">
+            {selectedUser?.role ?? ""}
+          </span>
           <div className="flex items-center gap-2 ml-4 border-l pl-4">
             <button
               onClick={() => {

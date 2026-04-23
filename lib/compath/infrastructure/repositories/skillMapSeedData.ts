@@ -21,7 +21,13 @@ import { NAKAJIMA_SKILLS, nakajimaAssessments } from "./seedData/nakajima";
 import { FUJIWARA_SKILLS, fujiwaraAssessments } from "./seedData/fujiwara";
 import { TANAKA_SKILLS_AFTER, tanakaAssessments, TANAKA_EVIDENCE } from "./seedData/tanaka";
 import { YAMADA_SKILLS, yamadaAssessments } from "./seedData/yamada";
+import { KIMURA_SKILLS, kimuraAssessments } from "./seedData/kimura";
+import { TAKAHASHI_SKILLS, takahashiAssessments } from "./seedData/takahashi";
+import { SUZUKI_SKILLS, suzukiAssessments } from "./seedData/suzuki";
 import { SATO_SKILLS, satoAssessments } from "./seedData/sato";
+import { ITO_SKILLS, itoAssessments } from "./seedData/ito";
+import { TAMURA_SKILLS, tamuraAssessments } from "./seedData/tamura";
+import { WATANABE_SKILLS, watanabeAssessments } from "./seedData/watanabe";
 
 // ============================================================
 // 公開データ
@@ -42,8 +48,14 @@ export const SAMPLE_USERS: SampleUser[] = [
   { id: "fujiwara-shota", name: "藤原 翔太", role: "若手CAEエンジニア（3年）", industry: "sheet-metal" },
   // 半導体製造
   { id: "yamada-naoto", name: "山田 直人", role: "プロセスエンジニア（8年）", industry: "semiconductor" },
+  { id: "kimura-yu", name: "木村 優", role: "プロセスエンジニア見習い（2年目）", industry: "semiconductor" },
+  { id: "takahashi-kenji", name: "高橋 健二", role: "プロセス設計ベテラン（30年）", industry: "semiconductor" },
+  { id: "suzuki-sho", name: "鈴木 翔", role: "装置エンジニア（10年）", industry: "semiconductor" },
   // 食品製造
   { id: "sato-yumi", name: "佐藤 由美", role: "品質管理リーダー（12年）", industry: "food-manufacturing" },
+  { id: "ito-ai", name: "伊藤 愛", role: "品質管理見習い（2年目）", industry: "food-manufacturing" },
+  { id: "tamura-masao", name: "田村 正雄", role: "工場長（25年）", industry: "food-manufacturing" },
+  { id: "watanabe-sho", name: "渡辺 翔", role: "生産技術エンジニア（8年）", industry: "food-manufacturing" },
 ];
 
 // ============================================================
@@ -112,7 +124,13 @@ export function generateSeedData(): {
     ...nakajimaAssessments(),
     ...fujiwaraAssessments(),
     ...yamadaAssessments(),
+    ...kimuraAssessments(),
+    ...takahashiAssessments(),
+    ...suzukiAssessments(),
     ...satoAssessments(),
+    ...itoAssessments(),
+    ...tamuraAssessments(),
+    ...watanabeAssessments(),
   ];
 
   const tanakaProfile = buildProfile("tanaka-daiki", TANAKA_SKILLS_AFTER, allAssessments);
@@ -130,7 +148,13 @@ export function generateSeedData(): {
     buildProfile("nakajima-kota", NAKAJIMA_SKILLS, allAssessments),
     buildProfile("fujiwara-shota", FUJIWARA_SKILLS, allAssessments),
     buildProfile("yamada-naoto", YAMADA_SKILLS, allAssessments),
+    buildProfile("kimura-yu", KIMURA_SKILLS, allAssessments),
+    buildProfile("takahashi-kenji", TAKAHASHI_SKILLS, allAssessments),
+    buildProfile("suzuki-sho", SUZUKI_SKILLS, allAssessments),
     buildProfile("sato-yumi", SATO_SKILLS, allAssessments),
+    buildProfile("ito-ai", ITO_SKILLS, allAssessments),
+    buildProfile("tamura-masao", TAMURA_SKILLS, allAssessments),
+    buildProfile("watanabe-sho", WATANABE_SKILLS, allAssessments),
   ];
 
   return { assessments: allAssessments, profiles };
