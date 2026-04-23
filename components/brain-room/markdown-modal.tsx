@@ -1,5 +1,4 @@
 "use client"
-import type { SummaryNode, Message } from "@/lib/brain-room/types"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -14,9 +13,7 @@ interface MarkdownModalProps {
   title: string
   content: string
   isLoading: boolean
-  node: SummaryNode | null
   theme: string
-  messages: Message[]
 }
 
 export function MarkdownModal({
@@ -25,14 +22,12 @@ export function MarkdownModal({
   title,
   content,
   isLoading,
-  node,
   theme,
-  messages,
 }: MarkdownModalProps) {
   const { toast } = useToast()
 
   const handleDownload = () => {
-    if (!node || !content) return
+    if (!content) return
 
     const reportContent = `# ${title}
 
@@ -42,18 +37,6 @@ export function MarkdownModal({
 ---
 
 ${content}
-
----
-
-## 関連する発言
-
-${node.relatedMessages
-  .map((index) => {
-    const message = messages[index]
-    return message ? `**${message.characterName}**: ${message.text}` : ""
-  })
-  .filter(Boolean)
-  .join("\n\n")}
 `
 
     const blob = new Blob([reportContent], { type: "text/markdown; charset=utf-8" })
@@ -61,10 +44,9 @@ ${node.relatedMessages
     const a = document.createElement("a")
     a.href = url
 
-    // 日本語対応のファイル名生成（ファイルシステムで使えない文字のみ置き換え）
-    const sanitizedLabel = node.label.replace(/[<>:"/\\|?*]/g, "_")
+    const sanitizedTitle = title.replace(/[<>:"/\\|?*]/g, "_")
     const dateStr = new Date().toISOString().split("T")[0]
-    a.download = `topic_report_${sanitizedLabel}_${dateStr}.md`
+    a.download = `topic_report_${sanitizedTitle}_${dateStr}.md`
 
     document.body.appendChild(a)
     a.click()

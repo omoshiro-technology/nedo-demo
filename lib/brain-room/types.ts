@@ -25,14 +25,6 @@ export interface Message {
   tag?: MessageTagType
 }
 
-export interface SummaryNode {
-  id: string
-  label: string
-  children: string[]
-  relatedMessages: number[]
-  summary?: string
-}
-
 export interface TopicData {
   name: string
   content: string

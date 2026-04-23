@@ -1,6 +1,6 @@
 import { openai } from "@ai-sdk/openai"
 import { generateText } from "ai"
-import type { Character, Message, SummaryNode } from "@/lib/brain-room/types"
+import type { Character, Message } from "@/lib/brain-room/types"
 
 export async function POST(req: Request) {
   try {
@@ -9,13 +9,11 @@ export async function POST(req: Request) {
       purpose,
       messages,
       characters,
-      summaryNodes,
     }: {
       theme: string
       purpose?: string
       messages: Message[]
       characters: Character[]
-      summaryNodes: Record<string, SummaryNode>
     } = await req.json()
 
     if (!theme || !messages || messages.length === 0) {
@@ -24,20 +22,14 @@ export async function POST(req: Request) {
 
     // 会議の基本情報
     const basicInfo = `会議テーマ: ${theme}${purpose ? `\n会議の目的: ${purpose}` : ""}`
-    
+
     // 参加キャラクター情報
-    const characterInfo = characters.map((c) => 
+    const characterInfo = characters.map((c) =>
       `- ${c.name}: ${c.personality} (${c.speakingStyle})`
     ).join("\n")
 
-    // 主要なディスカッションポイント（summary nodesから）
-    const discussionPoints = Object.values(summaryNodes)
-      .filter(node => node.id !== "root" && node.summary)
-      .map(node => `- ${node.label}: ${node.summary}`)
-      .join("\n")
-
     // 会話の抜粋（重要な部分のみ、長すぎる場合は最初と最後の部分）
-    const conversationExcerpt = messages.length > 20 
+    const conversationExcerpt = messages.length > 20
       ? [
           ...messages.slice(0, 10),
           { characterName: "...", text: `[中略: ${messages.length - 20}件のメッセージ]`, tag: null },
@@ -55,9 +47,6 @@ ${basicInfo}
 
 参加キャラクター:
 ${characterInfo}
-
-主要な議論ポイント:
-${discussionPoints}
 
 会話内容（抜粋）:
 ${conversationText}

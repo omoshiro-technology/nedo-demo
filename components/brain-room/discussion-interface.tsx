@@ -2,7 +2,7 @@
 
 import { CardFooter } from "@/components/ui/card"
 import { useState, useRef, useCallback } from "react"
-import type { Character, Message, SummaryNode, CharacterSet, TopicData, KnowledgeFile } from "@/lib/brain-room/types"
+import type { Character, Message, CharacterSet, TopicData, KnowledgeFile } from "@/lib/brain-room/types"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -14,8 +14,6 @@ import { useToast } from "@/components/ui/use-toast"
 import { Bot, Sparkles, FileText, Settings, Users, FileOutput, Square, Target, Brain, Info, Download } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { MindMapView } from "@/components/brain-room/mindmap-view"
-import { NodeListView } from "@/components/brain-room/node-list-view"
 import { MessageTag } from "@/components/brain-room/message-tag"
 import { ArchipelagoView } from "@/components/brain-room/archipelago-view"
 import { MessageTextWithReferences } from "@/components/brain-room/message-text-with-references"
@@ -41,7 +39,6 @@ export function DiscussionInterface({
   const [theme, setTheme] = useState("")
   const [purpose, setPurpose] = useState("")
   const [messages, setMessages] = useState<Message[]>([])
-  const [summaryNodes, setSummaryNodes] = useState<Record<string, SummaryNode>>({})
   const [status, setStatus] = useState<"idle" | "running" | "finished">("idle")
   const [selectedSetId, setSelectedSetId] = useState<string>("")
   const [activeTab, setActiveTab] = useState("chat")
@@ -197,9 +194,6 @@ export function DiscussionInterface({
       setStatus("running")
       setMessages([])
       setWhiteboardHtml("")
-      setSummaryNodes({
-        root: { id: "root", label: `テーマ: ${theme}`, children: [], relatedMessages: [], summary: `会議のメインテーマ: ${theme}${purpose ? `\n目的: ${purpose}` : ""}` },
-      })
 
       const allMessages = presetData.messages
       for (let i = 0; i < allMessages.length; i++) {
@@ -220,18 +214,6 @@ export function DiscussionInterface({
     setStatus("running")
     setMessages([])
     setWhiteboardHtml("")
-
-    const rootNodeId = "root"
-    const initialSummaryNodes: Record<string, SummaryNode> = {
-      [rootNodeId]: {
-        id: rootNodeId,
-        label: `テーマ: ${theme}`,
-        children: [],
-        relatedMessages: [],
-        summary: `会議のメインテーマ: ${theme}${purpose ? `\n目的: ${purpose}` : ""}`,
-      },
-    }
-    setSummaryNodes(initialSummaryNodes)
 
     abortControllerRef.current = new AbortController()
 
@@ -345,47 +327,6 @@ export function DiscussionInterface({
     }
 
     setStatus("finished")
-    generateTopicSummaries()
-  }
-
-  const generateTopicSummaries = async () => {
-    // 各トピックノードに対してサマリーを生成
-    setSummaryNodes((prevNodes) => {
-      const updatedNodes = { ...prevNodes }
-
-      Object.keys(updatedNodes).forEach(async (nodeId) => {
-        const node = updatedNodes[nodeId]
-        if (nodeId !== "root" && node.relatedMessages.length > 0) {
-          try {
-            const relatedMessages = node.relatedMessages.map((index) => messages[index]).filter(Boolean)
-            const response = await fetch("/api/generate-topic-summary", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                topic: node.label,
-                messages: relatedMessages,
-                characters,
-              }),
-            })
-
-            if (response.ok) {
-              const { summary } = await response.json()
-              setSummaryNodes((prev) => ({
-                ...prev,
-                [nodeId]: {
-                  ...prev[nodeId],
-                  summary: summary,
-                },
-              }))
-            }
-          } catch (error) {
-            console.error("Failed to generate summary for", nodeId, error)
-          }
-        }
-      })
-
-      return updatedNodes
-    })
   }
 
   const handleGenerateArchipelagoMap = useCallback(async () => {
@@ -459,7 +400,6 @@ export function DiscussionInterface({
           purpose,
           messages,
           characters,
-          summaryNodes,
         }),
       })
 
@@ -537,24 +477,6 @@ export function DiscussionInterface({
         }
         markdownContent += `\n---\n\n`
       })
-
-      if (Object.keys(summaryNodes).length > 1) {
-        markdownContent += "## 会話のまとめ\n\n"
-        const renderNodeMarkdown = (nodeId: string, depth = 0): string => {
-          const node = summaryNodes[nodeId]
-          if (!node) return ""
-
-          let result = `${"  ".repeat(depth)}- **${node.label}**\n`
-          if (node.summary && nodeId !== "root") {
-            result += `${"  ".repeat(depth + 1)}*概要: ${node.summary}*\n\n`
-          }
-          node.children.forEach((childId) => {
-            result += renderNodeMarkdown(childId, depth + 1)
-          })
-          return result
-        }
-        markdownContent += renderNodeMarkdown("root")
-      }
 
       // 引用元情報セクションを追加
       if (allReferencedKnowledge.size > 0) {
@@ -926,8 +848,6 @@ export function DiscussionInterface({
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList>
             <TabsTrigger value="chat">チャット</TabsTrigger>
-            <TabsTrigger value="mindmap">マインドマップ</TabsTrigger>
-            <TabsTrigger value="nodelist">ノードリスト</TabsTrigger>
             <TabsTrigger value="whiteboard">ホワイトボード</TabsTrigger>
             <TabsTrigger value="archipelago">群島MAP</TabsTrigger>
           </TabsList>
@@ -1004,52 +924,6 @@ export function DiscussionInterface({
                       {isSending ? <Sparkles className="h-4 w-4 animate-pulse" /> : "送信"}
                     </Button>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="mindmap">
-            <Card>
-              <CardHeader>
-                <CardTitle>マインドマップビュー</CardTitle>
-                <CardDescription>
-                  会議の要点をマインドマップ形式で表示。ノードをクリックして詳細を確認できます。
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="h-[60vh] p-4">
-                {Object.keys(summaryNodes).length > 0 ? (
-                  <MindMapView
-                    nodes={summaryNodes}
-                    messages={messages}
-                    characters={characters}
-                    theme={theme}
-                    onJumpToMessage={handleJumpToMessage}
-                  />
-                ) : (
-                  <p>サマリーはまだありません。</p>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="nodelist">
-            <Card>
-              <CardHeader>
-                <CardTitle>ノードリストビュー</CardTitle>
-                <CardDescription>
-                  会議の要点を階層的なリスト形式で表示。各ノードをクリックして詳細を確認できます。
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="h-[60vh] p-4">
-                {Object.keys(summaryNodes).length > 0 ? (
-                  <NodeListView
-                    nodes={summaryNodes}
-                    messages={messages}
-                    characters={characters}
-                    theme={theme}
-                    onJumpToMessage={handleJumpToMessage}
-                  />
-                ) : (
-                  <p>サマリーはまだありません。</p>
                 )}
               </CardContent>
             </Card>
