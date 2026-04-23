@@ -304,13 +304,13 @@ function FullScreenCard({ profile, compareProfile, industry, compareMode }: { pr
             return (
               <div key={category.id} className="flex-1 flex items-stretch min-h-0">
                 {/* カテゴリラベル — 15%幅 */}
-                <div className="w-[15%] shrink-0 flex items-center justify-end pr-2">
-                  <span className="text-sm font-medium text-slate-500 leading-tight text-right">
+                <div className="w-[15%] shrink-0 flex items-center justify-center bg-slate-100 border-r border-slate-200 px-2">
+                  <span className="text-sm font-semibold text-slate-700 leading-tight text-center">
                     {getCategoryLabel(category.id, industry, category.name)}
                   </span>
                 </div>
                 {/* セル群 — 85%幅を8等分 */}
-                <div className="flex-1 flex gap-[2px]">
+                <div className="flex-1 flex gap-[2px] pl-2">
                   {skills.map((skill) => {
                     const prof = profile.proficiencies[skill.id]
                     const level = (prof?.currentLevel ?? 1) as SkillLevel
@@ -328,8 +328,9 @@ function FullScreenCard({ profile, compareProfile, industry, compareMode }: { pr
                           ${isSelected ? "ring-2 ring-indigo-400 scale-105 z-10" : !isImproved ? "hover:brightness-95" : ""}
                         `}
                         onClick={() => setSelectedSkill(skill.id)}
+                        title={skill.name}
                       >
-                        <span className={`text-xs font-medium truncate select-none ${isImproved ? "text-emerald-900" : LEVEL_TEXT[level]}`}>
+                        <span className={`text-xs font-semibold truncate select-none ${isImproved ? "text-emerald-900" : LEVEL_TEXT[level]}`}>
                           {getSkillLabel(skill.id, industry, skill.name)}
                         </span>
                         {isImproved && (
@@ -459,7 +460,7 @@ function SkillDetailModal({ skillId, profile, industry, onClose }: { skillId: st
   return (
     <div className={`fixed inset-0 z-50 flex items-center justify-center transition-colors duration-200 ${visible ? "bg-black/30" : "bg-black/0"}`} onClick={onClose}>
       <div
-        className={`bg-white rounded-xl shadow-xl border border-slate-200 p-5 max-h-[80vh] overflow-y-auto transition-all duration-300 ease-out ${hasEvidence ? "w-[820px]" : "w-[420px]"} ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+        className={`bg-white rounded-xl shadow-xl border border-slate-200 p-5 max-h-[80vh] overflow-y-auto transition-all duration-300 ease-out mx-4 w-full ${hasEvidence ? "max-w-[820px]" : "max-w-[420px]"} ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between gap-3 mb-3">
