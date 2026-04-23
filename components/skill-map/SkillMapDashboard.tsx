@@ -25,7 +25,7 @@ import {
   SKILL_MAP,
   getSkillsByCategory,
 } from "@/lib/compath/domain/skillMap/skillCatalog"
-import { getSkillLabel } from "@/lib/compath/domain/skillMap/industryLabels"
+import { getSkillLabel, getCategoryLabel } from "@/lib/compath/domain/skillMap/industryLabels"
 import { QCDESRadar } from "./QCDESRadar"
 
 type SampleUser = { id: string; name: string; role: string; industry: Industry }
@@ -188,7 +188,9 @@ export default function SkillMapDashboard() {
             </select>
           </label>
           {selectedUser && (
-            <span className="text-base text-gray-400">{selectedUser.role}</span>
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-slate-100 text-slate-600 border border-slate-200">
+              {selectedUser.role}
+            </span>
           )}
           <div className="flex items-center gap-2 ml-4 border-l pl-4">
             <button
@@ -299,7 +301,7 @@ function FullScreenCard({ profile, compareProfile, industry }: { profile: SkillP
                 {/* カテゴリラベル — 15%幅 */}
                 <div className="w-[15%] shrink-0 flex items-center justify-end pr-2">
                   <span className="text-sm font-medium text-slate-500 leading-tight text-right">
-                    {category.name}
+                    {getCategoryLabel(category.id, industry, category.name)}
                   </span>
                 </div>
                 {/* セル群 — 85%幅を8等分 */}
@@ -419,7 +421,8 @@ function SkillDetailModal({ skillId, profile, industry, onClose }: { skillId: st
   if (!skill) return null
   const proficiency = profile.proficiencies[skillId]
   const currentLevel = (proficiency?.currentLevel ?? 1) as SkillLevel
-  const categoryName = SKILL_CATEGORIES.find((c) => c.id === skill.categoryId)?.name ?? ""
+  const categoryDefault = SKILL_CATEGORIES.find((c) => c.id === skill.categoryId)?.name ?? ""
+  const categoryName = getCategoryLabel(skill.categoryId, industry, categoryDefault)
 
   const ML_BG: Record<SkillLevel, string> = { 1: "bg-slate-50 border-slate-200", 2: "bg-sky-50 border-sky-200", 3: "bg-sky-50 border-sky-300", 4: "bg-indigo-50 border-indigo-200" }
   const evidence = proficiency?.levelUpEvidence?.filter(ev => ev.source === "compath_decision_navigator") ?? []
