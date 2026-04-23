@@ -3,6 +3,7 @@ import { anthropic } from "@ai-sdk/anthropic"
 import { z } from "zod"
 import type { Character, MessageTagType, KnowledgeFile } from "@/lib/brain-room/types"
 import { performKnowledgeSearch, type KnowledgeSearchResponse } from "./knowledge-search-tool"
+import { generateMockTurn, generateMockWhiteboard, shouldUseMock } from "./conference-mock"
 
 const messageTags = ["気づき", "合意", "重要な情報", "迷走中", "戻って考える", "問題提起"] as const
 
@@ -255,6 +256,13 @@ export async function updateWhiteboard(
   characters: Character[],
   currentWhiteboard: string,
 ): Promise<string> {
+  // ANTHROPIC_API_KEY 未設定時はモックホワイトボードを返す
+  if (shouldUseMock()) {
+    const turn = conversationHistory.length
+    console.log(`[MOCK] Whiteboard update at turn ${turn} (ANTHROPIC_API_KEY not set)`)
+    return await generateMockWhiteboard(theme, purpose, turn)
+  }
+
   const agent = new Agent({
     name: "whiteboard-updater",
     instructions: `You are a visual facilitator maintaining a shared whiteboard for a conference discussion.
@@ -332,7 +340,13 @@ export async function generateConferenceTurnWithKnowledge(
   whiteboard?: string,
 ): Promise<any> {
   const { knowledgeFiles, theme, turn, conversationHistory, characters } = context
-  
+
+  // ANTHROPIC_API_KEY 未設定時はモック応答を返す（デモ用）
+  if (shouldUseMock()) {
+    console.log(`[MOCK] Turn ${turn}: Using mock response for ${character.name} (ANTHROPIC_API_KEY not set)`)
+    return await generateMockTurn(character, theme, turn)
+  }
+
   const recentMessages = conversationHistory
     .slice(-3)
     .map((h) => `${characters[h.speakerIndex].name}: ${h.utterance}`)
