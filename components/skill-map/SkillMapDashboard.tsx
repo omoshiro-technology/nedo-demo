@@ -117,6 +117,14 @@ export default function SkillMapDashboard() {
     if (selectedUserId) fetchData()
   }, [selectedUserId]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // ユーザー選択時に compareDate を「1ヶ月前」に自動セット
+  useEffect(() => {
+    if (!selectedUserId) return
+    const d = new Date()
+    d.setMonth(d.getMonth() - 1)
+    setCompareDate(d.toISOString().slice(0, 10))
+  }, [selectedUserId])
+
   const hasData = profile && profile.totalAssessments > 0
   const selectedUser = users.find((u) => u.id === selectedUserId)
 
@@ -208,6 +216,12 @@ function FullScreenCard({ profile, compareProfile }: { profile: SkillProfile; co
     .sort((a, b) => new Date(b.lastAssessedAt).getTime() - new Date(a.lastAssessedAt).getTime())
     [0]?.latestScores ?? null
 
+  const compareProficiencies = compareProfile ? Object.values(compareProfile.proficiencies) : []
+  const compareLatestScores = compareProficiencies
+    .filter((p) => p.latestScores)
+    .sort((a, b) => new Date(b.lastAssessedAt).getTime() - new Date(a.lastAssessedAt).getTime())
+    [0]?.latestScores ?? null
+
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-4 h-full flex flex-col">
@@ -230,10 +244,10 @@ function FullScreenCard({ profile, compareProfile }: { profile: SkillProfile; co
         </div>
       </div>
 
-      {/* 上段: グリッド(65%) + 情報パネル(35%) — flex-1 で残りを埋める */}
+      {/* 上段: グリッド(55%) + 情報パネル(45%) — flex-1 で残りを埋める */}
       <div className="flex-1 min-h-0 flex gap-4">
         {/* 左: ヒートマップグリッド — 9行 x 8列がビューポートに合わせて伸縮 */}
-        <div className="w-[65%] flex flex-col gap-[2px]">
+        <div className="w-[55%] flex flex-col gap-[2px]">
           {SKILL_CATEGORIES.map((category) => {
             const skills = skillsByCategory.get(category.id) ?? []
             return (
@@ -281,15 +295,32 @@ function FullScreenCard({ profile, compareProfile }: { profile: SkillProfile; co
           })}
         </div>
 
-        {/* 右: レーダーチャートのみ — 35%幅 */}
-        <div className="w-[35%] min-h-0 rounded-lg border border-gray-100 bg-gray-50/50 p-4 flex flex-col">
-          <h3 className="text-base font-bold text-gray-600 mb-1 shrink-0">観点網羅度（QCDES）</h3>
-          <div className="flex-1 min-h-0">
-            {latestScores ? (
-              <QCDESRadar scores={latestScores} />
-            ) : (
-              <div className="h-full flex items-center justify-center text-sm text-gray-400">データなし</div>
-            )}
+        {/* 右: QCDES レーダー 2枚横並び — 45%幅 */}
+        <div className="w-[45%] min-h-0 rounded-lg border border-gray-100 bg-gray-50/50 p-3 flex flex-col">
+          <h3 className="text-base font-bold text-gray-600 mb-2 shrink-0">観点網羅度（QCDES）</h3>
+          <div className="flex-1 min-h-0 flex gap-4">
+            {/* 1ヶ月前 */}
+            <div className="flex-1 flex flex-col min-w-0">
+              <p className="text-xs text-center font-medium text-gray-500 mb-1 shrink-0">1ヶ月前</p>
+              <div className="flex-1 min-h-0">
+                {compareLatestScores ? (
+                  <QCDESRadar scores={compareLatestScores} compact />
+                ) : (
+                  <div className="h-full flex items-center justify-center text-xs text-gray-400">データなし</div>
+                )}
+              </div>
+            </div>
+            {/* 現在 */}
+            <div className="flex-1 flex flex-col min-w-0">
+              <p className="text-xs text-center font-medium text-gray-500 mb-1 shrink-0">現在</p>
+              <div className="flex-1 min-h-0">
+                {latestScores ? (
+                  <QCDESRadar scores={latestScores} compact />
+                ) : (
+                  <div className="h-full flex items-center justify-center text-xs text-gray-400">データなし</div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

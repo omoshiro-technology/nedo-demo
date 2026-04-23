@@ -12,17 +12,26 @@ import type { ThoughtQualityScore } from "@/lib/compath/domain/skillMap/types"
 
 type Props = {
   scores: ThoughtQualityScore
+  compact?: boolean
 }
 
-export function QCDESRadar({ scores }: Props) {
+export function QCDESRadar({ scores, compact = false }: Props) {
   const cov = scores.qcdesCoverage
-  const data = [
-    { axis: "品質 (Q)", value: cov.quality },
-    { axis: "コスト (C)", value: cov.cost },
-    { axis: "納期 (D)", value: cov.delivery },
-    { axis: "環境 (E)", value: cov.environment },
-    { axis: "安全 (S)", value: cov.safety },
-  ]
+  const data = compact
+    ? [
+        { axis: "Q", value: cov.quality },
+        { axis: "C", value: cov.cost },
+        { axis: "D", value: cov.delivery },
+        { axis: "E", value: cov.environment },
+        { axis: "S", value: cov.safety },
+      ]
+    : [
+        { axis: "品質 (Q)", value: cov.quality },
+        { axis: "コスト (C)", value: cov.cost },
+        { axis: "納期 (D)", value: cov.delivery },
+        { axis: "環境 (E)", value: cov.environment },
+        { axis: "安全 (S)", value: cov.safety },
+      ]
 
   const vals = Object.values(cov) as number[]
   const avg = Math.round(vals.reduce((a, b) => a + b, 0) / vals.length)
@@ -31,9 +40,12 @@ export function QCDESRadar({ scores }: Props) {
     <div className="h-full flex flex-col">
       <div className="flex-1 min-h-0">
         <ResponsiveContainer width="100%" height="100%">
-          <RadarChart data={data}>
+          <RadarChart data={data} margin={compact ? { top: 8, right: 8, bottom: 8, left: 8 } : undefined}>
             <PolarGrid stroke="#e5e7eb" />
-            <PolarAngleAxis dataKey="axis" tick={{ fontSize: 15, fill: "#6b7280" }} />
+            <PolarAngleAxis
+              dataKey="axis"
+              tick={{ fontSize: compact ? 11 : 15, fill: "#6b7280" }}
+            />
             <PolarRadiusAxis angle={90} domain={[0, 100]} tick={false} axisLine={false} />
             <Radar
               name="QCDES"
@@ -49,7 +61,7 @@ export function QCDESRadar({ scores }: Props) {
           </RadarChart>
         </ResponsiveContainer>
       </div>
-      <p className="text-center text-sm text-gray-500 mt-1 shrink-0">
+      <p className={`text-center text-gray-500 mt-1 shrink-0 ${compact ? "text-xs" : "text-sm"}`}>
         QCDES 平均: {avg} / 100
       </p>
     </div>
