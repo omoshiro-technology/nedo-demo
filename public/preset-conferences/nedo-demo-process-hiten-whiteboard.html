@@ -1,0 +1,146 @@
+<div
+    style="font-family: 'Noto Sans JP', sans-serif; background: #f5f0e8; padding: 24px; border-radius: 8px; min-height: 600px;">
+
+    <!-- タイトルエリア -->
+    <div style="text-align:center; margin-bottom: 24px;">
+        <div
+            style="display:inline-block; background:#2c3e50; color:#fff; padding:10px 32px; border-radius:4px; font-size:1.3em; font-weight:bold; letter-spacing:2px;">
+            🏭 自動車ブラケット（590MPaハイテン t1.2mm、月産8,000個）— 工程構想
+        </div>
+        <div style="margin-top:6px; color:#666; font-size:0.85em;">目的：スプリングバック対策と型寿命を考慮した順送 vs トランスファーの選定</div>
+    </div>
+
+    <!-- 上段：5名の論点カード -->
+    <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:10px; margin-bottom:20px;">
+
+        <!-- 村田 -->
+        <div class="wb-card wb-card-blue">
+            <div style="font-size:0.75em; color:#555; margin-bottom:4px;">🗣 村田 鉄男（加工経験）</div>
+            <strong>スプリングバック補正を順送後段で吸収</strong>
+            <ul style="margin:8px 0 0 0; padding-left:16px; font-size:0.88em;">
+                <li>ハイテン590は曲げ戻しが通常鋼板の <strong>2〜3倍</strong></li>
+                <li>月産8,000個なら順送金型が基本</li>
+                <li>矯正工程は順送後段に組み込む方が位置決め誤差を減らせる</li>
+            </ul>
+        </div>
+
+        <!-- 安藤 -->
+        <div class="wb-card wb-card-yellow">
+            <div style="font-size:0.75em; color:#555; margin-bottom:4px;">🗣 安藤 美咲（品質・仕様）</div>
+            <strong>面外歪み ±0.3mm の確実達成が最重要</strong>
+            <ul style="margin:8px 0 0 0; padding-left:16px; font-size:0.88em;">
+                <li>顧客公差が <strong>±0.3mm</strong> と非常に厳しい</li>
+                <li>型単体では厳しく、矯正工程の追加が必要</li>
+                <li>順送+矯正 vs トランスファーで品質安定性を比較</li>
+            </ul>
+        </div>
+
+        <!-- 黒田 -->
+        <div class="wb-card wb-card-purple">
+            <div style="font-size:0.75em; color:#555; margin-bottom:4px;">🗣 黒田 浩一（金型）</div>
+            <strong>ステーション設計とプレス容量の再評価</strong>
+            <ul style="margin:8px 0 0 0; padding-left:16px; font-size:0.88em;">
+                <li>順送なら 7〜8段、矯正組込で 9段必要</li>
+                <li>矯正組込時は既存250tプレスでは容量不足、<strong>350t〜400t</strong>への更新検討</li>
+                <li>ダイスチールは DC53 推奨</li>
+            </ul>
+        </div>
+
+        <!-- 中島 -->
+        <div class="wb-card wb-card-red">
+            <div style="font-size:0.75em; color:#555; margin-bottom:4px;">🗣 中島 康太（コスト・LCC）</div>
+            <strong>設備更新の有無で LCC が逆転</strong>
+            <ul style="margin:8px 0 0 0; padding-left:16px; font-size:0.88em;">
+                <li>順送: 型費 3,500万円、型寿命50万ショット</li>
+                <li>トランスファー: 型費 5,800万円、型寿命80万ショット</li>
+                <li>5年で約50万ショット、<strong>順送ではギリギリ</strong>。プレス更新+3,000万円でトランスファーが有利転じる可能性</li>
+            </ul>
+        </div>
+
+        <!-- 藤原 -->
+        <div class="wb-card wb-card-green">
+            <div style="font-size:0.75em; color:#555; margin-bottom:4px;">🗣 藤原 翔太（CAE）</div>
+            <strong>オーバーベンド補正角 5度＋ロット変動の吸収設計</strong>
+            <ul style="margin:8px 0 0 0; padding-left:16px; font-size:0.88em;">
+                <li>材料ロットごとに降伏点 <strong>±3度の変動</strong>、型修正の余地必須</li>
+                <li>矯正後の残留応力によるクラック起点の長期信頼性評価も実施</li>
+                <li>両案の面外歪み予測値と Cpk 予測値を来週提示</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- 下段：決定事項 / 未解決の問い / アクション -->
+    <div class="wb-grid-3">
+
+        <!-- 決定事項 -->
+        <div class="wb-section">
+            <div style="font-weight:bold; margin-bottom:8px; color:#2d6a2d;">✅ 合意・方針</div>
+            <div class="wb-decision" style="margin-bottom:8px;">
+                <strong>順送+矯正 と トランスファー の 2案で CAE 比較</strong><br>
+                <small>面外歪み ±0.3mm の確実達成可否が最終判断の軸</small>
+            </div>
+            <div class="wb-decision" style="margin-bottom:8px;">
+                <strong>スプリングバック補正は角度5度＋ロット変動余地</strong><br>
+                <small>型に修正の余地を持たせ、±3度のロット変動を吸収</small>
+            </div>
+            <div class="wb-decision" style="margin-bottom:8px;">
+                <strong>矯正工程を順送後段に組み込む方針</strong><br>
+                <small>別工程化より位置決め誤差が減る。プレス更新の要否は継続検討</small>
+            </div>
+            <div class="wb-decision" style="border-color:#27ae60;">
+                <strong>残留応力の長期信頼性評価を実施</strong><br>
+                <small>矯正後のクラック起点リスクを定量化</small>
+            </div>
+        </div>
+
+        <!-- 未解決の問い -->
+        <div class="wb-section">
+            <div style="font-weight:bold; margin-bottom:8px; color:#a00;">❓ 未解決の問い</div>
+            <div class="wb-question" style="margin-bottom:8px;">
+                <strong>プレス機 350t〜400t への更新は妥当か？</strong><br>
+                <small>設備投資 +3,000万円の回収可否。LCC再計算待ち</small>
+            </div>
+            <div class="wb-question" style="margin-bottom:8px;">
+                <strong>順送の型寿命50万ショットは5年運用で足りるか？</strong><br>
+                <small>年9.6万ショット×5年 ≈ 50万、ギリギリの領域</small>
+            </div>
+            <div class="wb-question">
+                <strong>顧客はプレス更新コストを共有できるか？</strong><br>
+                <small>トランスファー採用時の投資を折半できるか交渉が必要</small>
+            </div>
+        </div>
+
+        <!-- アクション項目 -->
+        <div class="wb-section">
+            <div style="font-weight:bold; margin-bottom:8px; color:#555;">📋 アクション項目</div>
+            <div class="wb-card wb-card-green" style="margin-bottom:8px; padding:10px;">
+                <div class="wb-tag" style="background:#27ae60; color:#fff; margin-bottom:4px;">藤原</div>
+                <strong>両案のCAE検証と Cpk 予測値の算出</strong><br>
+                <small>来週までに面外歪み予測値とトランスファーハンドの応力分布を提示</small>
+            </div>
+            <div class="wb-card wb-card-yellow" style="margin-bottom:8px; padding:10px;">
+                <div class="wb-tag" style="background:#b8860b; color:#fff; margin-bottom:4px;">安藤</div>
+                <strong>顧客公差の背景理解（最終製品での許容範囲）</strong><br>
+                <small>±0.3mm が絶対条件か、交渉の余地があるか確認</small>
+            </div>
+            <div class="wb-card wb-card-purple" style="margin-bottom:8px; padding:10px;">
+                <div class="wb-tag" style="background:#5a2d82; color:#fff; margin-bottom:4px;">黒田</div>
+                <strong>9段ステーション型の概略設計</strong><br>
+                <small>プレス容量要求と DC53 ダイスチール仕様の具体化</small>
+            </div>
+            <div class="wb-card wb-card-red" style="margin-bottom:8px; padding:10px;">
+                <div class="wb-tag" style="background:#c0392b; color:#fff; margin-bottom:4px;">中島</div>
+                <strong>LCC再計算と顧客折衝セッティング</strong><br>
+                <small>プレス更新ありの順送 vs トランスファーを厳密比較</small>
+            </div>
+            <div class="wb-card wb-card-blue" style="padding:10px;">
+                <div class="wb-tag" style="background:#1a4a8a; color:#fff; margin-bottom:4px;">村田</div>
+                <strong>矯正工程組込パターンの現場適用性評価</strong><br>
+                <small>位置決め精度・作業者負荷の観点から実装案を検討</small>
+            </div>
+        </div>
+
+    </div>
+
+</div>
