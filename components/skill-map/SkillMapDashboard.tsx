@@ -58,16 +58,18 @@ const LEVEL_BORDER: Record<SkillLevel, string> = {
 // ============================================================
 
 // 比較モードの種類
-type CompareMode = "monthly" | "quarterly"
+type CompareMode = "current" | "monthly" | "quarterly"
 
 const COMPARE_MODE_LABELS: Record<CompareMode, string> = {
+  "current": "現在のみ（比較なし）",
   "monthly": "1ヶ月前と比較",
   "quarterly": "期末比較（クオーター）",
 }
 
-// compareMode に応じて「何日前」を返す
+// compareMode に応じて「何日前」を返す（current は使わない）
 function getDaysAgo(mode: CompareMode): number {
   switch (mode) {
+    case "current": return 0
     case "monthly": return 30
     case "quarterly": return 90
   }
@@ -79,7 +81,7 @@ export default function SkillMapDashboard() {
   const [selectedUserId, setSelectedUserId] = useState<string>("")
   const [profile, setProfile] = useState<SkillProfile | null>(null)
   const [compareProfile, setCompareProfile] = useState<SkillProfile | null>(null)
-  const [compareMode, setCompareMode] = useState<CompareMode>("monthly")
+  const [compareMode, setCompareMode] = useState<CompareMode>("current")
   const [compareDate, setCompareDate] = useState<string>("")
   const [initialLoading, setInitialLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -143,9 +145,9 @@ export default function SkillMapDashboard() {
     }
   }, [selectedUserId, profile])
 
-  // 比較日付が変わったら比較用プロファイルを取得
+  // 比較日付が変わったら比較用プロファイルを取得（current モード時は取得せず）
   useEffect(() => {
-    if (!selectedUserId || !compareDate) {
+    if (!selectedUserId || !compareDate || compareMode === "current") {
       setCompareProfile(null)
       return
     }
@@ -153,7 +155,7 @@ export default function SkillMapDashboard() {
       .then((r) => r.ok ? r.json() : null)
       .then((data) => setCompareProfile(data))
       .catch(() => setCompareProfile(null))
-  }, [selectedUserId, compareDate])
+  }, [selectedUserId, compareDate, compareMode])
 
   useEffect(() => {
     if (selectedUserId) fetchData()
@@ -162,6 +164,10 @@ export default function SkillMapDashboard() {
   // ユーザー選択 or 比較モード変更時に compareDate を自動セット
   useEffect(() => {
     if (!selectedUserId) return
+    if (compareMode === "current") {
+      setCompareDate("")
+      return
+    }
     const d = new Date()
     d.setDate(d.getDate() - getDaysAgo(compareMode))
     setCompareDate(d.toISOString().slice(0, 10))
@@ -215,6 +221,7 @@ export default function SkillMapDashboard() {
                 onChange={(e) => setCompareMode(e.target.value as CompareMode)}
                 className="text-base border border-gray-200 rounded-md px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400 w-[200px]"
               >
+                <option value="current">{COMPARE_MODE_LABELS["current"]}</option>
                 <option value="monthly">{COMPARE_MODE_LABELS["monthly"]}</option>
                 <option value="quarterly">{COMPARE_MODE_LABELS["quarterly"]}</option>
               </select>
@@ -349,12 +356,23 @@ function FullScreenCard({ profile, compareProfile, industry, compareMode }: { pr
 
         {/* 右: QCDES レーダー — 45%幅
              compareMode により表示切替:
+               - current:   単一ポリゴン表示（比較なし）
                - monthly:   重ね表示（1ヶ月前 vs 現在、成長を2色で）
                - quarterly: 重ね表示（前四半期 vs 現在、成長を2色で）
         */}
         <div className="w-[45%] min-h-0 rounded-lg border border-gray-100 bg-gray-50/50 p-3 flex flex-col">
           <h3 className="text-base font-bold text-gray-600 mb-2 shrink-0">観点網羅度（QCDES）</h3>
-          {compareMode === "monthly" ? (
+          {compareMode === "current" ? (
+            <div className="flex-1 min-h-0 flex flex-col">
+              <div className="flex-1 min-h-0">
+                {latestScores ? (
+                  <QCDESRadar scores={latestScores} />
+                ) : (
+                  <div className="h-full flex items-center justify-center text-xs text-gray-400">データなし</div>
+                )}
+              </div>
+            </div>
+          ) : compareMode === "monthly" ? (
             <div className="flex-1 min-h-0 flex flex-col">
               <p className="text-xs text-center font-medium text-gray-500 mb-1 shrink-0">月次比較（1ヶ月前 → 現在）</p>
               <div className="flex-1 min-h-0">

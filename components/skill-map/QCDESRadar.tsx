@@ -59,6 +59,7 @@ export function QCDESRadar({
       axis: d.axis,
       current,
       past,
+      ringMax: 100,
     }
   })
 
@@ -91,6 +92,15 @@ export function QCDESRadar({
               tick={{ fontSize: compact ? 11 : 15, fill: "#6b7280" }}
             />
             <PolarRadiusAxis angle={90} domain={[0, 100]} tick={false} axisLine={false} />
+            {/* 背景: 最大値ポリゴン（全モード共通の視覚スキャフォールディング） */}
+            <Radar
+              dataKey="ringMax"
+              stroke="none"
+              fill="#cbd5e1"
+              fillOpacity={0.18}
+              isAnimationActive={false}
+              legendType="none"
+            />
             {isOverlay && (
               <Radar
                 name={pastLabel}
