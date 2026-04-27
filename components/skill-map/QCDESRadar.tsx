@@ -7,6 +7,7 @@ import {
   PolarRadiusAxis,
   Radar,
   ResponsiveContainer,
+  LabelList,
 } from "recharts"
 import type { ThoughtQualityScore } from "@/lib/compath/domain/skillMap/types"
 
@@ -83,56 +84,7 @@ export function QCDESRadar({
             <PolarGrid stroke="#e5e7eb" />
             <PolarAngleAxis
               dataKey="axis"
-              tick={(tickProps: { x: number; y: number; textAnchor: string; payload: { value: string; index: number } }) => {
-                const { x, y, textAnchor, payload } = tickProps
-                const datum = data[payload.index]
-                const delta = datum?.delta
-                const labelFont = compact ? 11 : 15
-                // 大きい変化のみチップ化（|Δ| >= 10）
-                const showChip = isOverlay && delta != null && Math.abs(delta) >= 10
-                const isUp = (delta ?? 0) > 0
-                const absDelta = Math.abs(delta ?? 0)
-                const chipScale = absDelta >= 30 ? 1.25 : absDelta >= 20 ? 1.12 : 1
-                const chipFont = (compact ? 11 : 13) * chipScale
-                const chipText = `${isUp ? "+" : ""}${delta}`
-                const chipPadX = 9
-                const chipH = chipFont + 8
-                const chipW = chipText.length * (chipFont * 0.62) + chipPadX * 2
-                const chipDx = textAnchor === "middle" ? 0 : textAnchor === "end" ? -chipW / 2 : chipW / 2
-                const chipDy = labelFont + 6
-                const chipFill = isUp ? "#d1fae5" : "#fee2e2"   // emerald-100 / red-100
-                const chipText2 = isUp ? "#047857" : "#b91c1c"  // emerald-700 / red-700
-                return (
-                  <g transform={`translate(${x},${y})`}>
-                    <text textAnchor={textAnchor} fill="#374151" fontSize={labelFont} fontWeight="500">
-                      {payload.value}
-                    </text>
-                    {showChip && (
-                      <g transform={`translate(${chipDx}, ${chipDy})`}>
-                        <rect
-                          x={-chipW / 2}
-                          y={0}
-                          width={chipW}
-                          height={chipH}
-                          rx={chipH / 2}
-                          fill={chipFill}
-                        />
-                        <text
-                          x={0}
-                          y={chipH / 2}
-                          textAnchor="middle"
-                          dominantBaseline="central"
-                          fontSize={chipFont}
-                          fontWeight="700"
-                          fill={chipText2}
-                        >
-                          {chipText}
-                        </text>
-                      </g>
-                    )}
-                  </g>
-                )
-              }}
+              tick={{ fontSize: compact ? 11 : 15, fill: "#374151", fontWeight: 500 }}
             />
             <PolarRadiusAxis angle={90} domain={[0, 100]} tick={false} axisLine={false} />
             {isOverlay && (
@@ -158,7 +110,59 @@ export function QCDESRadar({
               isAnimationActive={true}
               animationDuration={600}
               animationEasing="ease-in-out"
-            />
+            >
+              {isOverlay && (
+                <LabelList
+                  dataKey="delta"
+                  content={(props: { x?: number; y?: number; value?: number; index?: number }) => {
+                    const { x, y, value, index } = props
+                    if (x == null || y == null || value == null || value === 0) return null
+                    const delta = value
+                    const isUp = delta > 0
+                    const absDelta = Math.abs(delta)
+                    const chipScale = absDelta >= 30 ? 1.25 : absDelta >= 20 ? 1.12 : 1
+                    const chipFont = (compact ? 11 : 13) * chipScale
+                    const chipText = `${isUp ? "+" : ""}${delta}`
+                    const chipPadX = 9
+                    const chipH = chipFont + 8
+                    const chipW = chipText.length * (chipFont * 0.62) + chipPadX * 2
+                    const chipFill = isUp ? "#d1fae5" : "#fee2e2"
+                    const chipTextFill = isUp ? "#047857" : "#b91c1c"
+                    // 頂点からちょっと外側へオフセット（軸方向）
+                    const N = data.length
+                    const angleRad = (Math.PI / 180) * (90 - (360 / N) * (index ?? 0))
+                    const offsetPx = 22
+                    const finalX = x + offsetPx * Math.cos(angleRad)
+                    const finalY = y - offsetPx * Math.sin(angleRad)
+                    return (
+                      <g key={index} transform={`translate(${finalX - chipW / 2}, ${finalY - chipH / 2})`}>
+                        <rect
+                          x={0}
+                          y={0}
+                          width={chipW}
+                          height={chipH}
+                          rx={chipH / 2}
+                          fill={chipFill}
+                          stroke="#ffffff"
+                          strokeWidth={1.5}
+                        />
+                        <text
+                          x={chipW / 2}
+                          y={chipH / 2}
+                          textAnchor="middle"
+                          dominantBaseline="central"
+                          fontSize={chipFont}
+                          fontWeight="700"
+                          fill={chipTextFill}
+                        >
+                          {chipText}
+                        </text>
+                      </g>
+                    )
+                  }}
+                />
+              )}
+            </Radar>
           </RadarChart>
         </ResponsiveContainer>
       </div>
