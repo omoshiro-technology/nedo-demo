@@ -358,8 +358,8 @@ function FullScreenCard({ profile, compareProfile, industry, compareMode }: { pr
             <div className="flex-1 min-h-0 flex flex-col">
               <p className="text-xs text-center font-medium text-gray-500 mb-1 shrink-0">
                 月次比較（
-                <span className="inline-block w-3 border-t border-dashed border-slate-400 mr-1 align-middle" />
-                <span className="text-slate-500 font-semibold">1ヶ月前</span>
+                <span className="inline-block w-3 border-t border-dashed border-red-600 mr-1 align-middle" />
+                <span className="text-red-600 font-semibold">1ヶ月前</span>
                 <span className="mx-1">→</span>
                 <span className="inline-block w-3 h-0.5 bg-blue-600 mr-1 align-middle" />
                 <span className="text-blue-600 font-semibold">現在</span>
@@ -383,8 +383,8 @@ function FullScreenCard({ profile, compareProfile, industry, compareMode }: { pr
             <div className="flex-1 min-h-0 flex flex-col">
               <p className="text-xs text-center font-medium text-gray-500 mb-1 shrink-0">
                 期末比較（
-                <span className="inline-block w-3 border-t border-dashed border-slate-400 mr-1 align-middle" />
-                <span className="text-slate-500 font-semibold">前四半期</span>
+                <span className="inline-block w-3 border-t border-dashed border-red-600 mr-1 align-middle" />
+                <span className="text-red-600 font-semibold">前四半期</span>
                 <span className="mx-1">→</span>
                 <span className="inline-block w-3 h-0.5 bg-blue-600 mr-1 align-middle" />
                 <span className="text-blue-600 font-semibold">現在</span>

@@ -69,10 +69,10 @@ export function QCDESRadar({
   // 色付けモード判定
   const isOverlay = !!compareScores
 
-  // 現在 = 青（注目色） / 過去 = 灰色点線（ベースライン）
+  // 現在 = 青塗り / 過去 = 赤点線
   const currentColor = "#2563eb"  // blue-600
   const currentFillOpacity = overlayColor === "growth" ? 0.32 : 0.25
-  const pastColor = "#94a3b8"      // slate-400
+  const pastColor = "#dc2626"      // red-600
   const pastFillOpacity = 0.15
 
   return (
