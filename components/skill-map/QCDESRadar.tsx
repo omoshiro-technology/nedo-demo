@@ -75,7 +75,6 @@ export function QCDESRadar({
   const currentColor = "#2563eb"  // blue-600
   const currentFillOpacity = overlayColor === "growth" ? 0.32 : 0.25
   const pastColor = "#dc2626"      // red-600
-  const pastFillOpacity = 0.15
 
   return (
     <div className="h-full flex flex-col">
@@ -106,7 +105,8 @@ export function QCDESRadar({
                 strokeWidth={2}
                 strokeDasharray="6 4"
                 isAnimationActive={true}
-                animationDuration={600}
+                animationBegin={0}
+              animationDuration={500}
                 animationEasing="ease-in-out"
               />
             )}
@@ -115,18 +115,22 @@ export function QCDESRadar({
               dataKey="current"
               stroke={currentColor}
               fill={currentColor}
-              fillOpacity={isOverlay ? 0.32 : currentFillOpacity}
-              strokeWidth={isOverlay ? 2.5 : 2}
+              fillOpacity={currentFillOpacity}
+              strokeWidth={2}
               isAnimationActive={true}
-              animationDuration={600}
+              animationBegin={0}
+              animationDuration={500}
               animationEasing="ease-in-out"
             >
-              {isOverlay && (
+              {isOverlay ? (
                 <LabelList
                   dataKey="delta"
-                  content={(props: { x?: number; y?: number; value?: number; index?: number }) => {
-                    const { x, y, value, index } = props
-                    if (x == null || y == null || value == null || value === 0) return null
+                  content={(props: { x?: number | string; y?: number | string; value?: number | string; index?: number }) => {
+                    const { x: xRaw, y: yRaw, value: vRaw, index } = props
+                    const x = typeof xRaw === "number" ? xRaw : Number(xRaw)
+                    const y = typeof yRaw === "number" ? yRaw : Number(yRaw)
+                    const value = typeof vRaw === "number" ? vRaw : vRaw == null ? null : Number(vRaw)
+                    if (!Number.isFinite(x) || !Number.isFinite(y) || value == null || value === 0) return null
                     const delta = value
                     const isUp = delta > 0
                     const absDelta = Math.abs(delta)
@@ -138,10 +142,11 @@ export function QCDESRadar({
                     const chipW = chipText.length * (chipFont * 0.62) + chipPadX * 2
                     const chipFill = isUp ? "#d1fae5" : "#fee2e2"
                     const chipTextFill = isUp ? "#047857" : "#b91c1c"
-                    // 頂点からちょっと外側へオフセット（軸方向）
                     const N = data.length
                     const angleRad = (Math.PI / 180) * (90 - (360 / N) * (index ?? 0))
-                    const offsetPx = 22
+                    // 現在値が大きい(頂点が外側)場合はチップを内側へ。軸ラベルとの衝突回避
+                    const currentAtAxis = data[index ?? 0]?.current ?? 0
+                    const offsetPx = currentAtAxis >= 70 ? -22 : 22
                     const finalX = x + offsetPx * Math.cos(angleRad)
                     const finalY = y - offsetPx * Math.sin(angleRad)
                     return (
@@ -164,6 +169,53 @@ export function QCDESRadar({
                           fontSize={chipFont}
                           fontWeight="700"
                           fill={chipTextFill}
+                        >
+                          {chipText}
+                        </text>
+                      </g>
+                    )
+                  }}
+                />
+              ) : (
+                <LabelList
+                  dataKey="current"
+                  content={(props: { x?: number | string; y?: number | string; value?: number | string; index?: number }) => {
+                    const { x: xRaw, y: yRaw, value: vRaw, index } = props
+                    const x = typeof xRaw === "number" ? xRaw : Number(xRaw)
+                    const y = typeof yRaw === "number" ? yRaw : Number(yRaw)
+                    const value = typeof vRaw === "number" ? vRaw : vRaw == null ? null : Number(vRaw)
+                    if (!Number.isFinite(x) || !Number.isFinite(y) || value == null) return null
+                    const chipFont = compact ? 11 : 13
+                    const chipText = `${value}`
+                    const chipPadX = 9
+                    const chipH = chipFont + 8
+                    const chipW = chipText.length * (chipFont * 0.62) + chipPadX * 2
+                    const N = data.length
+                    const angleRad = (Math.PI / 180) * (90 - (360 / N) * (index ?? 0))
+                    // 値が大きい(頂点が外側)場合はチップを内側へ。軸ラベルとの衝突回避
+                    const offsetPx = value >= 70 ? -22 : 22
+                    const finalX = x + offsetPx * Math.cos(angleRad)
+                    const finalY = y - offsetPx * Math.sin(angleRad)
+                    return (
+                      <g key={index} transform={`translate(${finalX - chipW / 2}, ${finalY - chipH / 2})`}>
+                        <rect
+                          x={0}
+                          y={0}
+                          width={chipW}
+                          height={chipH}
+                          rx={chipH / 2}
+                          fill="#dbeafe"
+                          stroke="#ffffff"
+                          strokeWidth={1.5}
+                        />
+                        <text
+                          x={chipW / 2}
+                          y={chipH / 2}
+                          textAnchor="middle"
+                          dominantBaseline="central"
+                          fontSize={chipFont}
+                          fontWeight="700"
+                          fill="#1e40af"
                         >
                           {chipText}
                         </text>

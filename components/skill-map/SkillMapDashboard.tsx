@@ -366,7 +366,7 @@ function FullScreenCard({ profile, compareProfile, industry, compareMode }: { pr
             <div className="flex-1 min-h-0 flex flex-col">
               <div className="flex-1 min-h-0">
                 {latestScores ? (
-                  <QCDESRadar scores={latestScores} />
+                  <QCDESRadar key={`current-${profile.userId}`} scores={latestScores} />
                 ) : (
                   <div className="h-full flex items-center justify-center text-xs text-gray-400">データなし</div>
                 )}
@@ -374,7 +374,21 @@ function FullScreenCard({ profile, compareProfile, industry, compareMode }: { pr
             </div>
           ) : compareMode === "monthly" ? (
             <div className="flex-1 min-h-0 flex flex-col">
-              <p className="text-xs text-center font-medium text-gray-500 mb-1 shrink-0">
+              <div className="flex-1 min-h-0">
+                {latestScores && compareLatestScores ? (
+                  <QCDESRadar
+                    key={`monthly-${profile.userId}`}
+                    scores={latestScores}
+                    compareScores={compareLatestScores}
+                    overlayColor="growth"
+                    currentLabel="現在"
+                    pastLabel="1ヶ月前"
+                  />
+                ) : (
+                  <div className="h-full" />
+                )}
+              </div>
+              <p className="text-xs text-center font-medium text-gray-500 mt-1 shrink-0">
                 月次比較（
                 <span className="inline-block w-3 border-t border-dashed border-red-600 mr-1 align-middle" />
                 <span className="text-red-600 font-semibold">1ヶ月前</span>
@@ -383,23 +397,24 @@ function FullScreenCard({ profile, compareProfile, industry, compareMode }: { pr
                 <span className="text-blue-600 font-semibold">現在</span>
                 ）
               </p>
+            </div>
+          ) : (
+            <div className="flex-1 min-h-0 flex flex-col">
               <div className="flex-1 min-h-0">
-                {latestScores ? (
+                {latestScores && compareLatestScores ? (
                   <QCDESRadar
+                    key={`quarterly-${profile.userId}`}
                     scores={latestScores}
                     compareScores={compareLatestScores}
                     overlayColor="growth"
                     currentLabel="現在"
-                    pastLabel="1ヶ月前"
+                    pastLabel="前四半期"
                   />
                 ) : (
-                  <div className="h-full flex items-center justify-center text-xs text-gray-400">データなし</div>
+                  <div className="h-full" />
                 )}
               </div>
-            </div>
-          ) : (
-            <div className="flex-1 min-h-0 flex flex-col">
-              <p className="text-xs text-center font-medium text-gray-500 mb-1 shrink-0">
+              <p className="text-xs text-center font-medium text-gray-500 mt-1 shrink-0">
                 期末比較（
                 <span className="inline-block w-3 border-t border-dashed border-red-600 mr-1 align-middle" />
                 <span className="text-red-600 font-semibold">前四半期</span>
@@ -408,19 +423,6 @@ function FullScreenCard({ profile, compareProfile, industry, compareMode }: { pr
                 <span className="text-blue-600 font-semibold">現在</span>
                 ）
               </p>
-              <div className="flex-1 min-h-0">
-                {latestScores ? (
-                  <QCDESRadar
-                    scores={latestScores}
-                    compareScores={compareLatestScores}
-                    overlayColor="growth"
-                    currentLabel="現在"
-                    pastLabel="前四半期"
-                  />
-                ) : (
-                  <div className="h-full flex items-center justify-center text-xs text-gray-400">データなし</div>
-                )}
-              </div>
             </div>
           )}
         </div>
