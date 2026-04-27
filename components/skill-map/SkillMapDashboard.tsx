@@ -298,11 +298,11 @@ function FullScreenCard({ profile, compareProfile, industry, compareMode }: { pr
       {/* 上段: グリッド(55%) + 情報パネル(45%) — flex-1 で残りを埋める */}
       <div className="flex-1 min-h-0 flex gap-4">
         {/* 左: ヒートマップグリッド — 9行 x 8列がビューポートに合わせて伸縮 */}
-        <div className="w-[55%] flex flex-col gap-[2px]">
+        <div className="w-[55%] min-w-0 flex flex-col gap-[2px]">
           {SKILL_CATEGORIES.map((category) => {
             const skills = skillsByCategory.get(category.id) ?? []
             return (
-              <div key={category.id} className="flex-1 flex items-stretch min-h-0">
+              <div key={category.id} className="flex-1 flex items-stretch min-h-0 min-w-0">
                 {/* カテゴリラベル — 15%幅 */}
                 <div className="w-[15%] shrink-0 flex items-center justify-center bg-slate-100 border-r border-slate-200 px-2">
                   <span className="text-sm font-semibold text-slate-700 leading-tight text-center">
@@ -310,7 +310,7 @@ function FullScreenCard({ profile, compareProfile, industry, compareMode }: { pr
                   </span>
                 </div>
                 {/* セル群 — 85%幅を8等分 */}
-                <div className="flex-1 flex gap-[2px] pl-2">
+                <div className="flex-1 min-w-0 flex gap-[2px] pl-2">
                   {skills.map((skill) => {
                     const prof = profile.proficiencies[skill.id]
                     const level = (prof?.currentLevel ?? 1) as SkillLevel
@@ -321,7 +321,7 @@ function FullScreenCard({ profile, compareProfile, industry, compareMode }: { pr
                       <div
                         key={skill.id}
                         className={`
-                          flex-1 rounded-[4px] cursor-pointer overflow-hidden
+                          flex-1 min-w-0 rounded-[4px] cursor-pointer overflow-hidden
                           flex items-center justify-center
                           border transition-all px-1 relative
                           ${isImproved ? "bg-emerald-200 border-emerald-500 ring-2 ring-emerald-400" : `${LEVEL_BG[level]} ${LEVEL_BORDER[level]}`}
@@ -352,7 +352,7 @@ function FullScreenCard({ profile, compareProfile, industry, compareMode }: { pr
                - monthly:   重ね表示（1ヶ月前 vs 現在、成長を2色で）
                - quarterly: 重ね表示（前四半期 vs 現在、成長を2色で）
         */}
-        <div className="w-[45%] min-h-0 rounded-lg border border-gray-100 bg-gray-50/50 p-3 flex flex-col">
+        <div className="w-[45%] min-w-0 min-h-0 rounded-lg border border-gray-100 bg-gray-50/50 p-3 flex flex-col">
           <h3 className="text-base font-bold text-gray-600 mb-2 shrink-0">観点網羅度（QCDES）</h3>
           {compareMode === "monthly" ? (
             <div className="flex-1 min-h-0 flex flex-col">
