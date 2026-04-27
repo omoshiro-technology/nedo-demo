@@ -65,21 +65,15 @@ export function QCDESRadar({
 
   const vals = Object.values(cov) as number[]
   const avg = Math.round(vals.reduce((a, b) => a + b, 0) / vals.length)
-  const pastAvg = pastCov
-    ? Math.round((Object.values(pastCov) as number[]).reduce((a, b) => a + b, 0) / 5)
-    : null
 
   // 色付けモード判定
   const isOverlay = !!compareScores
-  const growthDelta = pastCov
-    ? Math.round((avg - (pastAvg ?? 0)))
-    : 0
 
-  // overlayColor === "growth" の場合、現在は赤系 / 過去は青系 の2色はっきり表示
-  const currentColor = overlayColor === "growth" ? "#ef4444" : "#3b82f6"  // red-500 / blue-500
-  const currentFillOpacity = overlayColor === "growth" ? 0.35 : 0.25
-  const pastColor = overlayColor === "growth" ? "#2563eb" : "#94a3b8"      // blue-600 / slate-400
-  const pastFillOpacity = overlayColor === "growth" ? 0.3 : 0.15
+  // 現在 = 青（注目色） / 過去 = 灰色点線（ベースライン）
+  const currentColor = "#2563eb"  // blue-600
+  const currentFillOpacity = overlayColor === "growth" ? 0.32 : 0.25
+  const pastColor = "#94a3b8"      // slate-400
+  const pastFillOpacity = 0.15
 
   return (
     <div className="h-full flex flex-col">
@@ -94,20 +88,20 @@ export function QCDESRadar({
                 const datum = data[payload.index]
                 const delta = datum?.delta
                 const labelFont = compact ? 11 : 15
-                const showChip = isOverlay && delta != null && delta !== 0
+                // 大きい変化のみチップ化（|Δ| >= 10）
+                const showChip = isOverlay && delta != null && Math.abs(delta) >= 10
                 const isUp = (delta ?? 0) > 0
                 const absDelta = Math.abs(delta ?? 0)
-                // 大きさで chip サイズを段階化
-                const chipScale = absDelta >= 30 ? 1.3 : absDelta >= 15 ? 1.15 : 1
+                const chipScale = absDelta >= 30 ? 1.25 : absDelta >= 20 ? 1.12 : 1
                 const chipFont = (compact ? 11 : 13) * chipScale
-                const chipText = `${isUp ? "▲" : "▼"} ${isUp ? "+" : ""}${delta}`
-                const chipPadX = 8
+                const chipText = `${isUp ? "+" : ""}${delta}`
+                const chipPadX = 9
                 const chipH = chipFont + 8
-                const chipW = chipText.length * (chipFont * 0.6) + chipPadX * 2
+                const chipW = chipText.length * (chipFont * 0.62) + chipPadX * 2
                 const chipDx = textAnchor === "middle" ? 0 : textAnchor === "end" ? -chipW / 2 : chipW / 2
-                const chipDy = labelFont + 8
-                const chipFill = isUp ? "#fee2e2" : "#dbeafe"
-                const chipStroke = isUp ? "#dc2626" : "#2563eb"
+                const chipDy = labelFont + 6
+                const chipFill = isUp ? "#d1fae5" : "#fee2e2"   // emerald-100 / red-100
+                const chipText2 = isUp ? "#047857" : "#b91c1c"  // emerald-700 / red-700
                 return (
                   <g transform={`translate(${x},${y})`}>
                     <text textAnchor={textAnchor} fill="#374151" fontSize={labelFont} fontWeight="500">
@@ -122,8 +116,6 @@ export function QCDESRadar({
                           height={chipH}
                           rx={chipH / 2}
                           fill={chipFill}
-                          stroke={chipStroke}
-                          strokeWidth={1.2}
                         />
                         <text
                           x={0}
@@ -132,7 +124,7 @@ export function QCDESRadar({
                           dominantBaseline="central"
                           fontSize={chipFont}
                           fontWeight="700"
-                          fill={chipStroke}
+                          fill={chipText2}
                         >
                           {chipText}
                         </text>
@@ -170,22 +162,11 @@ export function QCDESRadar({
           </RadarChart>
         </ResponsiveContainer>
       </div>
-      <p className={`text-center text-gray-500 mt-1 shrink-0 ${compact ? "text-xs" : "text-sm"}`}>
-        {isOverlay && pastAvg !== null ? (
-          <>
-            <span className="text-blue-600 font-medium">{pastAvg}</span>
-            <span className="mx-1 text-gray-400">→</span>
-            <span className="text-rose-600 font-medium">{avg}</span>
-            {overlayColor === "growth" && growthDelta !== 0 && (
-              <span className={growthDelta > 0 ? "ml-2 text-emerald-600 font-medium" : "ml-2 text-rose-600 font-medium"}>
-                ({growthDelta > 0 ? `+${growthDelta}` : growthDelta})
-              </span>
-            )}
-          </>
-        ) : (
-          <>QCDES 平均: {avg} / 100</>
-        )}
-      </p>
+      {!isOverlay && (
+        <p className={`text-center text-gray-500 mt-1 shrink-0 ${compact ? "text-xs" : "text-sm"}`}>
+          QCDES 平均: {avg} / 100
+        </p>
+      )}
     </div>
   )
 }
