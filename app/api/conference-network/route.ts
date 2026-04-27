@@ -4,7 +4,6 @@ import {
   generateCharacterTurn,
   type ConferenceNetworkContext
 } from "@/lib/brain-room/conference-network"
-import { evaluateImportance, generateMindmapNodes, findRelatedNode } from "@/lib/brain-room/mindmap-generator"
 import { updateWhiteboard } from "@/lib/brain-room/conference-agents"
 import type { Character, KnowledgeFile } from "@/lib/brain-room/types"
 
@@ -192,10 +191,6 @@ export async function POST(req: Request) {
                   nextSpeakerIndex = (turn + 1) % characters.length
                 }
               }
-
-              // Mindmap/nodelist AI evaluation skipped for performance
-              // (evaluateImportance + generateMindmapNodes + findRelatedNode = 3 LLM calls per turn)
-              // Whiteboard handles discussion structure visualization instead
 
               const selectedSpeakerIndex = characters.findIndex(c => c.id === selectedSpeaker.id)
               conversationHistory.push({

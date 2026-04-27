@@ -1,0 +1,146 @@
+<div
+    style="font-family: 'Noto Sans JP', sans-serif; background: #f5f0e8; padding: 24px; border-radius: 8px; min-height: 600px;">
+
+    <!-- タイトルエリア -->
+    <div style="text-align:center; margin-bottom: 24px;">
+        <div
+            style="display:inline-block; background:#2c3e50; color:#fff; padding:10px 32px; border-radius:4px; font-size:1.3em; font-weight:bold; letter-spacing:2px;">
+            🏭 SUS304 深絞り部品 — 量産工程構想と型設計戦略
+        </div>
+        <div style="margin-top:6px; color:#666; font-size:0.85em;">目的：絞り比・中間焼鈍要否・型寿命を考慮した工程構想とCAE事前検証方針の決定</div>
+    </div>
+
+    <!-- 上段：5名の論点カード -->
+    <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:10px; margin-bottom:20px;">
+
+        <!-- 村田 -->
+        <div class="wb-card wb-card-blue">
+            <div style="font-size:0.75em; color:#555; margin-bottom:4px;">🗣 村田 鉄男（加工経験）</div>
+            <strong>絞り比 1.6以下 を基本線に工程分割</strong>
+            <ul style="margin:8px 0 0 0; padding-left:16px; font-size:0.88em;">
+                <li>加工硬化が <em>最大の敵</em>、絞り比1.6超えで表面割れリスク急増</li>
+                <li>シミュで3工程成立しても実機は材料ロットばらつきで落ちる</li>
+                <li>4工程を推奨、品質リスクを最小化</li>
+            </ul>
+        </div>
+
+        <!-- 安藤 -->
+        <div class="wb-card wb-card-yellow">
+            <div style="font-size:0.75em; color:#555; margin-bottom:4px;">🗣 安藤 美咲（品質・仕様）</div>
+            <strong>顧客仕様と初期ロットCpkで工程を確定</strong>
+            <ul style="margin:8px 0 0 0; padding-left:16px; font-size:0.88em;">
+                <li>深さ公差・表面割れ許容基準の先行確認が前提</li>
+                <li>初期ロット50個で板厚減少率測定、<strong>Cpk 1.33 以上</strong> が量産GO条件</li>
+                <li>中間焼鈍要否は仕様書次第</li>
+            </ul>
+        </div>
+
+        <!-- 黒田 -->
+        <div class="wb-card wb-card-purple">
+            <div style="font-size:0.75em; color:#555; margin-bottom:4px;">🗣 黒田 浩一（金型）</div>
+            <strong>4工程で型内滞在短縮＋型寿命確保</strong>
+            <ul style="margin:8px 0 0 0; padding-left:16px; font-size:0.88em;">
+                <li>SUS304は熱伝導率が低く各工程の型内滞在が長い</li>
+                <li>4工程に分けた方が総サイクルタイムは短縮できる可能性</li>
+                <li>トリム型刃先処理は TD（+25万円/寿命1.5倍） と TiCN を比較</li>
+            </ul>
+        </div>
+
+        <!-- 中島 -->
+        <div class="wb-card wb-card-red">
+            <div style="font-size:0.75em; color:#555; margin-bottom:4px;">🗣 中島 康太（コスト・LCC）</div>
+            <strong>LCC比較で4工程が有利</strong>
+            <ul style="margin:8px 0 0 0; padding-left:16px; font-size:0.88em;">
+                <li>型費: 3工程 1,800万円 vs 4工程 2,200万円</li>
+                <li>サイクル3秒短縮×月産3,000個×5年 = <strong>340万円 有利</strong></li>
+                <li>TD処理は年2回更新×型4本で計算、総額では TiCN が勝る</li>
+            </ul>
+        </div>
+
+        <!-- 藤原 -->
+        <div class="wb-card wb-card-green">
+            <div style="font-size:0.75em; color:#555; margin-bottom:4px;">🗣 藤原 翔太（CAE）</div>
+            <strong>CAEで4工程成立を確認＋データ蓄積</strong>
+            <ul style="margin:8px 0 0 0; padding-left:16px; font-size:0.88em;">
+                <li>絞り比1.4以下で応力集中が破断応力の <strong>70%以下</strong></li>
+                <li>中間焼鈍なしで4工程成立する数値</li>
+                <li>月次で型摩耗量を蓄積、次回案件の予測精度向上に活用</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- 下段：決定事項 / 未解決の問い / アクション -->
+    <div class="wb-grid-3">
+
+        <!-- 決定事項 -->
+        <div class="wb-section">
+            <div style="font-weight:bold; margin-bottom:8px; color:#2d6a2d;">✅ 合意・方針</div>
+            <div class="wb-decision" style="margin-bottom:8px;">
+                <strong>4工程案を採用</strong><br>
+                <small>品質リスク最小化＋サイクルタイム短縮＋LCC有利の三拍子</small>
+            </div>
+            <div class="wb-decision" style="margin-bottom:8px;">
+                <strong>TiCN処理で進める</strong><br>
+                <small>ランニングコストで TiCN が有利。TD は品質安定性確認後に再検討の余地</small>
+            </div>
+            <div class="wb-decision" style="margin-bottom:8px;">
+                <strong>初期ロット50個で Cpk 1.33 以上 を確認</strong><br>
+                <small>量産GO判定の必須条件として明文化</small>
+            </div>
+            <div class="wb-decision" style="border-color:#27ae60;">
+                <strong>月次で型摩耗量データを蓄積</strong><br>
+                <small>次回案件の工程設計精度を向上、若手育成にも活用</small>
+            </div>
+        </div>
+
+        <!-- 未解決の問い -->
+        <div class="wb-section">
+            <div style="font-weight:bold; margin-bottom:8px; color:#a00;">❓ 未解決の問い</div>
+            <div class="wb-question" style="margin-bottom:8px;">
+                <strong>顧客の深さ公差・表面割れ許容基準は？</strong><br>
+                <small>仕様書未確認。工程数・焼鈍有無に直結</small>
+            </div>
+            <div class="wb-question" style="margin-bottom:8px;">
+                <strong>TD処理の品質安定性は TiCN を上回るか？</strong><br>
+                <small>将来的な切替判断の材料として別途評価</small>
+            </div>
+            <div class="wb-question">
+                <strong>材料ロットばらつきが絞り比1.4 の実機再現性に与える影響は？</strong><br>
+                <small>試作段階でロット違い材を使った検証が必要</small>
+            </div>
+        </div>
+
+        <!-- アクション項目 -->
+        <div class="wb-section">
+            <div style="font-weight:bold; margin-bottom:8px; color:#555;">📋 アクション項目</div>
+            <div class="wb-card wb-card-yellow" style="margin-bottom:8px; padding:10px;">
+                <div class="wb-tag" style="background:#b8860b; color:#fff; margin-bottom:4px;">安藤</div>
+                <strong>顧客仕様書の入手と試作スケジュール調整</strong><br>
+                <small>今週中に顧客報告資料をまとめて展開</small>
+            </div>
+            <div class="wb-card wb-card-purple" style="margin-bottom:8px; padding:10px;">
+                <div class="wb-tag" style="background:#5a2d82; color:#fff; margin-bottom:4px;">黒田</div>
+                <strong>TiCN型の詳細設計・試作準備</strong><br>
+                <small>安藤と連携し試作スケジュールに合わせる</small>
+            </div>
+            <div class="wb-card wb-card-green" style="margin-bottom:8px; padding:10px;">
+                <div class="wb-tag" style="background:#27ae60; color:#fff; margin-bottom:4px;">藤原</div>
+                <strong>月次データ蓄積の仕組み設計</strong><br>
+                <small>摩耗量記録フォーマット＋次回案件への活用方針を提案</small>
+            </div>
+            <div class="wb-card wb-card-red" style="margin-bottom:8px; padding:10px;">
+                <div class="wb-tag" style="background:#c0392b; color:#fff; margin-bottom:4px;">中島</div>
+                <strong>顧客への報告資料作成と発注単価交渉</strong><br>
+                <small>4工程案のLCC比較を根拠に提示</small>
+            </div>
+            <div class="wb-card wb-card-blue" style="padding:10px;">
+                <div class="wb-tag" style="background:#1a4a8a; color:#fff; margin-bottom:4px;">村田</div>
+                <strong>試作立ち会いと初期ロット判定</strong><br>
+                <small>Cpk 1.33 達成の実機確認を担当</small>
+            </div>
+        </div>
+
+    </div>
+
+</div>

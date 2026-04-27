@@ -172,7 +172,6 @@ export function ArchipelagoView({
           messages: messages,
           characters,
           allMessages: messages,
-          summaryNodes: {},
         }),
       })
       if (response.ok) {
@@ -328,9 +327,7 @@ export function ArchipelagoView({
         title={selectedTopic ? `トピック詳細レポート: ${selectedTopic.name}` : ""}
         content={topicReport}
         isLoading={isGeneratingReport}
-        node={null}
         theme={theme}
-        messages={messages}
       />
     </>
   )

@@ -2,7 +2,7 @@
 
 import { CardFooter } from "@/components/ui/card"
 import { useState, useRef, useCallback } from "react"
-import type { Character, Message, SummaryNode, CharacterSet, TopicData, KnowledgeFile } from "@/lib/brain-room/types"
+import type { Character, Message, CharacterSet, TopicData, KnowledgeFile } from "@/lib/brain-room/types"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -11,11 +11,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useToast } from "@/components/ui/use-toast"
-import { Bot, Sparkles, FileText, Settings, Users, FileOutput, Square, Target, Brain, Info } from "lucide-react"
+import { Bot, Sparkles, FileText, Settings, Users, FileOutput, Square, Target, Brain, Info, Download } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { MindMapView } from "@/components/brain-room/mindmap-view"
-import { NodeListView } from "@/components/brain-room/node-list-view"
 import { MessageTag } from "@/components/brain-room/message-tag"
 import { ArchipelagoView } from "@/components/brain-room/archipelago-view"
 import { MessageTextWithReferences } from "@/components/brain-room/message-text-with-references"
@@ -41,7 +39,6 @@ export function DiscussionInterface({
   const [theme, setTheme] = useState("")
   const [purpose, setPurpose] = useState("")
   const [messages, setMessages] = useState<Message[]>([])
-  const [summaryNodes, setSummaryNodes] = useState<Record<string, SummaryNode>>({})
   const [status, setStatus] = useState<"idle" | "running" | "finished">("idle")
   const [selectedSetId, setSelectedSetId] = useState<string>("")
   const [activeTab, setActiveTab] = useState("chat")
@@ -55,9 +52,12 @@ export function DiscussionInterface({
   const [appMode, setAppMode] = useState<"conference" | "chat">("conference")
   const [chatInput, setChatInput] = useState("")
   const [isSending, setIsSending] = useState(false)
+  const [isGeneratingSlide, setIsGeneratingSlide] = useState(false)
+  const [isGeneratingPptx, setIsGeneratingPptx] = useState(false)
   const [selectedChatPersonas, setSelectedChatPersonas] = useState<number[]>([])
   const [selectedConferenceMembers, setSelectedConferenceMembers] = useState<number[]>(() => characters.map(c => c.id))
   const [presetData, setPresetData] = useState<{ messages: any[]; whiteboardHtml: string } | null>(null)
+  const [selectedPresetKey, setSelectedPresetKey] = useState<string>("")
   const [chatTurnCount, setChatTurnCount] = useState(0)
   const [selectedMessageIndex, setSelectedMessageIndex] = useState<number | null>(null)
 
@@ -194,9 +194,6 @@ export function DiscussionInterface({
       setStatus("running")
       setMessages([])
       setWhiteboardHtml("")
-      setSummaryNodes({
-        root: { id: "root", label: `テーマ: ${theme}`, children: [], relatedMessages: [], summary: `会議のメインテーマ: ${theme}${purpose ? `\n目的: ${purpose}` : ""}` },
-      })
 
       const allMessages = presetData.messages
       for (let i = 0; i < allMessages.length; i++) {
@@ -209,6 +206,7 @@ export function DiscussionInterface({
 
       setStatus("finished")
       setPresetData(null)
+      setSelectedPresetKey("")
       toast({ title: "会議完了", description: `${allMessages.length}ターンの会議が完了しました`, duration: 5000 })
       return
     }
@@ -216,18 +214,6 @@ export function DiscussionInterface({
     setStatus("running")
     setMessages([])
     setWhiteboardHtml("")
-
-    const rootNodeId = "root"
-    const initialSummaryNodes: Record<string, SummaryNode> = {
-      [rootNodeId]: {
-        id: rootNodeId,
-        label: `テーマ: ${theme}`,
-        children: [],
-        relatedMessages: [],
-        summary: `会議のメインテーマ: ${theme}${purpose ? `\n目的: ${purpose}` : ""}`,
-      },
-    }
-    setSummaryNodes(initialSummaryNodes)
 
     abortControllerRef.current = new AbortController()
 
@@ -341,47 +327,6 @@ export function DiscussionInterface({
     }
 
     setStatus("finished")
-    generateTopicSummaries()
-  }
-
-  const generateTopicSummaries = async () => {
-    // 各トピックノードに対してサマリーを生成
-    setSummaryNodes((prevNodes) => {
-      const updatedNodes = { ...prevNodes }
-
-      Object.keys(updatedNodes).forEach(async (nodeId) => {
-        const node = updatedNodes[nodeId]
-        if (nodeId !== "root" && node.relatedMessages.length > 0) {
-          try {
-            const relatedMessages = node.relatedMessages.map((index) => messages[index]).filter(Boolean)
-            const response = await fetch("/api/generate-topic-summary", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                topic: node.label,
-                messages: relatedMessages,
-                characters,
-              }),
-            })
-
-            if (response.ok) {
-              const { summary } = await response.json()
-              setSummaryNodes((prev) => ({
-                ...prev,
-                [nodeId]: {
-                  ...prev[nodeId],
-                  summary: summary,
-                },
-              }))
-            }
-          } catch (error) {
-            console.error("Failed to generate summary for", nodeId, error)
-          }
-        }
-      })
-
-      return updatedNodes
-    })
   }
 
   const handleGenerateArchipelagoMap = useCallback(async () => {
@@ -455,7 +400,6 @@ export function DiscussionInterface({
           purpose,
           messages,
           characters,
-          summaryNodes,
         }),
       })
 
@@ -533,24 +477,6 @@ export function DiscussionInterface({
         }
         markdownContent += `\n---\n\n`
       })
-
-      if (Object.keys(summaryNodes).length > 1) {
-        markdownContent += "## 会話のまとめ\n\n"
-        const renderNodeMarkdown = (nodeId: string, depth = 0): string => {
-          const node = summaryNodes[nodeId]
-          if (!node) return ""
-
-          let result = `${"  ".repeat(depth)}- **${node.label}**\n`
-          if (node.summary && nodeId !== "root") {
-            result += `${"  ".repeat(depth + 1)}*概要: ${node.summary}*\n\n`
-          }
-          node.children.forEach((childId) => {
-            result += renderNodeMarkdown(childId, depth + 1)
-          })
-          return result
-        }
-        markdownContent += renderNodeMarkdown("root")
-      }
 
       // 引用元情報セクションを追加
       if (allReferencedKnowledge.size > 0) {
@@ -762,7 +688,7 @@ export function DiscussionInterface({
                     <Button
                       variant="outline"
                       size="sm"
-                      className={`text-xs ${presetData ? "border-green-500 text-green-700 bg-green-50" : ""}`}
+                      className={`text-xs ${selectedPresetKey === "nedo-demo-sus304" ? "border-green-500 text-green-700 bg-green-50" : ""}`}
                       onClick={async () => {
                         try {
                           const [dataRes, wbRes] = await Promise.all([
@@ -775,6 +701,7 @@ export function DiscussionInterface({
                           setTheme(preset.theme)
                           setPurpose(preset.purpose)
                           setPresetData({ messages: preset.messages, whiteboardHtml: wbHtml })
+                          setSelectedPresetKey("nedo-demo-sus304")
                           toast({ title: "プリセット読込完了", description: "「会議を開始」を押すと再生されます" })
                         } catch (e) {
                           toast({ title: "読込エラー", description: "プリセットの読み込みに失敗しました", variant: "destructive" })
@@ -784,14 +711,37 @@ export function DiscussionInterface({
                       SUS304 深絞り工程設計
                     </Button>
                     {[
-                      { label: "工程構想（SUS304 深絞り）", theme: "SUS304 t1.5 深絞り形状の工程設計方針", purpose: "新規受注案件（SUS304 t1.5 深絞り形状）の量産工程を確立するにあたり、加工硬化による割れリスクへの対策と、品質・コスト・納期を両立する工程設計方針を策定する。確認すべき論点と判断基準を洗い出したい。" },
-                      { label: "工程構想（ハイテン ブラケット）", theme: "自動車ブラケット（590MPaハイテン t1.2mm、月産8,000個）の工程設計を構想する", purpose: "新規受注した自動車ブラケットの量産工程を構想する。製品形状・材質（590MPaハイテン）・生産量（月産8,000個）から、最適な工程順序・型方式（順送 or トランスファー）・加工条件の方向性を決定する。ハイテン材特有のスプリングバック対策と型寿命を考慮し、品質・コスト・納期のバランスを取った工程設計の骨格を固める。" },
-                      { label: "量産トラブル（割れ不良）", theme: "量産中の絞り部品（SPCC t1.0mm）で割れ不良が突然発生率2%に上昇した。原因を特定し対策を検討する", purpose: "先週まで0.3%だった割れ不良率が今週2%に急上昇。ラインを止めずに暫定対策で生産を継続しつつ、4M変動（材料ロット・金型摩耗・設備速度・作業者）の観点から原因候補を絞り込む。過去の類似トラブル事例を参照し、恒久対策と再発防止策を決定する。顧客への報告と納期影響の見積もりも必要。" },
-                      { label: "VE提案（家電部品 30%削減）", theme: "既存製品（家電ブラケット、SPCC t1.0mm、現行5工程）の型費・加工費を30%削減するVE提案を検討する", purpose: "年間60万個生産している家電ブラケットのコスト削減提案を作成する。現行5工程の工程統合の可能性、図面公差の緩和による工程数削減、ブランクレイアウト変更による材料歩留まり改善の余地を洗い出す。品質を維持しながらコスト30%削減を実現する具体的な提案をまとめ、顧客へのVE提案書の骨子とする。" },
-                      { label: "材質変更（SPCC→ハイテン590）", theme: "顧客からの軽量化要求でSPCC t1.6mmから590MPaハイテン t1.2mmへの材質変更が決定。既存金型の流用可否と必要な工程変更を検討する", purpose: "薄肉化＋高張力化に伴う影響を網羅的に評価する。成形荷重の約1.5倍増加、スプリングバック量の2〜3倍増大、金型への負荷増大による型寿命への影響、後工程（溶接・塗装）の条件変更を検討する。既存金型のどこまでが流用可能で、どこに改造・新製作が必要かを判断し、追加投資額とリスクを明確にする。" },
-                      { label: "育成計画（工程設計 2年目）", theme: "入社2年目の工程設計者（田中大輝）を3年後に一人前の工程設計者にするための育成計画を議論する", purpose: "スキルマップのBefore/After評価を参照しながら、現時点での習熟度と目標レベル（Lv.3 応用）のギャップを特定する。どの案件にアサインすればどのスキルが伸びるかを検討し、OJTの方針、重点的に伸ばすスキル（工程設計・品質管理・コスト見積）、ベテランとのペア配置方針、育成上の注意点を具体的に決める。" },
+                      { label: "工程構想（SUS304 深絞り）", file: "nedo-demo-process-sus304" },
+                      { label: "工程構想（ハイテン ブラケット）", file: "nedo-demo-process-hiten" },
+                      { label: "量産トラブル（割れ不良）", file: "nedo-demo-crack-trouble" },
+                      { label: "VE提案（家電部品 30%削減）", file: "nedo-demo-ve-reduction" },
+                      { label: "材質変更（SPCC→ハイテン590）", file: "nedo-demo-material-change" },
+                      { label: "育成計画（工程設計 2年目）", file: "nedo-demo-training-plan" },
                     ].map((p) => (
-                      <Button key={p.label} variant="outline" size="sm" className="text-xs" onClick={() => { setTheme(p.theme); setPurpose(p.purpose) }}>
+                      <Button
+                        key={p.label}
+                        variant="outline"
+                        size="sm"
+                        className={`text-xs ${selectedPresetKey === p.file ? "border-green-500 text-green-700 bg-green-50" : ""}`}
+                        onClick={async () => {
+                          try {
+                            const [dataRes, wbRes] = await Promise.all([
+                              fetch(`/preset-conferences/${p.file}.json`),
+                              fetch(`/preset-conferences/${p.file}-whiteboard.html`),
+                            ])
+                            if (!dataRes.ok) throw new Error("Failed to load preset")
+                            const preset = await dataRes.json()
+                            const wbHtml = wbRes.ok ? await wbRes.text() : ""
+                            setTheme(preset.theme)
+                            setPurpose(preset.purpose)
+                            setPresetData({ messages: preset.messages, whiteboardHtml: wbHtml })
+                            setSelectedPresetKey(p.file)
+                            toast({ title: "プリセット読込完了", description: "「会議を開始」を押すと再生されます" })
+                          } catch (e) {
+                            toast({ title: "読込エラー", description: "プリセットの読み込みに失敗しました", variant: "destructive" })
+                          }
+                        }}
+                      >
                         {p.label}
                       </Button>
                     ))}
@@ -898,8 +848,6 @@ export function DiscussionInterface({
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList>
             <TabsTrigger value="chat">チャット</TabsTrigger>
-            <TabsTrigger value="mindmap">マインドマップ</TabsTrigger>
-            <TabsTrigger value="nodelist">ノードリスト</TabsTrigger>
             <TabsTrigger value="whiteboard">ホワイトボード</TabsTrigger>
             <TabsTrigger value="archipelago">群島MAP</TabsTrigger>
           </TabsList>
@@ -980,52 +928,6 @@ export function DiscussionInterface({
               </CardContent>
             </Card>
           </TabsContent>
-          <TabsContent value="mindmap">
-            <Card>
-              <CardHeader>
-                <CardTitle>マインドマップビュー</CardTitle>
-                <CardDescription>
-                  会議の要点をマインドマップ形式で表示。ノードをクリックして詳細を確認できます。
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="h-[60vh] p-4">
-                {Object.keys(summaryNodes).length > 0 ? (
-                  <MindMapView
-                    nodes={summaryNodes}
-                    messages={messages}
-                    characters={characters}
-                    theme={theme}
-                    onJumpToMessage={handleJumpToMessage}
-                  />
-                ) : (
-                  <p>サマリーはまだありません。</p>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="nodelist">
-            <Card>
-              <CardHeader>
-                <CardTitle>ノードリストビュー</CardTitle>
-                <CardDescription>
-                  会議の要点を階層的なリスト形式で表示。各ノードをクリックして詳細を確認できます。
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="h-[60vh] p-4">
-                {Object.keys(summaryNodes).length > 0 ? (
-                  <NodeListView
-                    nodes={summaryNodes}
-                    messages={messages}
-                    characters={characters}
-                    theme={theme}
-                    onJumpToMessage={handleJumpToMessage}
-                  />
-                ) : (
-                  <p>サマリーはまだありません。</p>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
           <TabsContent value="archipelago" forceMount className="group">
             <div className="h-[70vh] group-data-[state=inactive]:hidden">
               <ArchipelagoView
@@ -1051,15 +953,107 @@ export function DiscussionInterface({
                   <p className="text-sm text-gray-500">議論の構造をホワイトボード形式で可視化</p>
                 </div>
                 {whiteboardHtml && (
-                  <button
-                    className="text-xs text-gray-500 hover:text-gray-800 underline"
-                    onClick={() => {
-                      navigator.clipboard.writeText(whiteboardHtml)
-                      toast({ title: "コピー完了", description: "HTMLソースをコピーしました。" })
-                    }}
-                  >
-                    HTMLソースをコピー
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      className="text-xs text-gray-500 hover:text-gray-800 underline"
+                      onClick={() => {
+                        navigator.clipboard.writeText(whiteboardHtml)
+                        toast({ title: "コピー完了", description: "HTMLソースをコピーしました。" })
+                      }}
+                    >
+                      HTMLソースをコピー
+                    </button>
+                    <Button
+                      size="sm"
+                      disabled={isGeneratingSlide}
+                      onClick={async () => {
+                        setIsGeneratingSlide(true)
+                        const tab = window.open("", "_blank")
+                        if (tab) {
+                          tab.document.write(
+                            `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>スライドを生成中...</title><style>body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#1a1a1a;color:#fff;font-family:'Noto Sans JP',sans-serif;}.box{text-align:center}.spinner{width:48px;height:48px;border:4px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}@keyframes spin{to{transform:rotate(360deg)}}</style></head><body><div class="box"><div class="spinner"></div><p>スライドを生成しています…</p></div></body></html>`,
+                          )
+                          tab.document.close()
+                        }
+                        try {
+                          const res = await fetch("/api/generate-slide", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ whiteboardHtml, theme }),
+                          })
+                          if (!res.ok) throw new Error(`API error: ${res.status}`)
+                          const html = await res.text()
+                          if (tab) {
+                            tab.document.open()
+                            tab.document.write(html)
+                            tab.document.close()
+                          } else {
+                            const blob = new Blob([html], { type: "text/html" })
+                            const url = URL.createObjectURL(blob)
+                            window.open(url, "_blank")
+                          }
+                          toast({ title: "スライドを生成しました", description: "新しいタブで表示しています。" })
+                        } catch (err) {
+                          console.error(err)
+                          if (tab) tab.close()
+                          toast({
+                            title: "スライド生成に失敗しました",
+                            description: err instanceof Error ? err.message : "Unknown error",
+                            variant: "destructive",
+                          })
+                        } finally {
+                          setIsGeneratingSlide(false)
+                        }
+                      }}
+                    >
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      {isGeneratingSlide ? "生成中..." : "スライドを作成"}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={isGeneratingPptx}
+                      onClick={async () => {
+                        setIsGeneratingPptx(true)
+                        try {
+                          const res = await fetch("/api/generate-slide-pptx", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ whiteboardHtml, theme }),
+                          })
+                          if (!res.ok) throw new Error(`API error: ${res.status}`)
+                          const blob = await res.blob()
+                          const disposition = res.headers.get("Content-Disposition") || ""
+                          const starMatch = disposition.match(/filename\*=UTF-8''([^;]+)/i)
+                          const plainMatch = disposition.match(/filename="([^"]+)"/i)
+                          const fileName = starMatch
+                            ? decodeURIComponent(starMatch[1])
+                            : plainMatch?.[1] || "slides.pptx"
+                          const url = URL.createObjectURL(blob)
+                          const a = document.createElement("a")
+                          a.href = url
+                          a.download = fileName
+                          document.body.appendChild(a)
+                          a.click()
+                          document.body.removeChild(a)
+                          setTimeout(() => URL.revokeObjectURL(url), 1000)
+                          toast({ title: "PPTXをダウンロードしました", description: fileName })
+                        } catch (err) {
+                          console.error(err)
+                          toast({
+                            title: "PPTX生成に失敗しました",
+                            description: err instanceof Error ? err.message : "Unknown error",
+                            variant: "destructive",
+                          })
+                        } finally {
+                          setIsGeneratingPptx(false)
+                        }
+                      }}
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      {isGeneratingPptx ? "生成中..." : "PPTXダウンロード"}
+                    </Button>
+                  </div>
                 )}
               </div>
               {whiteboardHtml ? (

@@ -1,6 +1,6 @@
 import { openai } from "@ai-sdk/openai"
 import { generateText } from "ai"
-import type { Character, Message, SummaryNode } from "@/lib/brain-room/types"
+import type { Character, Message } from "@/lib/brain-room/types"
 
 export async function POST(req: Request) {
   try {
@@ -9,15 +9,12 @@ export async function POST(req: Request) {
       theme,
       messages,
       characters,
-      allMessages,
-      summaryNodes,
     }: {
       topic: string
       theme: string
       messages: Message[]
       characters: Character[]
-      allMessages: Message[]
-      summaryNodes: Record<string, SummaryNode>
+      allMessages?: Message[]
     } = await req.json()
 
     if (!topic || !theme || !messages || messages.length === 0) {
@@ -26,12 +23,6 @@ export async function POST(req: Request) {
 
     // 関連するメッセージを整理
     const conversationText = messages.map((msg) => `${msg.characterName}: ${msg.text}`).join("\n\n")
-
-    // 関連するサブトピックを取得
-    const relatedSubtopics = Object.values(summaryNodes)
-      .filter((node) => node.id !== "root" && node.label.includes(topic.split(":")[0]))
-      .map((node) => node.label)
-      .slice(0, 5)
 
     const prompt = `あなたは会議分析の専門家です。以下の情報に基づいて、詳細なトピック分析レポートを作成してください。
 
@@ -42,9 +33,6 @@ export async function POST(req: Request) {
 
 ## 関連する議論内容
 ${conversationText}
-
-## 関連サブトピック
-${relatedSubtopics.length > 0 ? relatedSubtopics.join(", ") : "なし"}
 
 ## レポート作成指示
 以下の構成で詳細なレポートを作成してください：

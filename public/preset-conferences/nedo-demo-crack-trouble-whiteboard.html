@@ -1,0 +1,146 @@
+<div
+    style="font-family: 'Noto Sans JP', sans-serif; background: #f5f0e8; padding: 24px; border-radius: 8px; min-height: 600px;">
+
+    <!-- タイトルエリア -->
+    <div style="text-align:center; margin-bottom: 24px;">
+        <div
+            style="display:inline-block; background:#c0392b; color:#fff; padding:10px 32px; border-radius:4px; font-size:1.3em; font-weight:bold; letter-spacing:2px;">
+            🚨 量産トラブル — SPCC t1.0mm 絞り部品の割れ不良急増
+        </div>
+        <div style="margin-top:6px; color:#666; font-size:0.85em;">目的：不良率 0.3% → 2% の急増（6.7倍）の原因特定、暫定対策と恒久対策の並行実施</div>
+    </div>
+
+    <!-- 上段：5名の論点カード -->
+    <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:10px; margin-bottom:20px;">
+
+        <!-- 中島 -->
+        <div class="wb-card wb-card-red">
+            <div style="font-size:0.75em; color:#555; margin-bottom:4px;">🗣 中島 康太（コスト・顧客対応）</div>
+            <strong>納期死守のため暫定+恒久の2軸で即動く</strong>
+            <ul style="margin:8px 0 0 0; padding-left:16px; font-size:0.88em;">
+                <li>月産5,000個、<strong>月100個弱の不良</strong>。顧客納期は来週末</li>
+                <li>暫定で0.3%以内に戻す、恒久は来週末までに報告</li>
+                <li>顧客第一報を今日中に入れる</li>
+            </ul>
+        </div>
+
+        <!-- 村田 -->
+        <div class="wb-card wb-card-blue">
+            <div style="font-size:0.75em; color:#555; margin-bottom:4px;">🗣 村田 鉄男（加工経験）</div>
+            <strong>4M変動の定石でチェック</strong>
+            <ul style="margin:8px 0 0 0; padding-left:16px; font-size:0.88em;">
+                <li>材料ロット変更 → 金型摩耗 → プレス速度 → 作業者、この順でチェック</li>
+                <li>暫定: パンチR を R3.0 に戻す研磨を今晩実施</li>
+                <li>前ロット在庫があれば切替で時間稼ぎ</li>
+            </ul>
+        </div>
+
+        <!-- 安藤 -->
+        <div class="wb-card wb-card-yellow">
+            <div style="font-size:0.75em; color:#555; margin-bottom:4px;">🗣 安藤 美咲（品質）</div>
+            <strong>材料ロット変動を早期発見する仕組みが必要</strong>
+            <ul style="margin:8px 0 0 0; padding-left:16px; font-size:0.88em;">
+                <li>先週から新ロット。ミルシートで引張強度が <strong>+15MPa</strong>（規格内だが成形性に影響）</li>
+                <li>社内サンプル抜き取り試験の仕組み追加を提案</li>
+                <li>受入検査の強化で次回のロット変動に事前対応</li>
+            </ul>
+        </div>
+
+        <!-- 黒田 -->
+        <div class="wb-card wb-card-purple">
+            <div style="font-size:0.75em; color:#555; margin-bottom:4px;">🗣 黒田 浩一（金型）</div>
+            <strong>R部定量測定で計画的な型管理へ</strong>
+            <ul style="margin:8px 0 0 0; padding-left:16px; font-size:0.88em;">
+                <li>第2工程パンチR部 R3.0 → <strong>R2.7 まで摩耗</strong></li>
+                <li>現行の目視点検から週次の定量測定へ変更</li>
+                <li>ショット数ベースの摩耗予測で計画的な研磨が可能に</li>
+            </ul>
+        </div>
+
+        <!-- 藤原 -->
+        <div class="wb-card wb-card-green">
+            <div style="font-size:0.75em; color:#555; margin-bottom:4px;">🗣 藤原 翔太（CAE）</div>
+            <strong>複合要因をCAEで定量化、再発時の切分け高速化</strong>
+            <ul style="margin:8px 0 0 0; padding-left:16px; font-size:0.88em;">
+                <li>引張強度+15MPa × R2.7 で応力集中が <strong>8%増加</strong>、割れ発生を説明可能</li>
+                <li>型摩耗と材料変動を CAE モデルに反映</li>
+                <li>トラブル時の原因切り分けツールとして整備</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- 下段：決定事項 / 未解決の問い / アクション -->
+    <div class="wb-grid-3">
+
+        <!-- 決定事項 -->
+        <div class="wb-section">
+            <div style="font-weight:bold; margin-bottom:8px; color:#2d6a2d;">✅ 合意・方針</div>
+            <div class="wb-decision" style="margin-bottom:8px;">
+                <strong>原因は材料強度上昇＋型摩耗の複合要因</strong><br>
+                <small>CAEで応力集中8%増加を確認、割れ発生率の上昇を十分説明できる</small>
+            </div>
+            <div class="wb-decision" style="margin-bottom:8px;">
+                <strong>暫定対策: パンチR 研磨＋前ロット切替</strong><br>
+                <small>今晩実施、明日朝から試運転で 0.3% 以内に戻す</small>
+            </div>
+            <div class="wb-decision" style="margin-bottom:8px;">
+                <strong>顧客報告方針を合意</strong><br>
+                <small>暫定で不良率復旧、恒久は来週末報告。納期は現状維持見込み</small>
+            </div>
+            <div class="wb-decision" style="border-color:#27ae60;">
+                <strong>恒久対策 3本柱: 受入強化・型管理強化・CAE整備</strong><br>
+                <small>材料バラつき許容幅／R部週次測定／原因切分けツール化</small>
+            </div>
+        </div>
+
+        <!-- 未解決の問い -->
+        <div class="wb-section">
+            <div style="font-weight:bold; margin-bottom:8px; color:#a00;">❓ 未解決の問い</div>
+            <div class="wb-question" style="margin-bottom:8px;">
+                <strong>引張強度のバラつき許容幅は何 MPa に設定するか？</strong><br>
+                <small>現在はミルシート確認のみ。社内試験の判定基準が未整備</small>
+            </div>
+            <div class="wb-question" style="margin-bottom:8px;">
+                <strong>R部の研磨周期はショット数ベースで何万回が適切か？</strong><br>
+                <small>摩耗予測モデルの初期パラメータが必要</small>
+            </div>
+            <div class="wb-question">
+                <strong>CAE原因切分けツールの精度はどこまで担保できるか？</strong><br>
+                <small>実機データ蓄積が前提。初動判断の根拠として十分か検証必要</small>
+            </div>
+        </div>
+
+        <!-- アクション項目 -->
+        <div class="wb-section">
+            <div style="font-weight:bold; margin-bottom:8px; color:#555;">📋 アクション項目</div>
+            <div class="wb-card wb-card-blue" style="margin-bottom:8px; padding:10px;">
+                <div class="wb-tag" style="background:#1a4a8a; color:#fff; margin-bottom:4px;">村田</div>
+                <strong>今晩の型研磨に現場張り付き</strong><br>
+                <small>明日朝の試運転で不良率復旧を確認</small>
+            </div>
+            <div class="wb-card wb-card-green" style="margin-bottom:8px; padding:10px;">
+                <div class="wb-tag" style="background:#27ae60; color:#fff; margin-bottom:4px;">藤原</div>
+                <strong>CAE原因切分けモデルの整備</strong><br>
+                <small>型摩耗×材料変動の影響を定量化、トラブル初動判断ツール化</small>
+            </div>
+            <div class="wb-card wb-card-yellow" style="margin-bottom:8px; padding:10px;">
+                <div class="wb-tag" style="background:#b8860b; color:#fff; margin-bottom:4px;">安藤</div>
+                <strong>受入検査強化の仕様策定</strong><br>
+                <small>社内サンプル抜き取り試験の手順・判定基準を整備</small>
+            </div>
+            <div class="wb-card wb-card-purple" style="margin-bottom:8px; padding:10px;">
+                <div class="wb-tag" style="background:#5a2d82; color:#fff; margin-bottom:4px;">黒田</div>
+                <strong>R部週次測定の運用ルール策定</strong><br>
+                <small>ショット数ベースの摩耗予測と計画研磨の仕組み化</small>
+            </div>
+            <div class="wb-card wb-card-red" style="padding:10px;">
+                <div class="wb-tag" style="background:#c0392b; color:#fff; margin-bottom:4px;">中島</div>
+                <strong>顧客対応と再発防止策の取りまとめ</strong><br>
+                <small>今日中に第一報、明日朝8時に進捗MTG</small>
+            </div>
+        </div>
+
+    </div>
+
+</div>
