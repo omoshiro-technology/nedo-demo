@@ -74,11 +74,10 @@ export function QCDESRadar({
     ? Math.round((avg - (pastAvg ?? 0)))
     : 0
 
-  // overlayColor === "growth" の場合、過去は赤系 / 現在は青系 の2色はっきり表示
-  // （画像例のような飲酒調査グラフ風）
-  const currentColor = overlayColor === "growth" ? "#2563eb" : "#3b82f6"  // blue-600 / blue-500
+  // overlayColor === "growth" の場合、現在は赤系 / 過去は青系 の2色はっきり表示
+  const currentColor = overlayColor === "growth" ? "#ef4444" : "#3b82f6"  // red-500 / blue-500
   const currentFillOpacity = overlayColor === "growth" ? 0.35 : 0.25
-  const pastColor = overlayColor === "growth" ? "#ef4444" : "#94a3b8"      // red-500 / slate-400
+  const pastColor = overlayColor === "growth" ? "#2563eb" : "#94a3b8"      // blue-600 / slate-400
   const pastFillOpacity = overlayColor === "growth" ? 0.3 : 0.15
 
   return (
@@ -126,9 +125,9 @@ export function QCDESRadar({
       <p className={`text-center text-gray-500 mt-1 shrink-0 ${compact ? "text-xs" : "text-sm"}`}>
         {isOverlay && pastAvg !== null ? (
           <>
-            <span className="text-rose-600 font-medium">{pastAvg}</span>
+            <span className="text-blue-600 font-medium">{pastAvg}</span>
             <span className="mx-1 text-gray-400">→</span>
-            <span className="text-blue-600 font-medium">{avg}</span>
+            <span className="text-rose-600 font-medium">{avg}</span>
             {overlayColor === "growth" && growthDelta !== 0 && (
               <span className={growthDelta > 0 ? "ml-2 text-emerald-600 font-medium" : "ml-2 text-rose-600 font-medium"}>
                 ({growthDelta > 0 ? `+${growthDelta}` : growthDelta})

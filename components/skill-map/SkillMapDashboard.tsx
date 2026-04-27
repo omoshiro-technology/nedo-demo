@@ -349,34 +349,26 @@ function FullScreenCard({ profile, compareProfile, industry, compareMode }: { pr
 
         {/* 右: QCDES レーダー — 45%幅
              compareMode により表示切替:
-               - monthly:   2枚横並び（過去 / 現在）
-               - quarterly: 重ね表示（1枚に過去 + 現在 + 色付け）
+               - monthly:   重ね表示（1ヶ月前 vs 現在、成長を2色で）
+               - quarterly: 重ね表示（前四半期 vs 現在、成長を2色で）
         */}
         <div className="w-[45%] min-h-0 rounded-lg border border-gray-100 bg-gray-50/50 p-3 flex flex-col">
           <h3 className="text-base font-bold text-gray-600 mb-2 shrink-0">観点網羅度（QCDES）</h3>
           {compareMode === "monthly" ? (
-            <div className="flex-1 min-h-0 flex gap-4">
-              {/* 1ヶ月前 */}
-              <div className="flex-1 flex flex-col min-w-0">
-                <p className="text-xs text-center font-medium text-gray-500 mb-1 shrink-0">1ヶ月前</p>
-                <div className="flex-1 min-h-0">
-                  {compareLatestScores ? (
-                    <QCDESRadar scores={compareLatestScores} compact />
-                  ) : (
-                    <div className="h-full flex items-center justify-center text-xs text-gray-400">データなし</div>
-                  )}
-                </div>
-              </div>
-              {/* 現在 */}
-              <div className="flex-1 flex flex-col min-w-0">
-                <p className="text-xs text-center font-medium text-gray-500 mb-1 shrink-0">現在</p>
-                <div className="flex-1 min-h-0">
-                  {latestScores ? (
-                    <QCDESRadar scores={latestScores} compact />
-                  ) : (
-                    <div className="h-full flex items-center justify-center text-xs text-gray-400">データなし</div>
-                  )}
-                </div>
+            <div className="flex-1 min-h-0 flex flex-col">
+              <p className="text-xs text-center font-medium text-gray-500 mb-1 shrink-0">月次比較（1ヶ月前 → 現在）</p>
+              <div className="flex-1 min-h-0">
+                {latestScores ? (
+                  <QCDESRadar
+                    scores={latestScores}
+                    compareScores={compareLatestScores}
+                    overlayColor="growth"
+                    currentLabel="現在"
+                    pastLabel="1ヶ月前"
+                  />
+                ) : (
+                  <div className="h-full flex items-center justify-center text-xs text-gray-400">データなし</div>
+                )}
               </div>
             </div>
           ) : (
