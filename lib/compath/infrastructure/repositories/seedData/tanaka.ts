@@ -51,6 +51,10 @@ export const TANAKA_SKILLS_AFTER: SkillLevelMap = {
 
 export function tanakaAssessments(): SkillAssessment[] {
   return makeAssessments("tanaka-daiki", TANAKA_SKILLS_AFTER, [
+    // 入社時のオリエンテーション（クオーター比較用の過去データ）
+    { source: "compath_chat", purpose: "製造業の基本用語を先輩AIに質問", tq: tq(8, 5, 4, 6, qcdes(5, 0, 0, 0, 0)), skills: ["industry-standard"], daysAgo: 120 },
+    // 入社1ヶ月後：基礎研修で多領域を浅く学習（クオーター比較で見えるベースライン）
+    { source: "brain_room_1shot", purpose: "工程設計・品質・安全の基礎を広く学習", tq: tq(12, 8, 6, 10, qcdes(15, 10, 5, 3, 8)), skills: ["industry-standard", "drawing-read", "qc-method", "occupational-safety"], daysAgo: 95 },
     // 入社直後：基礎研修でBRAIN-Roomを体験
     { source: "brain_room_1shot", purpose: "プレス加工の基礎を学ぶ", tq: tq(15, 10, 8, 12, qcdes(0, 0, 0, 0, 0)), skills: ["press-forming", "steel", "drawing-read"], daysAgo: 60 },
     { source: "compath_chat", purpose: "図面の読み方を先輩AIに質問", tq: tq(18, 12, 10, 15, qcdes(12, 0, 0, 0, 0)), skills: ["drawing-read", "tolerance", "req-spec"], daysAgo: 50 },

@@ -9,8 +9,10 @@ const SkillMapDashboard = dynamic(
 
 export default function SkillMapPage() {
   return (
-    <div className="h-full">
-      <SkillMapDashboard />
+    <div className="h-full overflow-x-auto">
+      <div className="min-w-[1280px] h-full">
+        <SkillMapDashboard />
+      </div>
     </div>
   )
 }

@@ -32,6 +32,9 @@ export const NAKAJIMA_SKILLS: SkillLevelMap = {
 
 export function nakajimaAssessments(): SkillAssessment[] {
   return makeAssessments("nakajima-kota", NAKAJIMA_SKILLS, [
+    // 過去四半期（クオーター比較用）
+    { source: "brain_room_1shot", purpose: "年度計画の工程管理レビュー", tq: tq(58, 55, 48, 62, qcdes(55, 62, 55, 10, 15)), skills: ["production-plan", "process-control", "cost-control"], daysAgo: 120 },
+    { source: "compath_chat", purpose: "外注先の納期遅延対応", tq: tq(62, 60, 52, 60, qcdes(60, 65, 58, 8, 12)), skills: ["outsource-mgmt", "delivery-coord", "customer-negotiation"], daysAgo: 100 },
     { source: "compath_chat", purpose: "新ライン立ち上げの工程設計方針", tq: tq(55, 50, 45, 60, qcdes(55, 60, 50, 5, 10)), skills: ["production-plan", "productivity", "line-layout", "cost-control"], daysAgo: 42 },
     { source: "brain_room_1shot", purpose: "材料変更に伴う曲げ条件の見直し", tq: tq(60, 55, 50, 55, qcdes(58, 55, 15, 5, 10)), skills: ["steel", "cost-est", "supplier-quality"], daysAgo: 35 },
     { source: "compath_decision_navigator", purpose: "外注先選定の判断基準整理", tq: tq(65, 68, 55, 58, qcdes(20, 68, 55, 5, 8)), skills: ["outsource-mgmt", "cost-est", "customer-negotiation", "quotation"], daysAgo: 28 },

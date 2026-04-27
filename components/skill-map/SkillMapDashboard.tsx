@@ -13,20 +13,22 @@
  *     ┗ 下段 (auto)  : レベル定義ガイド
  */
 
-import { useState, useEffect, useCallback, useRef, useLayoutEffect } from "react"
+import { useState, useEffect, useCallback, useRef, useLayoutEffect, useMemo } from "react"
 import type {
   SkillProfile,
   SkillLevel,
+  Industry,
 } from "@/lib/compath/domain/skillMap/types"
-import { SKILL_LEVEL_LABELS } from "@/lib/compath/domain/skillMap/types"
+import { SKILL_LEVEL_LABELS, INDUSTRY_LABELS } from "@/lib/compath/domain/skillMap/types"
 import {
   SKILL_CATEGORIES,
   SKILL_MAP,
   getSkillsByCategory,
 } from "@/lib/compath/domain/skillMap/skillCatalog"
+import { getSkillLabel, getCategoryLabel } from "@/lib/compath/domain/skillMap/industryLabels"
 import { QCDESRadar } from "./QCDESRadar"
 
-type SampleUser = { id: string; name: string; role: string }
+type SampleUser = { id: string; name: string; role: string; industry: Industry }
 
 // ============================================================
 // 色定義
@@ -55,16 +57,49 @@ const LEVEL_BORDER: Record<SkillLevel, string> = {
 // メインコンポーネント
 // ============================================================
 
+// 比較モードの種類
+type CompareMode = "current" | "monthly" | "quarterly"
+
+const COMPARE_MODE_LABELS: Record<CompareMode, string> = {
+  "current": "現在のみ（比較なし）",
+  "monthly": "1ヶ月前と比較",
+  "quarterly": "期末比較（クオーター）",
+}
+
+// compareMode に応じて「何日前」を返す（current は使わない）
+function getDaysAgo(mode: CompareMode): number {
+  switch (mode) {
+    case "current": return 0
+    case "monthly": return 30
+    case "quarterly": return 90
+  }
+}
+
 export default function SkillMapDashboard() {
   const [users, setUsers] = useState<SampleUser[]>([])
+  const [selectedIndustry, setSelectedIndustry] = useState<Industry>("sheet-metal")
   const [selectedUserId, setSelectedUserId] = useState<string>("")
   const [profile, setProfile] = useState<SkillProfile | null>(null)
   const [compareProfile, setCompareProfile] = useState<SkillProfile | null>(null)
+  const [compareMode, setCompareMode] = useState<CompareMode>("current")
   const [compareDate, setCompareDate] = useState<string>("")
   const [initialLoading, setInitialLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [transitioning, setTransitioning] = useState(false)
   const fetchRef = useRef(0)
+
+  // 業界で絞り込んだユーザー一覧
+  const filteredUsers = useMemo(
+    () => users.filter((u) => u.industry === selectedIndustry),
+    [users, selectedIndustry]
+  )
+
+  // 業界で利用可能な業界一覧（存在するユーザーの業界のみ）
+  const availableIndustries = useMemo(() => {
+    const set = new Set<Industry>()
+    users.forEach((u) => set.add(u.industry))
+    return Array.from(set)
+  }, [users])
 
   useEffect(() => {
     fetch("/api/compath/skill-map/users")
@@ -72,12 +107,21 @@ export default function SkillMapDashboard() {
       .then((data) => {
         const list: SampleUser[] = data.users ?? []
         setUsers(list)
-        if (list.length > 0 && !selectedUserId) {
-          setSelectedUserId(list[0].id)
+        const firstInIndustry = list.find((u) => u.industry === "sheet-metal")
+        if (firstInIndustry && !selectedUserId) {
+          setSelectedUserId(firstInIndustry.id)
         }
       })
       .catch(() => {})
   }, [])
+
+  // 業界切り替え時、その業界の先頭キャラを自動選択
+  useEffect(() => {
+    if (filteredUsers.length === 0) return
+    if (!filteredUsers.some((u) => u.id === selectedUserId)) {
+      setSelectedUserId(filteredUsers[0].id)
+    }
+  }, [selectedIndustry, filteredUsers, selectedUserId])
 
   const fetchData = useCallback(async () => {
     if (!selectedUserId) return
@@ -101,9 +145,9 @@ export default function SkillMapDashboard() {
     }
   }, [selectedUserId, profile])
 
-  // 比較日付が変わったら比較用プロファイルを取得
+  // 比較日付が変わったら比較用プロファイルを取得（current モード時は取得せず）
   useEffect(() => {
-    if (!selectedUserId || !compareDate) {
+    if (!selectedUserId || !compareDate || compareMode === "current") {
       setCompareProfile(null)
       return
     }
@@ -111,11 +155,23 @@ export default function SkillMapDashboard() {
       .then((r) => r.ok ? r.json() : null)
       .then((data) => setCompareProfile(data))
       .catch(() => setCompareProfile(null))
-  }, [selectedUserId, compareDate])
+  }, [selectedUserId, compareDate, compareMode])
 
   useEffect(() => {
     if (selectedUserId) fetchData()
   }, [selectedUserId]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ユーザー選択 or 比較モード変更時に compareDate を自動セット
+  useEffect(() => {
+    if (!selectedUserId) return
+    if (compareMode === "current") {
+      setCompareDate("")
+      return
+    }
+    const d = new Date()
+    d.setDate(d.getDate() - getDaysAgo(compareMode))
+    setCompareDate(d.toISOString().slice(0, 10))
+  }, [selectedUserId, compareMode])
 
   const hasData = profile && profile.totalAssessments > 0
   const selectedUser = users.find((u) => u.id === selectedUserId)
@@ -126,40 +182,50 @@ export default function SkillMapDashboard() {
       <div className="flex items-center border-b border-gray-200 bg-white px-5 py-2.5 shrink-0">
         <h1 className="text-xl font-bold text-gray-900 mr-4">スキルマップ</h1>
         <div className="ml-auto flex items-center gap-3">
-          <select
-            value={selectedUserId}
-            onChange={(e) => setSelectedUserId(e.target.value)}
-            className="text-base border border-gray-200 rounded-md px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400"
-          >
-            {users.map((u) => (
-              <option key={u.id} value={u.id}>{u.name}</option>
-            ))}
-          </select>
-          {selectedUser && (
-            <span className="text-base text-gray-400">{selectedUser.role}</span>
-          )}
-          <div className="flex items-center gap-2 ml-4 border-l pl-4">
-            <button
-              onClick={() => {
-                if (compareDate) {
-                  setCompareDate("")
-                } else {
-                  const d = new Date()
-                  d.setMonth(d.getMonth() - 1)
-                  setCompareDate(d.toISOString().slice(0, 10))
-                }
-              }}
-              className={`text-sm font-medium px-3 py-1.5 rounded-md border transition-colors ${
-                compareDate
-                  ? "bg-emerald-50 border-emerald-300 text-emerald-700 hover:bg-emerald-100"
-                  : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
-              }`}
+          {/* 業界プルダウン */}
+          <label className="flex items-center gap-2 text-sm text-gray-500">
+            業界別:
+            <select
+              value={selectedIndustry}
+              onChange={(e) => setSelectedIndustry(e.target.value as Industry)}
+              className="text-base border border-gray-200 rounded-md px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400 w-[130px]"
             >
-              {compareDate ? "比較OFF" : "1ヶ月前と比較"}
-            </button>
-            {compareDate && compareProfile && (
-              <span className="text-xs text-emerald-600 font-medium">差分表示中</span>
-            )}
+              {availableIndustries.map((ind) => (
+                <option key={ind} value={ind}>{INDUSTRY_LABELS[ind]}</option>
+              ))}
+            </select>
+          </label>
+          {/* ブレッドクラムセパレータ */}
+          <span className="text-gray-400">&gt;</span>
+          {/* 人物プルダウン（業界で絞り込み） */}
+          <label className="flex items-center gap-2 text-sm text-gray-500">
+            人物:
+            <select
+              value={selectedUserId}
+              onChange={(e) => setSelectedUserId(e.target.value)}
+              className="text-base border border-gray-200 rounded-md px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400 w-[130px]"
+            >
+              {filteredUsers.map((u) => (
+                <option key={u.id} value={u.id}>{u.name}</option>
+              ))}
+            </select>
+          </label>
+          <span className="inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-medium bg-slate-100 text-slate-600 border border-slate-200 w-[220px] truncate">
+            {selectedUser?.role ?? ""}
+          </span>
+          <div className="flex items-center gap-2 ml-4 border-l pl-4">
+            <label className="flex items-center gap-2 text-sm text-gray-500">
+              比較:
+              <select
+                value={compareMode}
+                onChange={(e) => setCompareMode(e.target.value as CompareMode)}
+                className="text-base border border-gray-200 rounded-md px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400 w-[200px]"
+              >
+                <option value="current">{COMPARE_MODE_LABELS["current"]}</option>
+                <option value="monthly">{COMPARE_MODE_LABELS["monthly"]}</option>
+                <option value="quarterly">{COMPARE_MODE_LABELS["quarterly"]}</option>
+              </select>
+            </label>
           </div>
         </div>
       </div>
@@ -174,7 +240,7 @@ export default function SkillMapDashboard() {
           <Placeholder text="まだスキルアセスメントのデータがありません。" />
         ) : (
           <div className={`h-full transition-opacity duration-200 ${transitioning ? "opacity-60" : "opacity-100"}`}>
-            <FullScreenCard profile={profile} compareProfile={compareProfile} />
+            <FullScreenCard profile={profile} compareProfile={compareProfile} industry={selectedIndustry} compareMode={compareMode} />
           </div>
         )}
       </div>
@@ -186,7 +252,7 @@ export default function SkillMapDashboard() {
 // フルスクリーンカード
 // ============================================================
 
-function FullScreenCard({ profile, compareProfile }: { profile: SkillProfile; compareProfile?: SkillProfile | null }) {
+function FullScreenCard({ profile, compareProfile, industry, compareMode }: { profile: SkillProfile; compareProfile?: SkillProfile | null; industry: Industry; compareMode: CompareMode }) {
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null)
 
   // 差分計算: compareProfile(過去)と現在のprofileを比較し、上がったスキルを特定
@@ -204,6 +270,12 @@ function FullScreenCard({ profile, compareProfile }: { profile: SkillProfile; co
 
   const proficiencies = Object.values(profile.proficiencies)
   const latestScores = proficiencies
+    .filter((p) => p.latestScores)
+    .sort((a, b) => new Date(b.lastAssessedAt).getTime() - new Date(a.lastAssessedAt).getTime())
+    [0]?.latestScores ?? null
+
+  const compareProficiencies = compareProfile ? Object.values(compareProfile.proficiencies) : []
+  const compareLatestScores = compareProficiencies
     .filter((p) => p.latestScores)
     .sort((a, b) => new Date(b.lastAssessedAt).getTime() - new Date(a.lastAssessedAt).getTime())
     [0]?.latestScores ?? null
@@ -230,22 +302,22 @@ function FullScreenCard({ profile, compareProfile }: { profile: SkillProfile; co
         </div>
       </div>
 
-      {/* 上段: グリッド(65%) + 情報パネル(35%) — flex-1 で残りを埋める */}
+      {/* 上段: グリッド(55%) + 情報パネル(45%) — flex-1 で残りを埋める */}
       <div className="flex-1 min-h-0 flex gap-4">
         {/* 左: ヒートマップグリッド — 9行 x 8列がビューポートに合わせて伸縮 */}
-        <div className="w-[65%] flex flex-col gap-[2px]">
+        <div className="w-[55%] min-w-0 flex flex-col gap-[2px]">
           {SKILL_CATEGORIES.map((category) => {
             const skills = skillsByCategory.get(category.id) ?? []
             return (
-              <div key={category.id} className="flex-1 flex items-stretch min-h-0">
+              <div key={category.id} className="flex-1 flex items-stretch min-h-0 min-w-0">
                 {/* カテゴリラベル — 15%幅 */}
-                <div className="w-[15%] shrink-0 flex items-center justify-end pr-2">
-                  <span className="text-sm font-medium text-slate-500 leading-tight text-right">
-                    {category.name}
+                <div className="w-[15%] shrink-0 flex items-center justify-center bg-slate-100 border-r border-slate-200 px-2">
+                  <span className="text-sm font-semibold text-slate-700 leading-tight text-center">
+                    {getCategoryLabel(category.id, industry, category.name)}
                   </span>
                 </div>
                 {/* セル群 — 85%幅を8等分 */}
-                <div className="flex-1 flex gap-[2px]">
+                <div className="flex-1 min-w-0 flex gap-[2px] pl-2">
                   {skills.map((skill) => {
                     const prof = profile.proficiencies[skill.id]
                     const level = (prof?.currentLevel ?? 1) as SkillLevel
@@ -256,16 +328,17 @@ function FullScreenCard({ profile, compareProfile }: { profile: SkillProfile; co
                       <div
                         key={skill.id}
                         className={`
-                          flex-1 rounded-[4px] cursor-pointer overflow-hidden
+                          flex-1 min-w-0 rounded-[4px] cursor-pointer overflow-hidden
                           flex items-center justify-center
                           border transition-all px-1 relative
                           ${isImproved ? "bg-emerald-200 border-emerald-500 ring-2 ring-emerald-400" : `${LEVEL_BG[level]} ${LEVEL_BORDER[level]}`}
                           ${isSelected ? "ring-2 ring-indigo-400 scale-105 z-10" : !isImproved ? "hover:brightness-95" : ""}
                         `}
                         onClick={() => setSelectedSkill(skill.id)}
+                        title={skill.name}
                       >
-                        <span className={`text-xs font-medium truncate select-none ${isImproved ? "text-emerald-900" : LEVEL_TEXT[level]}`}>
-                          {skill.name}
+                        <span className={`text-xs font-semibold truncate select-none ${isImproved ? "text-emerald-900" : LEVEL_TEXT[level]}`}>
+                          {getSkillLabel(skill.id, industry, skill.name)}
                         </span>
                         {isImproved && (
                           <span className="absolute top-0 right-0.5 text-[9px] font-bold text-emerald-700">
@@ -281,16 +354,77 @@ function FullScreenCard({ profile, compareProfile }: { profile: SkillProfile; co
           })}
         </div>
 
-        {/* 右: レーダーチャートのみ — 35%幅 */}
-        <div className="w-[35%] min-h-0 rounded-lg border border-gray-100 bg-gray-50/50 p-4 flex flex-col">
-          <h3 className="text-base font-bold text-gray-600 mb-1 shrink-0">観点網羅度（QCDES）</h3>
-          <div className="flex-1 min-h-0">
-            {latestScores ? (
-              <QCDESRadar scores={latestScores} />
-            ) : (
-              <div className="h-full flex items-center justify-center text-sm text-gray-400">データなし</div>
-            )}
-          </div>
+        {/* 右: QCDES レーダー — 45%幅
+             compareMode により表示切替:
+               - current:   単一ポリゴン表示（比較なし）
+               - monthly:   重ね表示（1ヶ月前 vs 現在、成長を2色で）
+               - quarterly: 重ね表示（前四半期 vs 現在、成長を2色で）
+        */}
+        <div className="w-[45%] min-w-0 min-h-0 rounded-lg border border-gray-100 bg-gray-50/50 p-3 flex flex-col">
+          <h3 className="text-base font-bold text-gray-600 mb-2 shrink-0">観点網羅度（QCDES）</h3>
+          {compareMode === "current" ? (
+            <div className="flex-1 min-h-0 flex flex-col">
+              <div className="flex-1 min-h-0">
+                {latestScores ? (
+                  <QCDESRadar key={`current-${profile.userId}`} scores={latestScores} />
+                ) : (
+                  <div className="h-full flex items-center justify-center text-xs text-gray-400">データなし</div>
+                )}
+              </div>
+            </div>
+          ) : compareMode === "monthly" ? (
+            <div className="flex-1 min-h-0 flex flex-col">
+              <div className="flex-1 min-h-0">
+                {latestScores && compareLatestScores ? (
+                  <QCDESRadar
+                    key={`monthly-${profile.userId}`}
+                    scores={latestScores}
+                    compareScores={compareLatestScores}
+                    overlayColor="growth"
+                    currentLabel="現在"
+                    pastLabel="1ヶ月前"
+                  />
+                ) : (
+                  <div className="h-full" />
+                )}
+              </div>
+              <p className="text-xs text-center font-medium text-gray-500 mt-1 shrink-0">
+                月次比較（
+                <span className="inline-block w-3 border-t border-dashed border-red-600 mr-1 align-middle" />
+                <span className="text-red-600 font-semibold">1ヶ月前</span>
+                <span className="mx-1">→</span>
+                <span className="inline-block w-3 h-0.5 bg-blue-600 mr-1 align-middle" />
+                <span className="text-blue-600 font-semibold">現在</span>
+                ）
+              </p>
+            </div>
+          ) : (
+            <div className="flex-1 min-h-0 flex flex-col">
+              <div className="flex-1 min-h-0">
+                {latestScores && compareLatestScores ? (
+                  <QCDESRadar
+                    key={`quarterly-${profile.userId}`}
+                    scores={latestScores}
+                    compareScores={compareLatestScores}
+                    overlayColor="growth"
+                    currentLabel="現在"
+                    pastLabel="前四半期"
+                  />
+                ) : (
+                  <div className="h-full" />
+                )}
+              </div>
+              <p className="text-xs text-center font-medium text-gray-500 mt-1 shrink-0">
+                期末比較（
+                <span className="inline-block w-3 border-t border-dashed border-red-600 mr-1 align-middle" />
+                <span className="text-red-600 font-semibold">前四半期</span>
+                <span className="mx-1">→</span>
+                <span className="inline-block w-3 h-0.5 bg-blue-600 mr-1 align-middle" />
+                <span className="text-blue-600 font-semibold">現在</span>
+                ）
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -314,7 +448,7 @@ function FullScreenCard({ profile, compareProfile }: { profile: SkillProfile; co
       </div>
 
       {/* スキル詳細モーダル */}
-      {selectedSkill && <SkillDetailModal skillId={selectedSkill} profile={profile} onClose={() => setSelectedSkill(null)} />}
+      {selectedSkill && <SkillDetailModal skillId={selectedSkill} profile={profile} industry={industry} onClose={() => setSelectedSkill(null)} />}
     </div>
   )
 }
@@ -334,7 +468,7 @@ const LEVEL_GUIDE: Array<{ level: SkillLevel; description: string; criteria: str
 // ツールチップ
 // ============================================================
 
-function SkillDetailModal({ skillId, profile, onClose }: { skillId: string; profile: SkillProfile; onClose: () => void }) {
+function SkillDetailModal({ skillId, profile, industry, onClose }: { skillId: string; profile: SkillProfile; industry: Industry; onClose: () => void }) {
   const [visible, setVisible] = useState(false)
   useLayoutEffect(() => {
     requestAnimationFrame(() => setVisible(true))
@@ -344,7 +478,8 @@ function SkillDetailModal({ skillId, profile, onClose }: { skillId: string; prof
   if (!skill) return null
   const proficiency = profile.proficiencies[skillId]
   const currentLevel = (proficiency?.currentLevel ?? 1) as SkillLevel
-  const categoryName = SKILL_CATEGORIES.find((c) => c.id === skill.categoryId)?.name ?? ""
+  const categoryDefault = SKILL_CATEGORIES.find((c) => c.id === skill.categoryId)?.name ?? ""
+  const categoryName = getCategoryLabel(skill.categoryId, industry, categoryDefault)
 
   const ML_BG: Record<SkillLevel, string> = { 1: "bg-slate-50 border-slate-200", 2: "bg-sky-50 border-sky-200", 3: "bg-sky-50 border-sky-300", 4: "bg-indigo-50 border-indigo-200" }
   const evidence = proficiency?.levelUpEvidence?.filter(ev => ev.source === "compath_decision_navigator") ?? []
@@ -353,13 +488,13 @@ function SkillDetailModal({ skillId, profile, onClose }: { skillId: string; prof
   return (
     <div className={`fixed inset-0 z-50 flex items-center justify-center transition-colors duration-200 ${visible ? "bg-black/30" : "bg-black/0"}`} onClick={onClose}>
       <div
-        className={`bg-white rounded-xl shadow-xl border border-slate-200 p-5 max-h-[80vh] overflow-y-auto transition-all duration-300 ease-out ${hasEvidence ? "w-[820px]" : "w-[420px]"} ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+        className={`bg-white rounded-xl shadow-xl border border-slate-200 p-5 max-h-[80vh] overflow-y-auto transition-all duration-300 ease-out mx-4 w-full ${hasEvidence ? "max-w-[820px]" : "max-w-[420px]"} ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between gap-3 mb-3">
           <div>
             <div className="text-sm text-slate-400">{categoryName}</div>
-            <div className="text-lg font-bold text-slate-800">{skill.name}</div>
+            <div className="text-lg font-bold text-slate-800">{getSkillLabel(skill.id, industry, skill.name)}</div>
           </div>
           <div className="flex items-center gap-2">
             <span className={`shrink-0 px-3 py-1 rounded text-base font-bold ${LEVEL_BG[currentLevel]} ${LEVEL_TEXT[currentLevel]} border ${LEVEL_BORDER[currentLevel]}`}>

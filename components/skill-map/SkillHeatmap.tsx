@@ -218,7 +218,7 @@ function SkillDetailModal({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-xl shadow-xl border border-slate-200 p-5 w-[380px] max-h-[80vh] overflow-y-auto"
+        className="bg-white rounded-xl shadow-xl border border-slate-200 p-5 mx-4 w-full max-w-[380px] max-h-[80vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between gap-3 mb-4">

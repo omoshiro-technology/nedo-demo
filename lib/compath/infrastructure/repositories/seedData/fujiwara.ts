@@ -32,6 +32,8 @@ export const FUJIWARA_SKILLS: SkillLevelMap = {
 
 export function fujiwaraAssessments(): SkillAssessment[] {
   return makeAssessments("fujiwara-shota", FUJIWARA_SKILLS, [
+    // 過去四半期（クオーター比較用）
+    { source: "compath_chat", purpose: "CAE ソフトの基本操作を学習", tq: tq(10, 5, 3, 8, qcdes(3, 0, 0, 0, 0)), skills: ["forming-sim"], daysAgo: 120 },
     { source: "brain_room_conference", purpose: "成形シミュレーション結果の読み方を確認", tq: tq(20, 15, 10, 18, qcdes(5, 0, 0, 0, 0)), skills: ["forming-sim", "press-forming", "springback"], daysAgo: 70 },
     { source: "brain_room_1shot", purpose: "板厚減少率の許容範囲を学ぶ", tq: tq(25, 20, 15, 22, qcdes(15, 5, 0, 0, 0)), skills: ["steel", "tolerance", "material-test"], daysAgo: 63 },
     { source: "compath_chat", purpose: "スプリングバックの補正方法", tq: tq(30, 25, 18, 28, qcdes(20, 8, 0, 0, 0)), skills: ["springback", "press-forming", "forming-sim"], daysAgo: 56 },

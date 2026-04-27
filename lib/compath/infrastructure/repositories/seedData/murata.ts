@@ -32,6 +32,9 @@ export const MURATA_SKILLS: SkillLevelMap = {
 
 export function murataAssessments(): SkillAssessment[] {
   return makeAssessments("murata-tetsuo", MURATA_SKILLS, [
+    // 過去四半期（クオーター比較用）
+    { source: "brain_room_1shot", purpose: "中堅部材の抜き加工FMEA", tq: tq(82, 78, 75, 88, qcdes(82, 75, 72, 15, 75)), skills: ["press-forming", "die-design", "process-fmea"], daysAgo: 120 },
+    { source: "compath_decision_navigator", purpose: "量産トラブル対応のフロー整備", tq: tq(85, 82, 78, 90, qcdes(88, 70, 78, 20, 82)), skills: ["troubleshoot", "work-standard", "die-maint"], daysAgo: 100 },
     { source: "brain_room_1shot", purpose: "SUS304 板厚1.2mm曲げ加工の工程検討", tq: tq(85, 80, 78, 90, qcdes(85, 80, 75, 15, 80)), skills: ["stainless", "springback", "process-seq", "press-forming"], daysAgo: 56 },
     { source: "compath_decision_navigator", purpose: "金型摩耗による品質低下の原因切り分け", tq: tq(80, 85, 82, 88, qcdes(88, 78, 25, 10, 75)), skills: ["die-maint", "troubleshoot", "inspection", "measurement"], daysAgo: 49 },
     { source: "compath_chat", purpose: "新規顧客の公差要求と既存設備の適合確認", tq: tq(78, 82, 75, 88, qcdes(82, 75, 80, 10, 20)), skills: ["tolerance", "equip-eval", "needs-analysis", "customer-negotiation"], daysAgo: 42 },
