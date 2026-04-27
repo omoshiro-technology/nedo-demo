@@ -356,7 +356,15 @@ function FullScreenCard({ profile, compareProfile, industry, compareMode }: { pr
           <h3 className="text-base font-bold text-gray-600 mb-2 shrink-0">観点網羅度（QCDES）</h3>
           {compareMode === "monthly" ? (
             <div className="flex-1 min-h-0 flex flex-col">
-              <p className="text-xs text-center font-medium text-gray-500 mb-1 shrink-0">月次比較（1ヶ月前 → 現在）</p>
+              <p className="text-xs text-center font-medium text-gray-500 mb-1 shrink-0">
+                月次比較（
+                <span className="inline-block w-3 border-t border-dashed border-red-600 mr-1 align-middle" />
+                <span className="text-red-600 font-semibold">1ヶ月前</span>
+                <span className="mx-1">→</span>
+                <span className="inline-block w-3 h-0.5 bg-blue-600 mr-1 align-middle" />
+                <span className="text-blue-600 font-semibold">現在</span>
+                ）
+              </p>
               <div className="flex-1 min-h-0">
                 {latestScores ? (
                   <QCDESRadar
@@ -373,7 +381,15 @@ function FullScreenCard({ profile, compareProfile, industry, compareMode }: { pr
             </div>
           ) : (
             <div className="flex-1 min-h-0 flex flex-col">
-              <p className="text-xs text-center font-medium text-gray-500 mb-1 shrink-0">期末比較（前四半期 → 現在）</p>
+              <p className="text-xs text-center font-medium text-gray-500 mb-1 shrink-0">
+                期末比較（
+                <span className="inline-block w-3 border-t border-dashed border-red-600 mr-1 align-middle" />
+                <span className="text-red-600 font-semibold">前四半期</span>
+                <span className="mx-1">→</span>
+                <span className="inline-block w-3 h-0.5 bg-blue-600 mr-1 align-middle" />
+                <span className="text-blue-600 font-semibold">現在</span>
+                ）
+              </p>
               <div className="flex-1 min-h-0">
                 {latestScores ? (
                   <QCDESRadar
