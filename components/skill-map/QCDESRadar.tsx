@@ -55,10 +55,12 @@ export function QCDESRadar({
   const data = axisDefs.map((d) => {
     const current = cov[d.key as keyof typeof cov]
     const past = pastCov ? pastCov[d.key as keyof typeof pastCov] : null
+    const delta = past != null ? current - past : null
     return {
       axis: d.axis,
       current,
       past,
+      delta,
     }
   })
 
@@ -88,7 +90,31 @@ export function QCDESRadar({
             <PolarGrid stroke="#e5e7eb" />
             <PolarAngleAxis
               dataKey="axis"
-              tick={{ fontSize: compact ? 11 : 15, fill: "#6b7280" }}
+              tick={(tickProps: { x: number; y: number; textAnchor: string; payload: { value: string; index: number } }) => {
+                const { x, y, textAnchor, payload } = tickProps
+                const datum = data[payload.index]
+                const delta = datum?.delta
+                const fontSize = compact ? 11 : 15
+                const deltaSize = compact ? 11 : 14
+                return (
+                  <g transform={`translate(${x},${y})`}>
+                    <text textAnchor={textAnchor} fill="#6b7280" fontSize={fontSize}>
+                      <tspan x={0} dy={0}>{payload.value}</tspan>
+                      {isOverlay && delta != null && delta !== 0 && (
+                        <tspan
+                          x={0}
+                          dy={fontSize + 2}
+                          fontSize={deltaSize}
+                          fontWeight="bold"
+                          fill={delta > 0 ? "#dc2626" : "#2563eb"}
+                        >
+                          {delta > 0 ? `+${delta}` : delta}
+                        </tspan>
+                      )}
+                    </text>
+                  </g>
+                )
+              }}
             />
             <PolarRadiusAxis angle={90} domain={[0, 100]} tick={false} axisLine={false} />
             {isOverlay && (
